@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { GiFingerPrint } from "react-icons/gi";
+import { LuFingerprint } from "react-icons/lu";
 
 const FingerprintLoading = () => {
   const [percentage, setPercentage] = useState(0);
@@ -22,8 +23,8 @@ const FingerprintLoading = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen">
       <div className="flex items-center gap-4 p-4">
-        <GiFingerPrint className="text-8xl animate-ping absolute inline-flex rounded-full text-sky-400 opacity-75" />
-        <GiFingerPrint className="text-8xl relative inline-flex rounded-full text-sky-500" />
+        <LuFingerprint className="text-6xl animate-ping absolute inline-flex rounded-full text-sky-400 opacity-75" />
+        <LuFingerprint className="text-6xl relative inline-flex rounded-full text-sky-500" />
       </div>
       <div className="mt-4 text-2xl">
         {percentage}%
