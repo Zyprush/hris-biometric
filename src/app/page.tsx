@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import Loading from "@/components/Loading";
 import { GrFingerPrint } from "react-icons/gr";
+import { useRouter } from "next/navigation";
 
 interface UserData {
   name: string;
@@ -21,6 +22,7 @@ export default function Home() {
   const [signOut] = useSignOut(auth);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [userDataLoading, setUserDataLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -44,51 +46,44 @@ export default function Home() {
     fetchUserData();
   }, [user]);
 
+  useEffect(() => {
+    if (user && userData) {
+      if (userData.role === "admin") {
+        router.push("/admin/dashboard");
+      } else if (userData && userData.role === "user") {
+        router.push("/user/dashboard");
+      } else {
+        // Handle case where role is not set
+        console.log("Role is not set");
+      }
+    }
+  }, [user, userData, router]);
+
   return (
     <main>
-      <div className="flex flex-col items-center justify-center min-h-screen p-4 dark">
-        <div className="flex flex-col w-full max-w-md bg-gray-800 rounded-lg shadow-md p-6">
-          <p className="text-3xl text-white font-bold mx-auto flex gap-2"><GrFingerPrint />HRIS</p>
-          <p className="text-xl text-white font-bold mx-auto mt-2">Biometric</p>
-          {loading || userDataLoading ? (
-            <Loading />
-          ) : (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4 dark bg-gray-800">
+        <div className="flex flex-col w-full max-w-md ">
             <>
               <SignedIn>
-                <div className="flex flex-col text-primary-500 text-white">
-                  <h1 className="text-3xl font-bold">Signed in as</h1>
-                  <p>Name: {userData?.name}</p>
-                  <p>Email: {userData?.email}</p>
-                  <p>Employee ID: {userData?.employeeId}</p>
-                  <p>Role: {userData?.role}</p>
-                  <p>
-                    Email verified:{" "}
-                    {user?.emailVerified ? (
-                      <span className="text-green-500">Verified</span>
-                    ) : (
-                      <span className="text-red-500">
-                        Not verified, check your email
-                      </span>
-                    )}
-                  </p>
-                  <button
-                    onClick={() => signOut()}
-                    className="text-red-500 font-bold mt-4"
-                  >
-                    Sign out
-                  </button>
-                </div>
+                <p className="text-3xl text-white font-bold mx-auto flex gap-2"><GrFingerPrint />HRIS</p>
+                <p className="text-xl text-white font-bold mx-auto mt-2">Biometric</p>
+                <button
+                  className="m-2 bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-600 hover:to-blue-600 transition ease-in-out duration-150 mx-auto mt-20"
+                >
+                  Signing in...
+                </button>
               </SignedIn>
               <SignedOut>
-                  <Link
-                    className="m-2 bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-600 hover:to-blue-600 transition ease-in-out duration-150 mx-auto mt-20"
-                    href="/sign-in"
-                  >
-                    Sign in
-                  </Link>
+                <p className="text-3xl text-white font-bold mx-auto flex gap-2"><GrFingerPrint />HRIS</p>
+                <p className="text-xl text-white font-bold mx-auto mt-2">Biometric</p>
+                <Link
+                  className="m-2 bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-600 hover:to-blue-600 transition ease-in-out duration-150 mx-auto mt-20"
+                  href="/sign-in"
+                >
+                  Sign in
+                </Link>
               </SignedOut>
             </>
-          )}
         </div>
       </div>
     </main>
