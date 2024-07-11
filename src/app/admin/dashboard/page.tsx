@@ -8,6 +8,8 @@ import AdminLayout from "@/components/AdminLayout";
 import Loading from "@/components/Loading";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { SignedIn } from "@/components/signed-in";
+import { warnToast } from "@/components/toast";
 
 interface UserData {
   name: string;
@@ -31,15 +33,7 @@ const AdminDashboard = () => {
           setUserData(userDocSnap.data() as UserData);
           if (!user.emailVerified) {
             setIsEmailVerified(false);
-            toast.warn("Your email is not verified. Please check your inbox for a verification email.", {
-              position: "top-right",
-              autoClose: false,
-              hideProgressBar: false,
-              closeOnClick: false,
-              pauseOnHover: true,
-              draggable: false,
-              progress: undefined,
-            });
+            warnToast("Your email is not verified. Please check your inbox for a verification email.")
           }
         }
       }
@@ -54,6 +48,7 @@ const AdminDashboard = () => {
   };
 
   return (
+    <SignedIn>
     <AdminLayout>
       <ToastContainer />
       <div className="flex flex-col items-center justify-center min-h-screen p-4 dark">
@@ -71,6 +66,7 @@ const AdminDashboard = () => {
         )}
       </div>
     </AdminLayout>
+    </SignedIn>
   );
 }
 

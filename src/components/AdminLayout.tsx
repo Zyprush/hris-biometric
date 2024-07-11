@@ -36,30 +36,30 @@ const AdminLayout: React.FC<NavbarProps> = ({ children }) => {
           <button
             onClick={toggleNavbar}
             data-tip="toggle width"
-            className={`text-2xl flex mb-5 tooltip tooltip-right m-auto p-2 font-bold rounded-md gap-2`}
+            className={`text-2xl text-zinc-700 flex mb-5 tooltip tooltip-right m-auto p-2 font-bold rounded-md gap-2`}
           >
-            <LuFingerprint className="text-3xl" /> {!isMinimized && "HRIS"}
+            <LuFingerprint className="text-3xl" /> {!isMinimized && <p className="bg-neutral px-2 rounded-md text-white">HRIS</p>}
           </button>
           <Link href={"/admin/dashboard"} className="navlink">
             <BsBarChartFill className="text-xl" /> {!isMinimized && "Dashboard"}
           </Link>
-          <Link href={"/employee"} className="navlink">
+          <Link href={"/admin/employee"} className="navlink">
             <FaUserAlt className="text-xl" /> {!isMinimized && "Employee"}
           </Link>
-          <Link href={"/attendance"} className="navlink">
+          <Link href={"/admin/attendance"} className="navlink">
             <MdTry className="text-xl" /> {!isMinimized && "Attendance"}
           </Link>
-          <Link href={"/payroll"} className="navlink">
+          <Link href={"/admin/payroll"} className="navlink">
             <MdPayments className="text-xl" /> {!isMinimized && "Payroll"}
           </Link>
-          <Link href={"/branch"} className="navlink">
+          <Link href={"/admin/branch"} className="navlink">
             <FaBuilding className="text-xl" /> {!isMinimized && "Branch"}
           </Link>
-          <Link href={"/history"} className="navlink">
+          <Link href={"/admin/history"} className="navlink">
             <RiFolderHistoryFill className="text-xl" />{" "}
             {!isMinimized && "History"}
           </Link>
-          <Link href={"/account"} className="navlink">
+          <Link href={"/admin/account"} className="navlink">
             <FaUserCircle className="text-xl" /> {!isMinimized && "Account"}
           </Link>
           <button className="navlink" onClick={() => { auth.signOut(); router.push("/sign-in"); }}>
