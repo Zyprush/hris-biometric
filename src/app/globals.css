@@ -20,6 +20,6 @@
     @apply textarea textarea-bordered w-auto resize-none text-xs bg-zinc-50 focus:outline-primary focus:border-primary;
   }
   .navlink {
-    @apply flex gap-3 text-sm font-[600] text-zinc-700 p-3 hover:bg-neutral rounded-md hover:text-white transition-all duration-300;
+    @apply flex gap-3 text-sm font-[600] p-3 hover:bg-secondary rounded-md hover:text-white transition-all duration-300;
   }
 }

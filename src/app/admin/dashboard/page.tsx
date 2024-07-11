@@ -6,8 +6,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import AdminLayout from "@/components/AdminLayout";
 import Loading from "@/components/Loading";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 import { SignedIn } from "@/components/signed-in";
 import { warnToast } from "@/components/toast";
 

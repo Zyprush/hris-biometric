@@ -20,13 +20,14 @@ interface NavbarProps {
 const AdminLayout: React.FC<NavbarProps> = ({ children }) => {
   const [isMinimized, setIsMinimized] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   const toggleNavbar = () => {
     setIsMinimized(!isMinimized);
   };
 
   return (
-    <div className="h-screen w-screen flex bg-slate-100">
+    <div className="h-screen w-screen flex bg-slate-100 overflow-hidden">
       <div
         className={`flex ${
           isMinimized ? "w-20" : "w-56"
@@ -40,34 +41,34 @@ const AdminLayout: React.FC<NavbarProps> = ({ children }) => {
           >
             <LuFingerprint className="text-3xl" /> {!isMinimized && <p className="bg-neutral px-2 rounded-md text-white">HRIS</p>}
           </button>
-          <Link href={"/admin/dashboard"} className="navlink">
+          <Link href={"/admin/dashboard"} className={`navlink ${pathname === "/admin/dashboard" ? "bg-neutral text-white" : "text-zinc-700"}`}>
             <BsBarChartFill className="text-xl" /> {!isMinimized && "Dashboard"}
           </Link>
-          <Link href={"/admin/employee"} className="navlink">
+          <Link href={"/admin/employee"} className={`navlink ${pathname === "/admin/employee" ? "bg-neutral text-white" : "text-zinc-700"}`}>
             <FaUserAlt className="text-xl" /> {!isMinimized && "Employee"}
           </Link>
-          <Link href={"/admin/attendance"} className="navlink">
+          <Link href={"/admin/attendance"} className={`navlink ${pathname === "/admin/attendance" ? "bg-neutral text-white" : "text-zinc-700"}`}>
             <MdTry className="text-xl" /> {!isMinimized && "Attendance"}
           </Link>
-          <Link href={"/admin/payroll"} className="navlink">
+          <Link href={"/admin/payroll"} className={`navlink ${pathname === "/admin/payroll" ? "bg-neutral text-white" : "text-zinc-700"}`}>
             <MdPayments className="text-xl" /> {!isMinimized && "Payroll"}
           </Link>
-          <Link href={"/admin/branch"} className="navlink">
+          <Link href={"/admin/branch"} className={`navlink ${pathname === "/admin/branch" ? "bg-neutral text-white" : "text-zinc-700"}`}>
             <FaBuilding className="text-xl" /> {!isMinimized && "Branch"}
           </Link>
-          <Link href={"/admin/history"} className="navlink">
+          <Link href={"/admin/history"} className={`navlink ${pathname === "/admin/history" ? "bg-neutral text-white" : "text-zinc-700"}`}>
             <RiFolderHistoryFill className="text-xl" />{" "}
             {!isMinimized && "History"}
           </Link>
-          <Link href={"/admin/account"} className="navlink">
+          <Link href={"/admin/account"} className={`navlink ${pathname === "/admin/account" ? "bg-neutral text-white" : "text-zinc-700"}`}>
             <FaUserCircle className="text-xl" /> {!isMinimized && "Account"}
           </Link>
-          <button className="navlink" onClick={() => { auth.signOut(); router.push("/sign-in"); }}>
+          <button className="navlink text-zinc-700" onClick={() => { auth.signOut(); router.push("/sign-in"); }}>
             <FaSignOutAlt className="text-xl" /> {!isMinimized && "Logout"}
           </button>
         </nav>
       </div>
-      <div className="flex-1">{children}</div>
+      <div className="flex-1 overflow-y-auto">{children}</div>
     </div>
   );
 };
