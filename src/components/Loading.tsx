@@ -23,8 +23,8 @@ const FingerprintLoading = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen">
       <div className="flex items-center gap-4 p-4">
-        <LuFingerprint className="text-6xl animate-ping absolute inline-flex rounded-full text-sky-400 opacity-75" />
-        <LuFingerprint className="text-6xl relative inline-flex rounded-full text-sky-500" />
+        <GiFingerPrint className="text-6xl animate-ping absolute inline-flex rounded-full text-sky-400 opacity-75" />
+        <GiFingerPrint className="text-6xl relative inline-flex rounded-full text-sky-500" />
       </div>
       <div className="mt-4 text-2xl">
         {percentage}%
