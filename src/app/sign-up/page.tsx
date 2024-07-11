@@ -2,7 +2,6 @@
 
 import { auth, db } from "@/firebase";
 import { IconFidgetSpinner } from "@tabler/icons-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, FormEvent } from "react";
 import {
@@ -136,11 +135,9 @@ export default function SignUpPage() {
                 type="submit"
                 className="bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-indigo-600 hover:to-blue-600 transition ease-in-out duration-150"
               >
-                SIGN UP
+                CREATE USER
               </button>
-              <Link className="mr-4 underline mt-4" href="../sign-in">
-                Sign in
-              </Link>
+
             </>
           )}
         </form>
