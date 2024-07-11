@@ -1,7 +1,6 @@
 "use client";
 
 import { auth, db } from "@/firebase";
-import { IconFidgetSpinner } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useState, FormEvent } from "react";
 import {
@@ -10,6 +9,7 @@ import {
 } from "react-firebase-hooks/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
+import Loading from "@/components/Loading";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -41,6 +41,8 @@ export default function SignUpPage() {
             role
           });
           console.log("Document successfully written!");
+
+
         } catch (firestoreError) {
           console.error("Error writing document: ", firestoreError);
           if (firestoreError instanceof FirebaseError) {
@@ -49,7 +51,12 @@ export default function SignUpPage() {
           }
         }
         await sendEmailVerification();
-        router.push("/");
+        if (role === "admin") {
+          router.push("/admin/dashboard");
+        } else {
+          router.push("/user/dashboard");
+        }
+        
       } else {
         console.error("User creation failed");
       }
@@ -77,10 +84,10 @@ export default function SignUpPage() {
         Back
       </button>
       <div className="w-full max-w-md bg-gray-800 rounded-lg shadow-md p-6 relative">
-        <h1 className="text-2xl font-bold mb-6">Create account</h1>
+        <h1 className="text-2xl font-bold mb-6 text-white text-center">Create account</h1>
         <form onSubmit={onSubmit} className="flex flex-col">
           {loading ? (
-            <IconFidgetSpinner className="animate-spin w-8 h-8 mx-auto" />
+            <Loading/>
           ) : (
             <>
               <input
