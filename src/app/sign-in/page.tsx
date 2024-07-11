@@ -1,5 +1,4 @@
 "use client";
-
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase";
 import { useRouter } from "next/navigation";
@@ -9,22 +8,20 @@ import { warnToast, errorToast } from "@/components/toast";
 import { FirebaseError } from 'firebase/app';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { ToastContainer } from "react-toastify";
-
 const SignInPage = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
   const onSubmit = async () => {
     setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      
+
       const userDocRef = doc(db, "users", user.uid);
       const userDocSnap = await getDoc(userDocRef);
-      
+
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
         const role = userData.role;
@@ -39,7 +36,7 @@ const SignInPage = () => {
       }
     } catch (error) {
       console.error("Error during sign in:", error);
-      
+
       if (error instanceof FirebaseError) {
         switch (error.code) {
           case "auth/invalid-credential":
@@ -61,7 +58,6 @@ const SignInPage = () => {
       setLoading(false);
     }
   };
-
   return (
     <AuroraBackground>
       <ToastContainer />
@@ -93,8 +89,8 @@ const SignInPage = () => {
           </div>
         </div>
       </div>
+
     </AuroraBackground>
   );
 };
-
 export default SignInPage;

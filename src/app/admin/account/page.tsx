@@ -25,6 +25,8 @@ const AdminAccount = () => {
   const [isEmailVerified, setIsEmailVerified] = useState(true);
   const router = useRouter();
 
+  const [isResendingVerification, setIsResendingVerification] = useState(false);
+
   const setAuthChecked = (isChecked: boolean) => {
     // Implement your logic here if needed
     console.log("Auth checked:", isChecked);
@@ -64,12 +66,15 @@ const AdminAccount = () => {
 
   const handleResendVerification = async () => {
     if (user && !user.emailVerified) {
+      setIsResendingVerification(true);
       try {
         await sendEmailVerification(user);
-        successToast("Verification email sent. Please check your inbox.");
+        warnToast("Verification email sent. Please check your inbox.");
       } catch (error) {
         console.error("Error sending verification email:", error);
         warnToast("Failed to send verification email. Please try again later.");
+      } finally {
+        setIsResendingVerification(false);
       }
     }
   };
@@ -92,9 +97,11 @@ const AdminAccount = () => {
               {!isEmailVerified && (
                 <button
                   onClick={handleResendVerification}
-                  className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                  disabled={isResendingVerification}
+                  className={`mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ${isResendingVerification ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                 >
-                  Resend Verification Email
+                  {isResendingVerification ? 'Sending...' : 'Resend Verification Email'}
                 </button>
               )}
             </span>
