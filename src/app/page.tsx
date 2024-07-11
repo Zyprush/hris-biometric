@@ -9,6 +9,9 @@ import { doc, getDoc } from "firebase/firestore";
 import Loading from "@/components/Loading";
 import { GrFingerPrint } from "react-icons/gr";
 import { useRouter } from "next/navigation";
+import { AuroraBackgroundHero } from "@/components/aurora-hero";
+import { AuroraBackground } from "@/components/ui/aurora-background";
+import { motion } from "framer-motion";
 
 interface UserData {
   name: string;
@@ -61,31 +64,50 @@ export default function Home() {
 
   return (
     <main>
-      <div className="flex flex-col items-center justify-center min-h-screen p-4 dark bg-gray-800">
-        <div className="flex flex-col w-full max-w-md ">
-            <>
-              <SignedIn>
-                <p className="text-3xl text-white font-bold mx-auto flex gap-2"><GrFingerPrint />HRIS</p>
-                <p className="text-xl text-white font-bold mx-auto mt-2">Biometric</p>
-                <button
-                  className="m-2 bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-600 hover:to-blue-600 transition ease-in-out duration-150 mx-auto mt-20"
-                >
-                  Signing in...
-                </button>
-              </SignedIn>
-              <SignedOut>
-                <p className="text-3xl text-white font-bold mx-auto flex gap-2"><GrFingerPrint />HRIS</p>
-                <p className="text-xl text-white font-bold mx-auto mt-2">Biometric</p>
-                <Link
-                  className="m-2 bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-600 hover:to-blue-600 transition ease-in-out duration-150 mx-auto mt-20"
-                  href="/sign-in"
-                >
-                  Sign in
-                </Link>
-              </SignedOut>
-            </>
-        </div>
-      </div>
+      <AuroraBackground>
+        <motion.div
+          initial={{ opacity: 0.0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 0.3,
+            duration: 0.8,
+            ease: "easeInOut",
+          }}
+          className="relative flex flex-col gap-4 items-center justify-center px-4"
+        >
+          <>
+            <SignedIn>
+              <div className="text-3xl md:text-7xl font-bold dark:text-white text-center flex items-center justify-center">
+                H<GrFingerPrint className="mx-2" />man Resources Info System
+              </div>
+
+              <div className="font-extralight text-base md:text-4xl dark:text-neutral-200 py-4">
+                All of your need for human resources management.
+              </div>
+              <button
+                className="bg-black dark:bg-white rounded-full w-fit text-white dark:text-black px-4 py-2"
+              >
+                Signing in...
+              </button>
+            </SignedIn>
+            <SignedOut>
+              <div className="text-3xl md:text-7xl font-bold dark:text-white text-center flex items-center justify-center">
+                H<GrFingerPrint className="mx-2" />man Resources Info System
+              </div>
+
+              <div className="font-extralight text-base md:text-4xl dark:text-neutral-200 py-4">
+                All of your need for human resources management.
+              </div>
+              <Link
+                className=" bg-black dark:bg-white rounded-full w-fit text-white dark:text-black px-5 py-2 text-xl"
+                href="/sign-in"
+              >
+                Sign in
+              </Link>
+            </SignedOut>
+          </>
+        </motion.div>
+      </AuroraBackground>
     </main>
   );
 }
