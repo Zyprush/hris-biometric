@@ -4,7 +4,6 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
-import { IconFidgetSpinner } from "@tabler/icons-react";
 
 interface UserData {
   name: string;

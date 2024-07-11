@@ -41,31 +41,36 @@ const AdminDashboard = () => {
     fetchUserData();
   }, [user]);
 
+  // Redirect to sign-in page if user is not authenticated
+  useEffect(() => {
+    if (!user) {
+      router.push("../sign-in");
+    }
+  }, [user, router]);
+
   const handleSignOut = async () => {
     await auth.signOut();
     router.push("/");
   };
 
   return (
-    <SignedIn>
-    <AdminLayout>
-      <ToastContainer />
-      <div className="flex flex-col items-center justify-center min-h-screen p-4 dark">
-        {loading || !userData ? (
-          <Loading/>
-        ) : (
-          <span>
+      <AdminLayout>
+        <ToastContainer />
+        <div className="flex flex-col items-center justify-center min-h-screen p-4 dark">
+          {loading || !userData ? (
+            <Loading />
+          ) : (
+            <span>
               <h2 className="text-2xl font-bold mb-2">
                 Welcome, Admin {userData.name}
               </h2>
               <p>Email: {userData.email}</p>
               <p>Employee ID: {userData.employeeId}</p>
               <p>Role: {userData.role}</p>
-          </span>
-        )}
-      </div>
-    </AdminLayout>
-    </SignedIn>
+            </span>
+          )}
+        </div>
+      </AdminLayout>
   );
 }
 
