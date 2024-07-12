@@ -1,26 +1,24 @@
+// pages/AddEmployee.tsx
 "use client";
 import React, { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import {
-  useCreateUserWithEmailAndPassword,
-  useSendEmailVerification,
-} from "react-firebase-hooks/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { FirebaseError } from "firebase/app";
-import { auth, db, storage } from "@/firebase";
+import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { auth } from "@/firebase";
 import Loading from "@/components/Loading";
-import { format } from "date-fns";
 import { errorToast, successToast } from "@/components/toast";
 import { ToastContainer } from "react-toastify";
+import { validateStep } from "./components/utils";
+import { handleSubmit } from "./components/formSubmitt";
+import PersonalInfo from "./components/PersonalInfo";
+import EmploymentInfo from "./components/EmployeeInfo";
+import LegalDocuments from "./components/LegalInfo";
+import Credentials from "./components/CredentialInfo";
 
 const AddEmployee = () => {
   const [step, setStep] = useState(1);
   const router = useRouter();
   const [createUser] = useCreateUserWithEmailAndPassword(auth);
-  const [sendEmailVerification] = useSendEmailVerification(auth);
   const [loading, setLoading] = useState<boolean>(false);
-  const [autoGeneratePassword, setAutoGeneratePassword] = useState<boolean>(false);
 
   // Personal Information
   const [name, setName] = useState<string>("");
@@ -40,119 +38,51 @@ const AddEmployee = () => {
   const [documents, setDocuments] = useState<FileList | null>(null);
 
   // Credentials
+  const [autoGeneratePassword, setAutoGeneratePassword] = useState<boolean>(false);
   const [password, setPassword] = useState<string>("");
   const [rePassword, setRePassword] = useState<string>("");
   const [role, setRole] = useState<"user" | "admin">("user");
 
-  const validateStep = () => {
-    switch (step) {
-      case 1:
-        return name !== "" && email !== "" && phone !== "" && birthday !== "";
-      case 2:
-        return position !== "" && department !== "" && startDate !== "" && employeeId !== "";
-      case 3:
-        return ssn !== "" && workPermitNumber !== "" && documents !== null;
-      case 4:
-        return autoGeneratePassword || (password !== "" && rePassword !== "" && password === rePassword);
-      default:
-        return false;
-    }
-  };
-
   const nextStep = () => {
-    if (validateStep() && step < 4) setStep(step + 1);
-    else errorToast("Please fill out all required fields before proceeding.");
+    if (validateStep(step, {
+      name, email, phone, birthday,
+      position, department, startDate, employeeId,
+      ssn, workPermitNumber, documents,
+      autoGeneratePassword, password, rePassword
+    })) {
+      setStep(step + 1);
+    } else {
+      errorToast("Please fill out all required fields before proceeding.");
+    }
   };
 
   const prevStep = () => {
     if (step > 1) setStep(step - 1);
   };
 
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return format(date, "MMddyyyy");
-  };
-
-  const handleAutoGeneratePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAutoGeneratePassword(e.target.checked);
-    if (e.target.checked) {
-      const formattedPassword = formatDate(birthday);
-      setPassword(formattedPassword);
-      setRePassword(formattedPassword);
-      console.log(formattedPassword);
-    } else {
-      setPassword("");
-      setRePassword("");
-    }
-  };
-
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!autoGeneratePassword && password !== rePassword) {
-      errorToast("Passwords do not match");
+    if (!validateStep(4, { autoGeneratePassword, password, rePassword })) {
+      errorToast("Please ensure all fields are filled correctly.");
       return;
     }
     setLoading(true);
     try {
-      const result = await createUser(email, password);
-      if (result?.user) {
-        const uploadedDocumentUrls: string[] = [];
-
-        // Upload documents if any
-        if (documents) {
-          for (let i = 0; i < documents.length; i++) {
-            const file = documents[i];
-            const storageRef = ref(storage, `employee_documents/${result.user.uid}/${file.name}`);
-            try {
-              const snapshot = await uploadBytes(storageRef, file);
-              const downloadURL = await getDownloadURL(snapshot.ref);
-              uploadedDocumentUrls.push(downloadURL);
-            } catch (error) {
-              console.error("Error uploading file: ", error);
-            }
-          }
+      await handleSubmit({
+        createUser,
+        email,
+        password,
+        documents,
+        formData: {
+          name, email, phone, birthday, position, department, startDate, employeeId,
+          ssn, workPermitNumber, role
         }
-
-        try {
-          await setDoc(doc(db, "users", result.user.uid), {
-            // Personal Information
-            name,
-            email,
-            phone,
-            birthday,
-            // Employment Info
-            position,
-            department,
-            startDate,
-            employeeId,
-            // Legal Compliance and Documents
-            ssn,
-            workPermitNumber,
-            documentUrls: uploadedDocumentUrls,
-            // Credentials
-            role,
-          });
-          console.log("Document successfully written!");
-        } catch (firestoreError) {
-          console.error("Error writing document: ", firestoreError);
-          if (firestoreError instanceof FirebaseError) {
-            console.error("Firebase error code:", firestoreError.code);
-            console.error("Firebase error message:", firestoreError.message);
-          }
-        }
-        //await sendEmailVerification();
-        setLoading(false);
-        successToast("User created successfully.");
-      } else {
-        console.error("User creation failed");
-        errorToast("User creation failed. Please try again later.");
-      }
+      });
+      successToast("User created successfully.");
+      router.push('/employees'); // Redirect to employees list
     } catch (error) {
       console.error("Error during signup:", error);
-      if (error instanceof FirebaseError) {
-        console.error("Firebase error code:", error.code);
-        console.error("Firebase error message:", error.message);
-      }
+      errorToast("User creation failed. Please try again later.");
     }
     setLoading(false);
   };
@@ -160,157 +90,13 @@ const AddEmployee = () => {
   const renderStep = () => {
     switch (step) {
       case 1:
-        return (
-          <div>
-            <h2 className="text-xl font-bold mb-4">Personal Information</h2>
-            <input
-              type="text"
-              onChange={(e) => setName(e.target.value)}
-              value={name}
-              placeholder="Full Name"
-              required
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="email"
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
-              placeholder="Email"
-              required
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="tel"
-              onChange={(e) => setPhone(e.target.value)}
-              value={phone}
-              placeholder="Phone"
-              required
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="date"
-              onChange={(e) => setBirthday(e.target.value)}
-              value={birthday}
-              placeholder="Birthday"
-              required
-              className="w-full p-2 mb-2 border rounded"
-            />
-          </div>
-        );
+        return <PersonalInfo {...{ name, setName, email, setEmail, phone, setPhone, birthday, setBirthday }} />;
       case 2:
-        return (
-          <div>
-            <h2 className="text-xl font-bold mb-4">Employment Info</h2>
-            <input
-              type="text"
-              onChange={(e) => setPosition(e.target.value)}
-              value={position}
-              placeholder="Position"
-              required
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="text"
-              onChange={(e) => setDepartment(e.target.value)}
-              value={department}
-              placeholder="Department"
-              required
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="date"
-              onChange={(e) => setStartDate(e.target.value)}
-              value={startDate}
-              placeholder="Start Date"
-              required
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="text"
-              onChange={(e) => setEmployeeId(e.target.value)}
-              value={employeeId}
-              placeholder="Employee ID"
-              required
-              className="w-full p-2 mb-2 border rounded"
-            />
-          </div>
-        );
+        return <EmploymentInfo {...{ position, setPosition, department, setDepartment, startDate, setStartDate, employeeId, setEmployeeId }} />;
       case 3:
-        return (
-          <div>
-            <h2 className="text-xl font-bold mb-4">Legal Compliance and Documents</h2>
-            <input
-              type="text"
-              onChange={(e) => setSsn(e.target.value)}
-              value={ssn}
-              placeholder="SSN/TIN"
-              required
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="text"
-              onChange={(e) => setWorkPermitNumber(e.target.value)}
-              value={workPermitNumber}
-              placeholder="Work Permit Number"
-              required
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="file"
-              onChange={(e) => setDocuments(e.target.files)}
-              multiple
-              className="w-full p-2 mb-2 border rounded"
-            />
-            {documents && (
-              <p className="text-sm text-gray-600">
-                {documents.length} file(s) selected
-              </p>
-            )}
-          </div>
-        );
+        return <LegalDocuments {...{ ssn, setSsn, workPermitNumber, setWorkPermitNumber, documents, setDocuments }} />;
       case 4:
-        return (
-          <div>
-            <h2 className="text-xl font-bold mb-4">Credentials (for user login)</h2>
-            <div className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                onChange={handleAutoGeneratePassword}
-                checked={autoGeneratePassword}
-                className="mr-2"
-              />
-              <label>Auto-generate password based on Birthday.</label>
-            </div>
-            {!autoGeneratePassword && (
-              <>
-                <input
-                  type="password"
-                  onChange={(e) => setPassword(e.target.value)}
-                  value={password}
-                  placeholder="Password"
-                  required
-                  className="w-full p-2 mb-2 border rounded"
-                />
-                <input
-                  type="password"
-                  onChange={(e) => setRePassword(e.target.value)}
-                  value={rePassword}
-                  placeholder="Re-enter Password"
-                  required
-                  className="w-full p-2 mb-2 border rounded"
-                />
-              </>
-            )}
-            <select
-              onChange={(e) => setRole(e.target.value as "user" | "admin")}
-              value={role}
-              className="w-full p-2 mb-2 border rounded"
-            >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-        );
+        return <Credentials {...{ autoGeneratePassword, setAutoGeneratePassword, password, setPassword, rePassword, setRePassword, role, setRole, birthday }} />;
       default:
         return null;
     }
