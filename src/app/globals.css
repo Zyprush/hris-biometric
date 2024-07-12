@@ -22,4 +22,7 @@
   .navlink {
     @apply flex gap-3 text-sm font-[600] p-3 hover:bg-secondary rounded-md hover:text-white transition-all duration-300;
   }
+  .navlink-user {
+    @apply flex gap-2 text-xs font-[600] p-2 hover:bg-secondary rounded-md hover:text-white transition-all duration-300;
+  }
 }
