@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase";
 import Loading from "@/components/Loading";
+import { warnToast } from "@/components/toast";
 
 interface UserData {
   role: "user" | "admin";
@@ -50,6 +51,9 @@ const AdminRouteGuard = ({ children }: { children: React.ReactNode }) => {
       } else if (userData && userData.role !== "admin") {
         console.log("Regular user. Redirecting to user dashboard...");
         router.push("/user/dashboard");
+      } else if (user && !user.emailVerified) {
+        warnToast("Your email is not verified. Please check your inbox for a verification email.");
+        console.log("Email not verified.");
       }
     }
   }, [user, userData, loading, userDataLoading, router]);

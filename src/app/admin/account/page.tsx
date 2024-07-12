@@ -87,6 +87,7 @@ const AdminAccount = () => {
               <p>Email: {userData.email}</p>
               <p>Employee ID: {userData.employeeId}</p>
               <p>Role: {userData.role}</p>
+              <p>Verfied: {isEmailVerified ? 'Yes' : 'No'}</p>
               {!isEmailVerified && (
                 <button
                   onClick={handleResendVerification}

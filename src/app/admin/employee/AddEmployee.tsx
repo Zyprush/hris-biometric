@@ -11,7 +11,7 @@ import { FirebaseError } from "firebase/app";
 import { auth, db, storage } from "@/firebase";
 import Loading from "@/components/Loading";
 import { format } from "date-fns";
-import { errorToast } from "@/components/toast";
+import { errorToast, successToast } from "@/components/toast";
 import { ToastContainer } from "react-toastify";
 
 const AddEmployee = () => {
@@ -70,15 +70,16 @@ const AddEmployee = () => {
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    return format(date, "dd/MM/yyyy");
+    return format(date, "MMddyyyy");
   };
 
   const handleAutoGeneratePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAutoGeneratePassword(e.target.checked);
     if (e.target.checked) {
-      const formattedPassword = formatDate(startDate);
+      const formattedPassword = formatDate(birthday);
       setPassword(formattedPassword);
       setRePassword(formattedPassword);
+      console.log(formattedPassword);
     } else {
       setPassword("");
       setRePassword("");
@@ -139,14 +140,12 @@ const AddEmployee = () => {
             console.error("Firebase error message:", firestoreError.message);
           }
         }
-        await sendEmailVerification();
-        if (role === "admin") {
-          router.push("/admin/dashboard");
-        } else {
-          router.push("/user/dashboard");
-        }
+        //await sendEmailVerification();
+        setLoading(false);
+        successToast("User created successfully.");
       } else {
         console.error("User creation failed");
+        errorToast("User creation failed. Please try again later.");
       }
     } catch (error) {
       console.error("Error during signup:", error);
@@ -280,7 +279,7 @@ const AddEmployee = () => {
                 checked={autoGeneratePassword}
                 className="mr-2"
               />
-              <label>Auto-generate password based on start date.</label>
+              <label>Auto-generate password based on Birthday.</label>
             </div>
             {!autoGeneratePassword && (
               <>

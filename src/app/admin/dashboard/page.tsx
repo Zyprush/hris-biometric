@@ -15,6 +15,7 @@ import {
 } from "chart.js";
 import { FaUsers, FaUserCheck, FaUserTimes, FaUserAltSlash, FaCalendarAlt } from 'react-icons/fa';
 import AdminRouteGuard from "@/app/AdminRouteGuard/page";
+import { ToastContainer } from "react-toastify";
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
@@ -79,6 +80,7 @@ const AdminDashboard = () => {
       <SignedIn>
         <AdminLayout>
           <div className="container mx-auto p-4">
+            <ToastContainer/>
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4">
               {cardData.map(({ title, icon: Icon, color, value }, index) => (
                 <div key={index} className="bg-white shadow-md rounded-lg p-4 text-center">
