@@ -84,11 +84,11 @@ const AdminDashboard = () => {
   };
 
   const cardData = [
-    { title: "Total Employees", icon: FaUsers, color: "text-blue-500" },
-    { title: "Present", icon: FaUserCheck, color: "text-green-500" },
-    { title: "Absent", icon: FaUserTimes, color: "text-red-500" },
-    { title: "Leaved", icon: FaUserAltSlash, color: "text-yellow-500" },
-    { title: "Restday", icon: FaCalendarAlt, color: "text-purple-500" },
+    { title: "Total Employees", icon: FaUsers, color: "text-blue-500", value: 100 },
+    { title: "Present", icon: FaUserCheck, color: "text-green-500", value: 80 },
+    { title: "Absent", icon: FaUserTimes, color: "text-red-500", value: 10 },
+    { title: "Leaved", icon: FaUserAltSlash, color: "text-yellow-500", value: 5 },
+    { title: "Restday", icon: FaCalendarAlt, color: "text-purple-500", value: 5 },
   ];
 
   if (loading) {
@@ -99,12 +99,12 @@ const AdminDashboard = () => {
     <SignedIn>
       <AdminLayout>
         <div className="container mx-auto p-4">
-          <div className="grid grid-cols-5 gap-4 mb-4">
-            {cardData.map(({ title, icon: Icon, color }, index) => (
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4">
+            {cardData.map(({ title, icon: Icon, color, value }, index) => (
               <div key={index} className="bg-white shadow-md rounded-lg p-4 text-center">
                 <Icon className={`text-3xl mb-2 mx-auto ${color}`} />
                 <h2 className="text-lg font-semibold">{title}</h2>
-                <p className="text-2xl font-bold">42</p>
+                <p className="text-2xl font-bold">{value}</p>
               </div>
             ))}
           </div>
