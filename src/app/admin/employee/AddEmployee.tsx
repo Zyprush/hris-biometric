@@ -1,7 +1,6 @@
 // pages/AddEmployee.tsx
 "use client";
 import React, { useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
 import { errorToast, successToast } from "@/components/toast";
 import { ToastContainer } from "react-toastify";
@@ -15,7 +14,6 @@ import { auth } from "@/firebase";
 
 const AddEmployee = () => {
   const [step, setStep] = useState(1);
-  const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
 
   // Personal Information
