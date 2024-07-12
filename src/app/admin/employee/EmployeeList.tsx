@@ -43,46 +43,48 @@ const EmployeeList = () => {
   };
 
   return (
-    <div>
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Search by name or ID"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="input input-sm input-bordered mr-2 rounded-sm"
-        />
-        <button onClick={handleSearch} className="btn rounded-md btn-sm btn-primary text-white">
-          Search
-        </button>
-      </div>
-      <table className="table table-zebra border rounded border-zinc-200">
-        <thead>
-          <tr className="text-xs text-zinc-500">
-            <th>Employee ID </th>
-            <th>Name</th>
-            <th>Remarks</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredEmployees.length < 1 ? (
-            <tr>
-              <td colSpan={3} className="text-red-500 text-xs">
-                {" "}
-                No result
-              </td>
+    <div className="container mx-auto p-4">
+      <div className="grid grid-col-1 gap-4">
+        <div className="mb-2">
+          <input
+            type="text"
+            placeholder="Search by name or ID"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="input input-sm input-bordered mr-2 rounded-sm w-full max-w-sm"
+          />
+          <button onClick={handleSearch} className="btn rounded-md btn-sm btn-primary text-white">
+            Search
+          </button>
+        </div>
+        <table className="table table-zebra border rounded border-zinc-200">
+          <thead>
+            <tr className="text-xs text-zinc-500">
+              <th>Employee ID </th>
+              <th>Name</th>
+              <th>Remarks</th>
             </tr>
-          ) : (
-            filteredEmployees.map((info, ind) => (
-              <tr key={ind}>
-                <td className="text-xs">{info.employeeId}</td>
-                <td className="text-xs text-zinc-600">{info.name}</td>
-                <td className="text-xs text-zinc-600">{info.remarks}</td>
+          </thead>
+          <tbody>
+            {filteredEmployees.length < 1 ? (
+              <tr>
+                <td colSpan={3} className="text-red-500 text-xs">
+                  {" "}
+                  No result
+                </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              filteredEmployees.map((info, ind) => (
+                <tr key={ind}>
+                  <td className="text-xs">{info.employeeId}</td>
+                  <td className="text-xs text-zinc-600">{info.name}</td>
+                  <td className="text-xs text-zinc-600">{info.remarks}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
