@@ -79,14 +79,15 @@ const AdminAccount = () => {
     }
   };
 
+  if (!userData || loading) {
+    return <Loading />;
+  }
+
   return (
     <SignedIn>
       <AdminLayout>
         <ToastContainer />
         <div className="flex flex-col items-center justify-center min-h-screen p-4 dark">
-          {!userData ? (
-            <Loading />
-          ) : (
             <span>
               <h2 className="text-2xl font-bold mb-2">
                 Welcome, Admin {userData.name}
@@ -105,7 +106,6 @@ const AdminAccount = () => {
                 </button>
               )}
             </span>
-          )}
         </div>
       </AdminLayout>
     </SignedIn>

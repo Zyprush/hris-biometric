@@ -18,6 +18,7 @@ import {
   Title,
 } from "chart.js";
 import { FaUsers, FaUserCheck, FaUserTimes, FaUserAltSlash, FaCalendarAlt } from 'react-icons/fa';
+import Loading from "@/components/Loading";
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
@@ -89,6 +90,10 @@ const AdminDashboard = () => {
     { title: "Leaved", icon: FaUserAltSlash, color: "text-yellow-500" },
     { title: "Restday", icon: FaCalendarAlt, color: "text-purple-500" },
   ];
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <SignedIn>
