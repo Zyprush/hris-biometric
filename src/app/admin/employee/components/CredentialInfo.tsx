@@ -24,6 +24,7 @@ const Credentials: React.FC<CredentialsProps> = ({
       const formattedPassword = formatDate(birthday);
       setPassword(formattedPassword);
       setRePassword(formattedPassword);
+      console.log(formattedPassword);
     } else {
       setPassword("");
       setRePassword("");

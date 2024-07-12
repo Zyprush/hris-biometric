@@ -2,8 +2,6 @@
 "use client";
 import React, { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { auth } from "@/firebase";
 import Loading from "@/components/Loading";
 import { errorToast, successToast } from "@/components/toast";
 import { ToastContainer } from "react-toastify";
@@ -13,11 +11,11 @@ import PersonalInfo from "./components/PersonalInfo";
 import EmploymentInfo from "./components/EmployeeInfo";
 import LegalDocuments from "./components/LegalInfo";
 import Credentials from "./components/CredentialInfo";
+import { auth } from "@/firebase";
 
 const AddEmployee = () => {
   const [step, setStep] = useState(1);
   const router = useRouter();
-  const [createUser] = useCreateUserWithEmailAndPassword(auth);
   const [loading, setLoading] = useState<boolean>(false);
 
   // Personal Information
@@ -69,7 +67,7 @@ const AddEmployee = () => {
     setLoading(true);
     try {
       await handleSubmit({
-        createUser,
+        auth,
         email,
         password,
         documents,
@@ -79,7 +77,7 @@ const AddEmployee = () => {
         }
       });
       successToast("User created successfully.");
-      router.push('/employees'); // Redirect to employees list
+      setLoading(false);
     } catch (error) {
       console.error("Error during signup:", error);
       errorToast("User creation failed. Please try again later.");
@@ -104,7 +102,7 @@ const AddEmployee = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <ToastContainer/>
+      <ToastContainer />
       <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
         <div className="p-8">
           <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold mb-4">

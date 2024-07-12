@@ -1,11 +1,12 @@
 // utils/formSubmission.ts
 import { doc, setDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "@/firebase";
+import { auth, db, storage } from "@/firebase";
 import { FirebaseError } from "firebase/app";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 interface SubmitParams {
-  createUser: any; // Replace with proper type from react-firebase-hooks
+  auth: any;
   email: string;
   password: string;
   documents: FileList | null;
@@ -25,22 +26,32 @@ interface SubmitParams {
 }
 
 export const handleSubmit = async ({
-  createUser,
+  auth,
   email,
   password,
   documents,
-  formData
+  formData,
 }: SubmitParams) => {
   try {
-    const result = await createUser(email, password);
-    if (result?.user) {
+    // Replace createUser with createUserWithEmailAndPassword
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const newUser = userCredential.user;
+
+    if (newUser) {
       const uploadedDocumentUrls: string[] = [];
 
       // Upload documents if any
       if (documents) {
         for (let i = 0; i < documents.length; i++) {
           const file = documents[i];
-          const storageRef = ref(storage, `employee_documents/${result.user.uid}/${file.name}`);
+          const storageRef = ref(
+            storage,
+            `employee_documents/${newUser.uid}/${file.name}`
+          );
           try {
             const snapshot = await uploadBytes(storageRef, file);
             const downloadURL = await getDownloadURL(snapshot.ref);
@@ -52,7 +63,7 @@ export const handleSubmit = async ({
       }
 
       try {
-        await setDoc(doc(db, "users", result.user.uid), {
+        await setDoc(doc(db, "users", newUser.uid), {
           ...formData,
           documentUrls: uploadedDocumentUrls,
         });
