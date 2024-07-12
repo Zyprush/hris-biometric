@@ -6,8 +6,9 @@ import {
   useSendEmailVerification,
 } from "react-firebase-hooks/auth";
 import { doc, setDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { FirebaseError } from "firebase/app";
-import { auth, db } from "@/firebase";
+import { auth, db, storage } from "@/firebase";
 import Loading from "@/components/Loading";
 
 const AddEmployee = () => {
@@ -56,6 +57,23 @@ const AddEmployee = () => {
     try {
       const result = await createUser(email, password);
       if (result?.user) {
+        const uploadedDocumentUrls: string[] = [];
+
+        // Upload documents if any
+        if (documents) {
+          for (let i = 0; i < documents.length; i++) {
+            const file = documents[i];
+            const storageRef = ref(storage, `employee_documents/${result.user.uid}/${file.name}`);
+            try {
+              const snapshot = await uploadBytes(storageRef, file);
+              const downloadURL = await getDownloadURL(snapshot.ref);
+              uploadedDocumentUrls.push(downloadURL);
+            } catch (error) {
+              console.error("Error uploading file: ", error);
+            }
+          }
+        }
+
         try {
           await setDoc(doc(db, "users", result.user.uid), {
             // Personal Information
@@ -70,9 +88,7 @@ const AddEmployee = () => {
             // Legal Compliance and Documents
             ssn,
             workPermitNumber,
-            // We don't store the actual files in Firestore
-            // You'd need to use Firebase Storage for file uploads
-            hasUploadedDocuments: documents !== null,
+            documentUrls: uploadedDocumentUrls,
             // Credentials
             role,
           });
@@ -199,6 +215,11 @@ const AddEmployee = () => {
               multiple
               className="w-full p-2 mb-2 border rounded"
             />
+            {documents && (
+              <p className="text-sm text-gray-600">
+                {documents.length} file(s) selected
+              </p>
+            )}
           </div>
         );
       case 4:
