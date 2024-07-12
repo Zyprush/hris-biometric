@@ -99,7 +99,7 @@ export default function Home() {
                 All of your need for human resources management.
               </div>
               <Link
-                className=" bg-black dark:bg-white rounded-full w-fit text-white dark:text-black px-5 py-2 text-xl"
+                className=" bg-gradient-to-r from-indigo-500 to-blue-500 bg-opacity-80 hover:bg-opacity-100 text-white font-bold py-2 px-9 rounded-md mt-4 transition ease-in-out duration-150"
                 href="/sign-in"
               >
                 Sign in
