@@ -7,8 +7,6 @@ import { useRouter } from "next/navigation";
 import { SignedIn } from "@/components/signed-in";
 import Userlayout from "@/components/UserLayout";
 import FingerprintLoading from "@/components/Loading";
-import { FaClipboardList, FaUserAlt, FaMoneyCheckAlt } from "react-icons/fa";
-import Link from "next/link";
 
 interface UserData {
   name: string;
@@ -44,7 +42,7 @@ export default function UserDashboard() {
     );
   }
 
-  if (userData && userData.role === "admin") {
+  if (userData.role === "admin") {
     router.push("/admin-dashboard");
     return null;
   }
@@ -52,19 +50,20 @@ export default function UserDashboard() {
   return (
     <SignedIn>
       <Userlayout>
-        <div className="flex flex-col items-center justify-center min-h-screen p-8 gap-10 bg-white shadow-lg rounded-lg">
-          <Link href="/user/attendance" className="card max-w-80 border-2 rounded-lg mx-auto flex items-center justify-center text-lg font-semibold p-4 shadow-md hover:shadow-lg transition-shadow duration-300">
-            <FaClipboardList className="mr-3 text-2xl" />
-            View Attendance
-          </Link>
-          <Link href="/user/request" className="card max-w-80 border-2 rounded-lg mx-auto flex items-center justify-center text-lg font-semibold p-4 shadow-md hover:shadow-lg transition-shadow duration-300">
-            <FaUserAlt className="mr-3 text-2xl" />
-            Leave Request
-          </Link>
-          <Link href="/user/payslip" className="card max-w-80 border-2 rounded-lg mx-auto flex items-center justify-center text-lg font-semibold p-4 shadow-md hover:shadow-lg transition-shadow duration-300">
-            <FaMoneyCheckAlt className="mr-3 text-2xl" />
-            View Pay Slip
-          </Link>
+        <div className="flex flex-col items-center justify-center min-h-screen p-4 dark">
+          <div className="w-full max-w-md p-6 relative">
+            <h2 className="text-2xl font-bold mb-2">
+              Welcome, {userData.name}
+            </h2>
+            <p>Email: {userData.email}</p>
+            <p>Employee ID: {userData.employeeId}</p>
+            <button
+              onClick={() => auth.signOut()}
+              className="bg-red-500 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-red-600 transition ease-in-out duration-150"
+            >
+              Sign out
+            </button>
+          </div>
         </div>
       </Userlayout>
     </SignedIn>

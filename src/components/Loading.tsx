@@ -21,20 +21,22 @@ const FingerprintLoading = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="flex flex-col items-center justify-center h-screen p-4">
       <div className="flex items-center gap-4 p-4">
-        <GiFingerPrint className="text-6xl animate-ping absolute inline-flex rounded-full text-sky-400 opacity-75" />
-        <GiFingerPrint className="text-6xl relative inline-flex rounded-full text-sky-500" />
+        <GiFingerPrint className="text-4xl md:text-6xl animate-ping absolute inline-flex rounded-full text-sky-400 opacity-75" />
+        <GiFingerPrint className="text-4xl md:text-6xl relative inline-flex rounded-full text-sky-500" />
       </div>
-      <div className="mt-4 text-2xl">
-        {percentage}%
-      </div>
-      <div className="w-full max-w-md mt-4">
-        <div className="h-4">
+      <div className="w-40 mt-4 relative">
+        <div className="h-3 md:h-5 bg-gray-300 rounded-lg">
           <div
-            className="h-4 bg-sky-500 rounded"
+            className="h-3 md:h-5 bg-sky-500 rounded-lg"
             style={{ width: `${percentage}%` }}
           ></div>
+        </div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-white text-xs md:text-sm p-1">
+            {percentage}%
+          </span>
         </div>
       </div>
     </div>
