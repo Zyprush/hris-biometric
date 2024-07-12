@@ -10,6 +10,9 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { FirebaseError } from "firebase/app";
 import { auth, db, storage } from "@/firebase";
 import Loading from "@/components/Loading";
+import { format } from "date-fns";
+import { errorToast } from "@/components/toast";
+import { ToastContainer } from "react-toastify";
 
 const AddEmployee = () => {
   const [step, setStep] = useState(1);
@@ -17,11 +20,13 @@ const AddEmployee = () => {
   const [createUser] = useCreateUserWithEmailAndPassword(auth);
   const [sendEmailVerification] = useSendEmailVerification(auth);
   const [loading, setLoading] = useState<boolean>(false);
+  const [autoGeneratePassword, setAutoGeneratePassword] = useState<boolean>(false);
 
   // Personal Information
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
+  const [birthday, setBirthday] = useState<string>("");
 
   // Employment Info
   const [position, setPosition] = useState<string>("");
@@ -39,18 +44,51 @@ const AddEmployee = () => {
   const [rePassword, setRePassword] = useState<string>("");
   const [role, setRole] = useState<"user" | "admin">("user");
 
+  const validateStep = () => {
+    switch (step) {
+      case 1:
+        return name !== "" && email !== "" && phone !== "" && birthday !== "";
+      case 2:
+        return position !== "" && department !== "" && startDate !== "" && employeeId !== "";
+      case 3:
+        return ssn !== "" && workPermitNumber !== "" && documents !== null;
+      case 4:
+        return autoGeneratePassword || (password !== "" && rePassword !== "" && password === rePassword);
+      default:
+        return false;
+    }
+  };
+
   const nextStep = () => {
-    if (step < 4) setStep(step + 1);
+    if (validateStep() && step < 4) setStep(step + 1);
+    else errorToast("Please fill out all required fields before proceeding.");
   };
 
   const prevStep = () => {
     if (step > 1) setStep(step - 1);
   };
 
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return format(date, "dd/MM/yyyy");
+  };
+
+  const handleAutoGeneratePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAutoGeneratePassword(e.target.checked);
+    if (e.target.checked) {
+      const formattedPassword = formatDate(startDate);
+      setPassword(formattedPassword);
+      setRePassword(formattedPassword);
+    } else {
+      setPassword("");
+      setRePassword("");
+    }
+  };
+
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (password !== rePassword) {
-      alert("Passwords do not match");
+    if (!autoGeneratePassword && password !== rePassword) {
+      errorToast("Passwords do not match");
       return;
     }
     setLoading(true);
@@ -80,6 +118,7 @@ const AddEmployee = () => {
             name,
             email,
             phone,
+            birthday,
             // Employment Info
             position,
             department,
@@ -146,6 +185,14 @@ const AddEmployee = () => {
               onChange={(e) => setPhone(e.target.value)}
               value={phone}
               placeholder="Phone"
+              required
+              className="w-full p-2 mb-2 border rounded"
+            />
+            <input
+              type="date"
+              onChange={(e) => setBirthday(e.target.value)}
+              value={birthday}
+              placeholder="Birthday"
               required
               className="w-full p-2 mb-2 border rounded"
             />
@@ -226,22 +273,35 @@ const AddEmployee = () => {
         return (
           <div>
             <h2 className="text-xl font-bold mb-4">Credentials (for user login)</h2>
-            <input
-              type="password"
-              onChange={(e) => setPassword(e.target.value)}
-              value={password}
-              placeholder="Password"
-              required
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="password"
-              onChange={(e) => setRePassword(e.target.value)}
-              value={rePassword}
-              placeholder="Re-enter Password"
-              required
-              className="w-full p-2 mb-2 border rounded"
-            />
+            <div className="flex items-center mb-2">
+              <input
+                type="checkbox"
+                onChange={handleAutoGeneratePassword}
+                checked={autoGeneratePassword}
+                className="mr-2"
+              />
+              <label>Auto-generate password based on start date.</label>
+            </div>
+            {!autoGeneratePassword && (
+              <>
+                <input
+                  type="password"
+                  onChange={(e) => setPassword(e.target.value)}
+                  value={password}
+                  placeholder="Password"
+                  required
+                  className="w-full p-2 mb-2 border rounded"
+                />
+                <input
+                  type="password"
+                  onChange={(e) => setRePassword(e.target.value)}
+                  value={rePassword}
+                  placeholder="Re-enter Password"
+                  required
+                  className="w-full p-2 mb-2 border rounded"
+                />
+              </>
+            )}
             <select
               onChange={(e) => setRole(e.target.value as "user" | "admin")}
               value={role}
@@ -259,6 +319,7 @@ const AddEmployee = () => {
 
   return (
     <div className="container mx-auto p-4">
+      <ToastContainer/>
       <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
         <div className="p-8">
           <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold mb-4">

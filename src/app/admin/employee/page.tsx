@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import EmployeeList from "./EmployeeList";
 import FormerEmployee from "./FormerEmployee";
 import AddEmployee from "./AddEmployee";
+import AdminRouteGuard from "@/app/AdminRouteGuard/page";
 
 const Page = () => {
   const [currentTable, setCurrentTable] = useState("Employee");
@@ -23,36 +24,38 @@ const Page = () => {
   };
 
   return (
-    <SignedIn>
-      <AdminLayout>
-        <div className="container mx-auto p-4">
-          <div className="grid grid-col-1 py-4">
-            <p className="text-lg font-bold">{currentTable}</p>
-            <div className="join rounded-md my-5">
-              <button
-                className={`btn join-item border-2 border-zinc-400 ${currentTable === "Employee" ? "active" : ""}`}
-                onClick={() => setCurrentTable("Employee")}
-              >
-                Employee
-              </button>
-              <button
-                className={`btn join-item border-2 border-zinc-400 ${currentTable === "Add Employee" ? "active" : ""}`}
-                onClick={() => setCurrentTable("Add Employee")}
-              >
-                Add Employee
-              </button>
-              <button
-                className={`btn join-item border-2 border-zinc-400 ${currentTable === "Former Employee" ? "active" : ""}`}
-                onClick={() => setCurrentTable("Former Employee")}
-              >
-                Former Employee
-              </button>
+    <AdminRouteGuard>
+      <SignedIn>
+        <AdminLayout>
+          <div className="container mx-auto p-4">
+            <div className="grid grid-col-1 py-4">
+              <p className="text-lg font-bold">{currentTable}</p>
+              <div className="join rounded-md my-5">
+                <button
+                  className={`btn join-item border-2 border-zinc-400 ${currentTable === "Employee" ? "active" : ""}`}
+                  onClick={() => setCurrentTable("Employee")}
+                >
+                  Employee
+                </button>
+                <button
+                  className={`btn join-item border-2 border-zinc-400 ${currentTable === "Add Employee" ? "active" : ""}`}
+                  onClick={() => setCurrentTable("Add Employee")}
+                >
+                  Add Employee
+                </button>
+                <button
+                  className={`btn join-item border-2 border-zinc-400 ${currentTable === "Former Employee" ? "active" : ""}`}
+                  onClick={() => setCurrentTable("Former Employee")}
+                >
+                  Former Employee
+                </button>
+              </div>
+              {renderTable()}
             </div>
-            {renderTable()}
           </div>
-        </div>
-      </AdminLayout>
-    </SignedIn>
+        </AdminLayout>
+      </SignedIn>
+    </AdminRouteGuard>
   );
 };
 
