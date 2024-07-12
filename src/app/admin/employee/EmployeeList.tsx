@@ -1,11 +1,16 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase";
+import Modal from "./employeeModal";
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredEmployees, setFilteredEmployees] = useState<any[]>([]);
+  const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -37,10 +42,14 @@ const EmployeeList = () => {
     setFilteredEmployees(filtered);
   };
 
-  const handleViewDetails = (employeeId: string) => {
-    // Handle displaying employee details (e.g., in a modal)
-    console.log("View details for employee with ID: ", employeeId);
-    // Implement your modal or detailed view logic here
+  const handleViewDetails = (employee: any) => {
+    setSelectedEmployee(employee);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedEmployee(null);
   };
 
   return (
@@ -79,10 +88,10 @@ const EmployeeList = () => {
                 <tr key={employee.id}>
                   <td className="px-4 py-2 text-xs">{employee.employeeId}</td>
                   <td className="px-4 py-2 text-xs text-gray-600">{employee.name}</td>
-                  <td className="px-4 py-2 text-xs text-gray-600">{employee.remarks}</td>
+                  <td className="px-4 py-2 text-xs text-gray-600">{employee.birthday}</td>
                   <td className="px-4 py-2">
                     <button
-                      onClick={() => handleViewDetails(employee.id)}
+                      onClick={() => handleViewDetails(employee)}
                       className="btn btn-sm btn-outline-primary"
                     >
                       View Details
@@ -94,6 +103,9 @@ const EmployeeList = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Modal Component */}
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal} employee={selectedEmployee} />
     </div>
   );
 };
