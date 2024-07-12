@@ -11,6 +11,7 @@ import Loading from "@/components/Loading";
 import { ToastContainer } from 'react-toastify';
 import { successToast, warnToast } from "@/components/toast";
 import { SignedIn } from "@/components/signed-in";
+import AdminRouteGuard from "@/app/AdminRouteGuard/page";
 
 interface UserData {
   name: string;
@@ -49,16 +50,6 @@ const AdminAccount = () => {
     fetchUserData();
   }, [user]);
 
-  useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        console.log("User not authenticated. Redirecting to sign-in page...");
-        router.push("../sign-in");
-      }
-      setAuthChecked(true);
-    }
-  }, [user, loading, router]);
-
   const handleSignOut = async () => {
     await auth.signOut();
     router.push("/");
@@ -84,10 +75,11 @@ const AdminAccount = () => {
   }
 
   return (
-    <SignedIn>
-      <AdminLayout>
-        <ToastContainer />
-        <div className="flex flex-col items-center justify-center min-h-screen p-4 dark">
+    <AdminRouteGuard>
+      <SignedIn>
+        <AdminLayout>
+          <ToastContainer />
+          <div className="flex flex-col items-center justify-center min-h-screen p-4 dark">
             <span>
               <h2 className="text-2xl font-bold mb-2">
                 Welcome, Admin {userData.name}
@@ -106,9 +98,10 @@ const AdminAccount = () => {
                 </button>
               )}
             </span>
-        </div>
-      </AdminLayout>
-    </SignedIn>
+          </div>
+        </AdminLayout>
+      </SignedIn>
+    </AdminRouteGuard>
   );
 }
 
