@@ -1,5 +1,5 @@
 // components/PersonalInfo.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface PersonalInfoProps {
   name: string;
@@ -35,6 +35,15 @@ interface PersonalInfoProps {
 const PersonalInfo: React.FC<PersonalInfoProps> = ({
   name, setName, nickname, setNickname, birthday, setBirthday, gender, setGender, maritalStatus, setMaritalStatus, nationality, setNationality, currentAddress, setCurrentAddress, permanentAddress, setPermanentAddress, isPermanentSameAsCurrent, setIsPermanentSameAsCurrent, phone, setPhone, email, setEmail, emergencyContactName, setEmergencyContactName, emergencyContactPhone, setEmergencyContactPhone, emergencyContactAddress, setEmergencyContactAddress
 }) => {
+
+  useEffect(() => {
+    if (isPermanentSameAsCurrent) {
+      setPermanentAddress(currentAddress);
+    } else {
+      setPermanentAddress('');
+    }
+  }, [isPermanentSameAsCurrent, currentAddress, setPermanentAddress]);
+
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">Personal Information</h2>
