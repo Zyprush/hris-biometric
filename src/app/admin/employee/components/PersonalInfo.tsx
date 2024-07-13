@@ -151,7 +151,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
         className="w-full p-2 mb-2 border rounded"
       />
       <input
-        type="text"
+        type="tel"
         onChange={(e) => setEmergencyContactName(e.target.value)}
         value={emergencyContactName}
         placeholder="Emergency Contact Name"
@@ -159,7 +159,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
         className="w-full p-2 mb-2 border rounded"
       />
       <input
-        type="text"
+        type="tel"
         onChange={(e) => setEmergencyContactPhone(e.target.value)}
         value={emergencyContactPhone}
         placeholder="Emergency Contact Phone"
@@ -167,7 +167,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
         className="w-full p-2 mb-2 border rounded"
       />
       <input
-        type="text"
+        type="tel"
         onChange={(e) => setEmergencyContactAddress(e.target.value)}
         value={emergencyContactAddress}
         placeholder="Emergency Contact Address"

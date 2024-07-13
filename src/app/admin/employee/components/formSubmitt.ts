@@ -42,8 +42,9 @@ export const handleSubmit = async ({
   documents,
   formData,
 }: SubmitParams) => {
+  const currentUser = auth.currentUser;
+
   try {
-    // Replace createUser with createUserWithEmailAndPassword
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -54,7 +55,6 @@ export const handleSubmit = async ({
     if (newUser) {
       const uploadedDocumentUrls: string[] = [];
 
-      // Upload documents if any
       if (documents) {
         for (let i = 0; i < documents.length; i++) {
           const file = documents[i];
@@ -96,5 +96,9 @@ export const handleSubmit = async ({
       console.error("Firebase error message:", error.message);
     }
     throw error;
+  } finally {
+    if (currentUser) {
+      await auth.updateCurrentUser(currentUser);
+    }
   }
 };
