@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
-import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
+import { FaUserCircle, FaSignOutAlt, FaUserAlt, FaBuilding } from "react-icons/fa";
 import { LuFingerprint } from "react-icons/lu";
 import { auth } from "@/firebase";
 import { TiThMenu } from "react-icons/ti";
@@ -32,7 +32,7 @@ const NavLink: React.FC<NavLinkProps> = ({ href, icon: Icon, label, isActive }) 
   </Link>
 );
 
-const TopNavbar: React.FC<NavbarProps> = ({ children }) => {
+const AdminTopNavbar: React.FC<NavbarProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -66,34 +66,46 @@ const TopNavbar: React.FC<NavbarProps> = ({ children }) => {
             className="fixed h-screen top-14 bottom-0 bg-zinc-200 flex flex-col p-5 gap-2 z-50 items-center justify-center w-full"
           >
             <NavLink
-              href="/user/dashboard"
+              href="/admin/dashboard"
               icon={BsBarChartFill}
               label="Dashboard"
-              isActive={pathname === "/user/dashboard"}
+              isActive={pathname === "/admin/dashboard"}
             />
             <NavLink
-              href="/user/attendance"
+              href="/admin/employee"
+              icon={FaUserAlt}
+              label="Employee"
+              isActive={pathname === "/admin/employee"}
+            />
+            <NavLink
+              href="/admin/attendance"
               icon={MdTry}
               label="Attendance"
-              isActive={pathname === "/user/attendance"}
+              isActive={pathname === "/admin/attendance"}
             />
             <NavLink
-              href="/user/payslip"
+              href="/admin/payroll"
               icon={MdPayments}
-              label="Payslip"
-              isActive={pathname === "/user/payroll"}
+              label="Payroll"
+              isActive={pathname === "/admin/payroll"}
             />
             <NavLink
-              href="/user/history"
+              href="/admin/branch"
+              icon={FaBuilding}
+              label="Branch"
+              isActive={pathname === "/admin/branch"}
+            />
+            <NavLink
+              href="/admin/history"
               icon={RiFolderHistoryFill}
               label="History"
-              isActive={pathname === "/user/history"}
+              isActive={pathname === "/admin/history"}
             />
             <NavLink
-              href="/user/account"
+              href="/admin/account"
               icon={FaUserCircle}
               label="Account"
-              isActive={pathname === "/user/account"}
+              isActive={pathname === "/admin/account"}
             />
             <button
               className="navlink text-zinc-700"
@@ -112,4 +124,4 @@ const TopNavbar: React.FC<NavbarProps> = ({ children }) => {
   );
 };
 
-export default TopNavbar;
+export default AdminTopNavbar;

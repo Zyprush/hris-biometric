@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
-import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
+import { FaUserCircle, FaSignOutAlt, FaUserAlt, FaBuilding } from "react-icons/fa";
 import { LuFingerprint } from "react-icons/lu";
 import { auth } from "@/firebase";
 
@@ -30,7 +30,7 @@ const NavLink: React.FC<NavLinkProps> = ({ href, icon: Icon, label, isMinimized,
   </Link>
 );
 
-const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
+const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
   const [isMinimized, setIsMinimized] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -60,40 +60,62 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
             isMinimized ? "w-20" : "w-56"
           } bg-zinc-200 h-auto transition-width duration-300 flex-col items-start justify-start p-5 gap-2`}
         >
+          <button
+            onClick={toggleNavbar}
+            data-tip="toggle width"
+            className="text-2xl text-zinc-700 flex mb-5 tooltip tooltip-right m-auto p-2 font-bold rounded-md gap-2"
+          >
+            <LuFingerprint className="text-3xl" />
+            {!isMinimized && <p className="bg-neutral px-2 rounded-md text-white">HRIS</p>}
+          </button>
           <NavLink
-            href="/user/dashboard"
+            href="/admin/dashboard"
             icon={BsBarChartFill}
             label="Dashboard"
             isMinimized={isMinimized}
-            isActive={pathname === "/user/dashboard"}
+            isActive={pathname === "/admin/dashboard"}
           />
           <NavLink
-            href="/user/attendance"
+            href="/admin/employee"
+            icon={FaUserAlt}
+            label="Employee"
+            isMinimized={isMinimized}
+            isActive={pathname === "/admin/employee"}
+          />
+          <NavLink
+            href="/admin/attendance"
             icon={MdTry}
             label="Attendance"
             isMinimized={isMinimized}
-            isActive={pathname === "/user/attendance"}
+            isActive={pathname === "/admin/attendance"}
           />
           <NavLink
-            href="/user/payslip"
+            href="/admin/payroll"
             icon={MdPayments}
-            label="Payslip"
+            label="Payroll"
             isMinimized={isMinimized}
-            isActive={pathname === "/user/payslip"}
+            isActive={pathname === "/admin/payroll"}
           />
           <NavLink
-            href="/user/history"
+            href="/admin/branch"
+            icon={FaBuilding}
+            label="Branch"
+            isMinimized={isMinimized}
+            isActive={pathname === "/admin/branch"}
+          />
+          <NavLink
+            href="/admin/history"
             icon={RiFolderHistoryFill}
             label="History"
             isMinimized={isMinimized}
-            isActive={pathname === "/user/history"}
+            isActive={pathname === "/admin/history"}
           />
           <NavLink
-            href="/user/account"
+            href="/admin/account"
             icon={FaUserCircle}
             label="Account"
             isMinimized={isMinimized}
-            isActive={pathname === "/user/account"}
+            isActive={pathname === "/admin/account"}
           />
           <button
             className="navlink text-zinc-700"
@@ -111,4 +133,4 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
   );
 };
 
-export default SideNavbar;
+export default AdminSideNavbar;

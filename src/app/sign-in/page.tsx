@@ -58,13 +58,18 @@ const SignInPage = () => {
       setLoading(false);
     }
   };
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      onSubmit();
+    }
+  };
   return (
     <AuroraBackground>
       <ToastContainer />
       <div className="flex flex-col items-center justify-center h-screen dark w-full px-4">
         <div className="w-full max-w-lg bg-gray-800 bg-opacity-30 backdrop-blur-sm rounded-lg shadow-md p-6 z-10 relative">
           <h1 className="text-2xl text-white font-bold mb-6">Sign in page</h1>
-          <div className="flex flex-col">
+          <div className="flex flex-col" onKeyDown={handleKeyDown}>
             <input
               type="text"
               onChange={(e) => setEmail(e.target.value)}
