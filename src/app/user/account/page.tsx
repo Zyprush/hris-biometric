@@ -1,47 +1,31 @@
 "use client";
-import { auth, db } from "@/firebase";
+import { auth } from "@/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
+import { useUserStore } from "@/state/user";
 import { SignedIn } from "@/components/signed-in";
 import Userlayout from "@/components/UserLayout";
 import FingerprintLoading from "@/components/Loading";
 import { MdEmail, MdWork } from "react-icons/md";
 import { FaIdBadge, FaPhone } from "react-icons/fa";
 import { FaBuildingUser } from "react-icons/fa6";
-
-interface UserData {
-  name: string;
-  email: string;
-  employeeId: string;
-  role: string;
-  phone: string;
-  department: string;
-  position: string;
-  ssn: string;
-  workPermitNumber: string;
-  startDate: string;
-}
+import { useEffect } from "react";
 
 const UserDashboard = () => {
-  const [user, loading] = useAuthState(auth);
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [user, authLoading] = useAuthState(auth);
+  const { user: userData, loading, fetchUserData, signOut } = useUserStore();
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (user) {
-        const userDocRef = doc(db, "users", user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        if (userDocSnap.exists()) {
-          setUserData(userDocSnap.data() as UserData);
-        }
-      }
-    };
+  const handleSignOut = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    signOut();
+    router.push("/sign-in");
+  };
 
-    fetchUserData();
-  }, [user]);
+  useEffect(() => {
+    if (user) {
+      fetchUserData(user.uid);
+    }
+  }, [user, fetchUserData]);
 
   useEffect(() => {
     if (userData?.role === "admin") {
@@ -49,7 +33,7 @@ const UserDashboard = () => {
     }
   }, [userData, router]);
 
-  if (loading || !userData) {
+  if (authLoading || loading || !userData) {
     return (
       <Userlayout>
         <FingerprintLoading />
@@ -74,7 +58,7 @@ const UserDashboard = () => {
             <UserInfo label="Work Permit Number" value={userData.workPermitNumber} icon={FaIdBadge} />
             <UserInfo label="Start Date" value={userData.startDate} icon={FaIdBadge} />
             <button
-              onClick={() => auth.signOut()}
+              onClick={handleSignOut}
               className="bg-red-500 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-red-600 transition ease-in-out duration-150"
             >
               Sign out
