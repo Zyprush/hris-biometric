@@ -52,7 +52,7 @@ export default function UserDashboard() {
   return (
     <SignedIn>
       <Userlayout>
-        <div className="flex flex-col items-center justify-center min-h-screen p-8 gap-10 bg-white shadow-lg rounded-lg">
+        <div className="flex flex-col items-center justify-center p-8 gap-10 bg-white shadow-lg rounded-lg">
           <Link href="/user/attendance" className="card max-w-80 border-2 rounded-lg mx-auto flex items-center justify-center text-lg font-semibold p-4 shadow-md hover:shadow-lg transition-shadow duration-300">
             <FaClipboardList className="mr-3 text-2xl" />
             View Attendance

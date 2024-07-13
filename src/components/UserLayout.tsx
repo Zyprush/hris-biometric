@@ -1,200 +1,35 @@
 "use client";
-import Link from "next/link";
-import React, { useState, ReactNode } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { BsBarChartFill } from "react-icons/bs";
-import { MdTry } from "react-icons/md";
-import { MdPayments } from "react-icons/md";
-import { RiFolderHistoryFill } from "react-icons/ri";
-import { FaUserCircle } from "react-icons/fa";
-import { FaSignOutAlt } from "react-icons/fa";
-import { LuFingerprint } from "react-icons/lu";
-import { auth } from "@/firebase";
-import { FaBars, FaTimes } from "react-icons/fa";
+
+import React, { ReactNode } from "react";
+import SideNavbar from "./navbar/SideNavbar";
+import TopNavbar from "./navbar/TopNavbar";
 
 interface NavbarProps {
   children: ReactNode;
 }
 
 const UserLayout: React.FC<NavbarProps> = ({ children }) => {
-  const [isMinimized, setIsMinimized] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname();
+  const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
 
-  const toggleNavbar = () => {
-    setIsMinimized(!isMinimized);
-  };
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
-    <div>
-    <div className="h-screen w-screen flex flex-col bg-slate-100 overflow-hidden">
-      <span className="w-full h-14 bg-zinc-200 justify-between px-5 items-center border-b-2 border-zinc-300 hidden md:flex">
-        <button
-          onClick={toggleNavbar}
-          data-tip="toggle width"
-          className={`text-2xl text-zinc-700 flex tooltip tooltip-right p-2 font-bold rounded-md gap-2`}
-        >
-          <LuFingerprint className="text-3xl" />
-          {!isMinimized && 
-          <p className="bg-neutral px-2 rounded-md text-white">HRIS</p>}
-        </button>
-        <span className="h-10 w-10 flex bg-zinc-500 rounded-full "></span>
-      </span>
-      <div
-        className={`flex ${
-          isMinimized ? "w-20" : "w-56"
-        } h-screen bg-zinc-200 transition-width duration-300 justify-start items-start hidden md:flex`}
-      >
-        <nav className="flex flex-col items-start justify-start p-5 gap-2">
-          <Link
-            href={"/user/dashboard"}
-            className={`navlink ${
-              pathname === "/user/dashboard"
-                ? "bg-neutral text-white"
-                : "text-zinc-700"
-            }`}
-          >
-            <BsBarChartFill className="text-xl" /> {!isMinimized && "Dashboard"}
-          </Link>
-          <Link
-            href={"/user/attendance"}
-            className={`navlink ${
-              pathname === "/user/attendance"
-                ? "bg-neutral text-white"
-                : "text-zinc-700"
-            }`}
-          >
-            <MdTry className="text-xl" /> {!isMinimized && "Attendance"}
-          </Link>
-          <Link
-            href={"/user/payslip"}
-            className={`navlink ${
-              pathname === "/user/payroll"
-                ? "bg-neutral text-white"
-                : "text-zinc-700"
-            }`}
-          >
-            <MdPayments className="text-xl" /> {!isMinimized && "Payroll"}
-          </Link>
-          <Link
-            href={"/user/history"}
-            className={`navlink ${
-              pathname === "/user/history"
-                ? "bg-neutral text-white"
-                : "text-zinc-700"
-            }`}
-          >
-            <RiFolderHistoryFill className="text-xl" />{" "}
-            {!isMinimized && "History"}
-          </Link>
-          <Link
-            href={"/user/account"}
-            className={`navlink ${
-              pathname === "/user/account"
-                ? "bg-neutral text-white"
-                : "text-zinc-700"
-            }`}
-          >
-            <FaUserCircle className="text-xl" /> {!isMinimized && "Account"}
-          </Link>
-          <button
-            className="navlink text-zinc-700"
-            onClick={() => {
-              auth.signOut();
-              router.push("/sign-in");
-            }}
-          >
-            <FaSignOutAlt className="text-xl" /> {!isMinimized && "Logout"}
-          </button>
-        </nav>
-      </div>
-      <div className="md:hidden flex flex-col bg-zinc-200">
-        <div className="flex justify-between items-center p-4">
-          <div className="flex items-center gap-2">
-            <LuFingerprint className="text-3xl" />
-            <p className="bg-neutral px-2 rounded-md text-white">HRIS</p>
-          </div>
-          <button onClick={toggleMobileMenu} className="text-2xl text-zinc-700">
-            {isMobileMenuOpen ? (
-              <FaTimes className="text-xl" />
-            ) : (
-              <FaBars className="text-xl" />
-            )}
-          </button>
-        </div>
-        {isMobileMenuOpen && (
-          <nav className={`flex flex-col items-center justify-start p-5 gap-2 transition-all duration-500 ${isMobileMenuOpen ? 'h-screen' : 'h-0'}`}>
-            <Link
-              href={"/user/dashboard"}
-              className={`navlink ${
-                pathname === "/user/dashboard"
-                  ? "bg-neutral text-white"
-                  : "text-zinc-700"
-              }`}
-            >
-              <BsBarChartFill className="text-xl" /> Dashboard
-            </Link>
-            <Link
-              href={"/user/attendance"}
-              className={`navlink ${
-                pathname === "/user/attendance"
-                  ? "bg-neutral text-white"
-                  : "text-zinc-700"
-              }`}
-            >
-              <MdTry className="text-xl" /> Attendance
-            </Link>
-            <Link
-              href={"/user/payslip"}
-              className={`navlink ${
-                pathname === "/user/payroll"
-                  ? "bg-neutral text-white"
-                  : "text-zinc-700"
-              }`}
-            >
-              <MdPayments className="text-xl" /> Payroll
-            </Link>
-            <Link
-              href={"/user/history"}
-              className={`navlink ${
-                pathname === "/user/history"
-                  ? "bg-neutral text-white"
-                  : "text-zinc-700"
-              }`}
-            >
-              <RiFolderHistoryFill className="text-xl" /> History
-            </Link>
-            <Link
-              href={"/user/account"}
-              className={`navlink ${
-                pathname === "/user/account"
-                  ? "bg-neutral text-white"
-                  : "text-zinc-700"
-              }`}
-            >
-              <FaUserCircle className="text-xl" /> Account
-            </Link>
-            <button
-              className="navlink text-zinc-700"
-              onClick={() => {
-                auth.signOut();
-                router.push("/sign-in");
-              }}
-            >
-              <FaSignOutAlt className="text-xl" /> Logout
-            </button>
-          </nav>
-        )}
-      </div>
-      <div className="flex-1 overflow-y-auto">{children}</div>
-    </div>
-    </div>
-
+    <>
+      {isMobile ? (
+        <TopNavbar>{children}</TopNavbar>
+      ) : (
+        <SideNavbar>{children}</SideNavbar>
+      )}
+    </>
   );
 };
 

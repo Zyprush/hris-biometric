@@ -50,7 +50,7 @@ export default function UserDashboard() {
   return (
     <SignedIn>
       <Userlayout>
-        <div className="flex flex-col items-center justify-center min-h-screen p-4 dark">
+        <div className="flex flex-col items-center justify-center h-[50rem] p-4 dark">
           <div className="w-full max-w-md p-6 relative">
             <h2 className="text-2xl font-bold mb-2">
               Welcome, {userData.name}
