@@ -79,7 +79,7 @@ const AdminDashboard = () => {
     <AdminRouteGuard>
       <SignedIn>
         <AdminLayout>
-          <div className="container mx-auto p-4">
+          <div className="container h-full mx-auto p-4">
             <ToastContainer/>
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4">
               {cardData.map(({ title, icon: Icon, color, value }, index) => (

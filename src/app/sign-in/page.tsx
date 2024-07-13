@@ -8,11 +8,19 @@ import { warnToast, errorToast } from "@/components/toast";
 import { FirebaseError } from 'firebase/app';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { ToastContainer } from "react-toastify";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+
 const SignInPage = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   const onSubmit = async () => {
     setLoading(true);
     try {
@@ -58,11 +66,13 @@ const SignInPage = () => {
       setLoading(false);
     }
   };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       onSubmit();
     }
   };
+
   return (
     <AuroraBackground>
       <ToastContainer />
@@ -77,13 +87,22 @@ const SignInPage = () => {
               placeholder="Email"
               className="bg-gray-700 bg-opacity-50 text-gray-200 border-0 rounded-md p-2 mb-4 focus:bg-gray-600 focus:bg-opacity-70 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150 text-sm"
             />
-            <input
-              type="password"
-              onChange={(e) => setPassword(e.target.value)}
-              value={password}
-              placeholder="Password"
-              className="bg-gray-700 bg-opacity-50 text-gray-200 border-0 rounded-md p-2 mb-4 focus:bg-gray-600 focus:bg-opacity-70 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150 text-sm"
-            />
+            <div className="relative mb-4">
+              <input
+                type={showPassword ? "text" : "password"}
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
+                placeholder="Password"
+                className="bg-gray-700 bg-opacity-50 text-gray-200 border-0 rounded-md p-2 w-full focus:bg-gray-600 focus:bg-opacity-70 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150 text-sm"
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
             <button
               className="bg-gradient-to-r from-indigo-500 to-blue-500 bg-opacity-80 hover:bg-opacity-100 text-white font-bold py-2 px-4 rounded-md mt-4 transition ease-in-out duration-150"
               onClick={onSubmit}

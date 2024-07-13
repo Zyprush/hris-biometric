@@ -119,7 +119,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
             <FaSignOutAlt className="text-xl" /> {!isMinimized && "Logout"}
           </button>
         </nav>
-        <div className="overflow-y-auto w-full h-full flex items-center justify-center pt-40">{children}</div>
+        <div className="overflow-y-auto w-full h-full flex items-center justify-center">{children}</div>
       </div>
     </div>
   );

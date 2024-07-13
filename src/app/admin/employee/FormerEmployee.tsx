@@ -32,7 +32,7 @@ const FormerEmployee = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 borde">
       <div className="grid grid-col-1 gap-4">
         <div className="mb-2">
           <input

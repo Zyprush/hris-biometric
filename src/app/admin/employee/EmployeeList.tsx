@@ -53,7 +53,7 @@ const EmployeeList = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 h-full ">
       <div className="grid grid-cols-1 gap-4">
         <div className="mb-2">
           <input

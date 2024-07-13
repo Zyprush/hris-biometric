@@ -27,7 +27,7 @@ const Page = () => {
     <AdminRouteGuard>
       <SignedIn>
         <AdminLayout>
-          <div className="container mx-auto p-4">
+          <div className="container h-full mx-auto p-4">
             <div className="grid grid-col-1 py-4">
               <p className="text-lg font-bold">{currentTable}</p>
               <div className="join rounded-md my-5">
