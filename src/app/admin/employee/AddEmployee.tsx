@@ -11,6 +11,7 @@ import EmploymentInfo from "./components/EmployeeInfo";
 import LegalDocuments from "./components/LegalInfo";
 import Credentials from "./components/CredentialInfo";
 import { auth } from "@/firebase";
+import AdminRouteGuard from "@/app/AdminRouteGuard/page";
 
 const AddEmployee = () => {
   const [step, setStep] = useState(1);
@@ -18,9 +19,19 @@ const AddEmployee = () => {
 
   // Personal Information
   const [name, setName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [phone, setPhone] = useState<string>("");
+  const [nickname, setNickname] = useState<string>("");
   const [birthday, setBirthday] = useState<string>("");
+  const [gender, setGender] = useState<string>("");
+  const [maritalStatus, setMaritalStatus] = useState<string>("");
+  const [nationality, setNationality] = useState<string>("");
+  const [currentAddress, setCurrentAddress] = useState<string>("");
+  const [permanentAddress, setPermanentAddress] = useState<string>("");
+  const [isPermanentSameAsCurrent, setIsPermanentSameAsCurrent] = useState<boolean>(false);
+  const [phone, setPhone] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [emergencyContactName, setEmergencyContactName] = useState<string>("");
+  const [emergencyContactPhone, setEmergencyContactPhone] = useState<string>("");
+  const [emergencyContactAddress, setEmergencyContactAddress] = useState<string>("");
 
   // Employment Info
   const [position, setPosition] = useState<string>("");
@@ -70,7 +81,7 @@ const AddEmployee = () => {
         password,
         documents,
         formData: {
-          name, email, phone, birthday, position, department, startDate, employeeId,
+          name, nickname, gender, maritalStatus, nationality, currentAddress, permanentAddress, isPermanentSameAsCurrent, email, phone, birthday, emergencyContactName, emergencyContactPhone, emergencyContactAddress, position, department, startDate, employeeId,
           ssn, workPermitNumber, role
         }
       });
@@ -86,7 +97,7 @@ const AddEmployee = () => {
   const renderStep = () => {
     switch (step) {
       case 1:
-        return <PersonalInfo {...{ name, setName, email, setEmail, phone, setPhone, birthday, setBirthday }} />;
+        return <PersonalInfo {...{ name, setName, nickname, setNickname,  birthday, setBirthday, gender, setGender, maritalStatus, setMaritalStatus, nationality, setNationality, currentAddress, setCurrentAddress, permanentAddress, setPermanentAddress, isPermanentSameAsCurrent, setIsPermanentSameAsCurrent, phone, setPhone, email, setEmail, emergencyContactName, setEmergencyContactName, emergencyContactPhone, setEmergencyContactPhone, emergencyContactAddress, setEmergencyContactAddress }} />;
       case 2:
         return <EmploymentInfo {...{ position, setPosition, department, setDepartment, startDate, setStartDate, employeeId, setEmployeeId }} />;
       case 3:
@@ -99,46 +110,48 @@ const AddEmployee = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <ToastContainer />
-      <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
-        <div className="p-8">
-          <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold mb-4">
-            Add Employee - Step {step} of 4
-          </div>
-          <form onSubmit={onSubmit}>
-            {loading ? <Loading /> : renderStep()}
-            <div className="flex justify-between mt-6">
-              {step > 1 && (
-                <button
-                  type="button"
-                  onClick={prevStep}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-                >
-                  Previous
-                </button>
-              )}
-              {step < 4 ? (
-                <button
-                  type="button"
-                  onClick={nextStep}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                >
-                  Next
-                </button>
-              ) : (
-                <button
-                  type="submit"
-                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                >
-                  Submit
-                </button>
-              )}
+    <AdminRouteGuard>
+      <div className="container mx-auto p-4">
+        <ToastContainer />
+        <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
+          <div className="p-8">
+            <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold mb-4">
+              Add Employee - Step {step} of 4
             </div>
-          </form>
+            <form onSubmit={onSubmit}>
+              {loading ? <Loading /> : renderStep()}
+              <div className="flex justify-between mt-6">
+                {step > 1 && (
+                  <button
+                    type="button"
+                    onClick={prevStep}
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+                  >
+                    Previous
+                  </button>
+                )}
+                {step < 4 ? (
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  >
+                    Next
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                  >
+                    Submit
+                  </button>
+                )}
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </AdminRouteGuard>
   );
 };
 

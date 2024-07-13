@@ -12,9 +12,19 @@ interface SubmitParams {
   documents: FileList | null;
   formData: {
     name: string;
+    nickname: string;
+    birthday: string;
+    gender: string;
+    maritalStatus: string;
+    nationality: string;
+    currentAddress: string;
+    permanentAddress: string;
+    isPermanentSameAsCurrent: boolean;
+    emergencyContactName: string;
+    emergencyContactPhone: string;
+    emergencyContactAddress: string;
     email: string;
     phone: string;
-    birthday: string;
     position: string;
     department: string;
     startDate: string;
