@@ -86,7 +86,7 @@ const AddEmployee = () => {
         }
       });
       successToast("User created successfully.");
-      setLoading(false);
+      setLoading(true);
     } catch (error) {
       console.error("Error during signup:", error);
       errorToast("User creation failed. Please try again later.");
