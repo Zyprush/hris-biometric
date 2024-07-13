@@ -107,7 +107,7 @@ const TopNavbar: React.FC<NavbarProps> = ({ children }) => {
           </motion.nav>
         )}
       </AnimatePresence>
-      <div className="overflow-y-auto w-full mt-14">{children}</div>
+      <div className="overflow-y-auto w-full pt-14">{children}</div>
     </div>
   );
 };
