@@ -32,19 +32,19 @@ const Page = () => {
               <p className="text-lg font-bold">{currentTable}</p>
               <div className="join rounded-md my-5">
                 <button
-                  className={`btn join-item border-2 border-zinc-400 ${currentTable === "Employee" ? "active" : ""}`}
+                  className={`btn join-item border-2 border-zinc-400 ${currentTable === "Employee" ? "bg-primary text-white border-primary" : ""}`}
                   onClick={() => setCurrentTable("Employee")}
                 >
                   Employee
                 </button>
                 <button
-                  className={`btn join-item border-2 border-zinc-400 ${currentTable === "Add Employee" ? "active" : ""}`}
+                  className={`btn join-item border-2 border-zinc-400 ${currentTable === "Add Employee" ? "bg-primary text-white border-primary" : ""}`}
                   onClick={() => setCurrentTable("Add Employee")}
                 >
                   Add Employee
                 </button>
                 <button
-                  className={`btn join-item border-2 border-zinc-400 ${currentTable === "Former Employee" ? "active" : ""}`}
+                  className={`btn join-item border-2 border-zinc-400 ${currentTable === "Former Employee" ? "bg-primary text-white border-primary" : ""}`}
                   onClick={() => setCurrentTable("Former Employee")}
                 >
                   Former Employee

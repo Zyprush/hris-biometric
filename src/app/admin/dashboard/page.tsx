@@ -83,7 +83,7 @@ const AdminDashboard = () => {
             <ToastContainer/>
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4">
               {cardData.map(({ title, icon: Icon, color, value }, index) => (
-                <div key={index} className="bg-white shadow-md rounded-lg p-4 text-center">
+                <div key={index} className="bg-white shadow-md rounded-lg p-4 text-center border">
                   <Icon className={`text-3xl mb-2 mx-auto ${color}`} />
                   <h2 className="text-lg font-semibold">{title}</h2>
                   <p className="text-2xl font-bold">{value}</p>

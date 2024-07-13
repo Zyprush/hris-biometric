@@ -60,14 +60,6 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
             isMinimized ? "w-20" : "w-56"
           } bg-zinc-200 h-auto transition-width duration-300 flex-col items-start justify-start p-5 gap-2`}
         >
-          <button
-            onClick={toggleNavbar}
-            data-tip="toggle width"
-            className="text-2xl text-zinc-700 flex mb-5 tooltip tooltip-right m-auto p-2 font-bold rounded-md gap-2"
-          >
-            <LuFingerprint className="text-3xl" />
-            {!isMinimized && <p className="bg-neutral px-2 rounded-md text-white">HRIS</p>}
-          </button>
           <NavLink
             href="/admin/dashboard"
             icon={BsBarChartFill}
@@ -127,7 +119,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
             <FaSignOutAlt className="text-xl" /> {!isMinimized && "Logout"}
           </button>
         </nav>
-        <div className="overflow-y-auto w-full h-full flex items-center justify-center">{children}</div>
+        <div className="overflow-y-auto w-full h-full flex items-center justify-center pt-40">{children}</div>
       </div>
     </div>
   );
