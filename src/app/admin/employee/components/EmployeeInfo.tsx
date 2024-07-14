@@ -9,6 +9,8 @@ interface EmploymentInfoProps {
   setPosition: (position: string) => void;
   department: string;
   setDepartment: (department: string) => void;
+  branch: string;
+  setBranch: (branch: string) => void;
   startDate: string;
   setStartDate: (startDate: string) => void;
   status: string;
@@ -18,7 +20,7 @@ interface EmploymentInfoProps {
 }
 
 const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
-  employeeId, setEmployeeId, position, setPosition, department, setDepartment, startDate, setStartDate, status, setStatus, supervisor, setSupervisor
+  employeeId, setEmployeeId, position, setPosition, department, setDepartment, branch, setBranch, startDate, setStartDate, status, setStatus, supervisor, setSupervisor
 }) => {
   return (
     <div>
@@ -47,6 +49,16 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
         required
         className="w-full p-2 mb-2 border rounded"
       />
+      <select
+        onChange={(e) => setBranch(e.target.value)}
+        value={branch}
+        required
+        className="w-full p-2 mb-2 border rounded"
+      >
+        <option value="">Select Branch</option>
+        <option value="Branch 1">Branch 1</option>
+        <option value="Branch 2">Branch 2</option>
+      </select>
       <div className="flex flex-col mb-2">
         <label htmlFor="birthday" className="text-sm text-gray-500 mb-1">
           Employment Start Date
@@ -78,7 +90,6 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
         required
         className="w-full p-2 mb-2 border rounded"
       />
-      <h2 className="text-md font-bold mb-4">Employment Info</h2>
     </div>
   );
 };

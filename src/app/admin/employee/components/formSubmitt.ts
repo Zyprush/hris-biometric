@@ -28,9 +28,12 @@ interface SubmitParams {
     position: string;
     department: string;
     startDate: string;
+    branch: string;
     employeeId: string;
-    ssn: string;
-    workPermitNumber: string;
+    sss: string;
+    philHealthNumber: string;
+    pagIbigNumber: string;
+    tinNumber: string;
     status: string;
     supervisor: string;
     role: "user" | "admin";

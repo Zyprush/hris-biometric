@@ -8,10 +8,10 @@ import { validateStep } from "./components/utils";
 import { handleSubmit } from "./components/formSubmitt";
 import PersonalInfo from "./components/PersonalInfo";
 import EmploymentInfo from "./components/EmployeeInfo";
-import LegalDocuments from "./components/LegalInfo";
 import Credentials from "./components/CredentialInfo";
 import { auth } from "@/firebase";
 import AdminRouteGuard from "@/app/AdminRouteGuard/page";
+import LegalDocuments from "./components/LegalInfo";
 
 const AddEmployee = () => {
   const [step, setStep] = useState(1);
@@ -37,13 +37,16 @@ const AddEmployee = () => {
   const [employeeId, setEmployeeId] = useState<string>("");
   const [position, setPosition] = useState<string>("");
   const [department, setDepartment] = useState<string>("");
+  const [branch, setBranch] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
   const [status, setStatus] = useState<string>("");
   const [supervisor, setSupervisor] = useState<string>("");
 
   // Legal Compliance and Documents
-  const [ssn, setSsn] = useState<string>("");
-  const [workPermitNumber, setWorkPermitNumber] = useState<string>("");
+  const [sss, setSss] = useState<string>("");
+  const [philHealthNumber, setPhilHealthNumber] = useState<string>("");
+  const [pagIbigNumber, setPagIbigNumber] = useState<string>("");
+  const [tinNumber, setTinNumber] = useState<string>("");
   const [documents, setDocuments] = useState<FileList | null>(null);
 
   // Credentials
@@ -53,15 +56,15 @@ const AddEmployee = () => {
   const [role, setRole] = useState<"user" | "admin">("user");
 
   const nextStep = () => {
-    if (validateStep(step, {
-      name, email, phone, birthday,
-      position, department, startDate, employeeId,
-      ssn, workPermitNumber, documents,
-      autoGeneratePassword, password, rePassword, status, supervisor
-    })) {
+    const validationResult = validateStep(step, {
+      name, nickname, birthday, gender, nationality, currentAddress, permanentAddress, phone, email, emergencyContactName, emergencyContactPhone, emergencyContactAddress,
+      position, department, startDate, employeeId, sss, philHealthNumber, pagIbigNumber, tinNumber, status, supervisor, branch, documents
+    });
+
+    if (validationResult.isValid) {
       setStep(step + 1);
     } else {
-      errorToast("Please fill out all required fields before proceeding.");
+      errorToast(validationResult.errorMessage || "Please fill out all required fields before proceeding.");
     }
   };
 
@@ -71,8 +74,9 @@ const AddEmployee = () => {
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!validateStep(4, { autoGeneratePassword, password, rePassword })) {
-      errorToast("Please ensure all fields are filled correctly.");
+    const validationResult = validateStep(4, { autoGeneratePassword, password, rePassword, role });
+    if (!validationResult.isValid) {
+      errorToast(validationResult.errorMessage || "Please ensure all fields are filled correctly.");
       return;
     }
     setLoading(true);
@@ -84,11 +88,14 @@ const AddEmployee = () => {
         documents,
         formData: {
           name, nickname, gender, maritalStatus, nationality, currentAddress, permanentAddress, isPermanentSameAsCurrent, email, phone, birthday, emergencyContactName, emergencyContactPhone, emergencyContactAddress, position, department, startDate, employeeId,
-          ssn, workPermitNumber, role, status, supervisor
+          sss, philHealthNumber, pagIbigNumber, tinNumber, role, status, supervisor, branch
         }
       });
       successToast("User created successfully.");
-      setLoading(true);
+      // Set a short timeout before reloading to ensure the success toast is visible
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500); // 1.5 seconds delay
     } catch (error) {
       console.error("Error during signup:", error);
       errorToast("User creation failed. Please try again later.");
@@ -99,11 +106,11 @@ const AddEmployee = () => {
   const renderStep = () => {
     switch (step) {
       case 1:
-        return <PersonalInfo {...{ name, setName, nickname, setNickname,  birthday, setBirthday, gender, setGender, maritalStatus, setMaritalStatus, nationality, setNationality, currentAddress, setCurrentAddress, permanentAddress, setPermanentAddress, isPermanentSameAsCurrent, setIsPermanentSameAsCurrent, phone, setPhone, email, setEmail, emergencyContactName, setEmergencyContactName, emergencyContactPhone, setEmergencyContactPhone, emergencyContactAddress, setEmergencyContactAddress }} />;
+        return <PersonalInfo {...{ name, setName, nickname, setNickname, birthday, setBirthday, gender, setGender, maritalStatus, setMaritalStatus, nationality, setNationality, currentAddress, setCurrentAddress, permanentAddress, setPermanentAddress, isPermanentSameAsCurrent, setIsPermanentSameAsCurrent, phone, setPhone, email, setEmail, emergencyContactName, setEmergencyContactName, emergencyContactPhone, setEmergencyContactPhone, emergencyContactAddress, setEmergencyContactAddress }} />;
       case 2:
-        return <EmploymentInfo {...{ employeeId, setEmployeeId, position, setPosition, department, setDepartment, startDate, setStartDate, status, setStatus, supervisor, setSupervisor }} />;
+        return <EmploymentInfo {...{ employeeId, setEmployeeId, position, setPosition, department, setDepartment, branch, setBranch, startDate, setStartDate, status, setStatus, supervisor, setSupervisor }} />;
       case 3:
-        return <LegalDocuments {...{ ssn, setSsn, workPermitNumber, setWorkPermitNumber, documents, setDocuments }} />;
+        return <LegalDocuments {...{ sss, setSss, philHealthNumber, setPhilHealthNumber, pagIbigNumber, setPagIbigNumber, tinNumber, setTinNumber, documents, setDocuments }} />;
       case 4:
         return <Credentials {...{ autoGeneratePassword, setAutoGeneratePassword, password, setPassword, rePassword, setRePassword, role, setRole, birthday }} />;
       default:

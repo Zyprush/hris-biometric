@@ -50,7 +50,6 @@ const Credentials: React.FC<CredentialsProps> = ({
             onChange={(e) => setPassword(e.target.value)}
             value={password}
             placeholder="Password"
-            required
             className="w-full p-2 mb-2 border rounded"
           />
           <input
@@ -58,7 +57,6 @@ const Credentials: React.FC<CredentialsProps> = ({
             onChange={(e) => setRePassword(e.target.value)}
             value={rePassword}
             placeholder="Re-enter Password"
-            required
             className="w-full p-2 mb-2 border rounded"
           />
         </>

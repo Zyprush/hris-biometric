@@ -2,33 +2,53 @@
 import React from 'react';
 
 interface LegalDocumentsProps {
-  ssn: string;
-  setSsn: (ssn: string) => void;
-  workPermitNumber: string;
-  setWorkPermitNumber: (workPermitNumber: string) => void;
+  sss: string;
+  setSss: (sss: string) => void;
+  philHealthNumber: string;
+  setPhilHealthNumber: (philHealthNumber: string) => void;
+  pagIbigNumber: string;
+  setPagIbigNumber: (pagIbigNumber: string) => void;
+  tinNumber: string;
+  setTinNumber: (tinNumber: string) => void;
   documents: FileList | null;
   setDocuments: (documents: FileList | null) => void;
 }
 
 const LegalDocuments: React.FC<LegalDocumentsProps> = ({
-  ssn, setSsn, workPermitNumber, setWorkPermitNumber, documents, setDocuments
+  sss, setSss, philHealthNumber, setPhilHealthNumber, pagIbigNumber, setPagIbigNumber, tinNumber, setTinNumber, documents, setDocuments
 }) => {
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">Legal Compliance and Documents</h2>
       <input
         type="text"
-        onChange={(e) => setSsn(e.target.value)}
-        value={ssn}
-        placeholder="SSN/TIN"
+        onChange={(e) => setSss(e.target.value)}
+        value={sss}
+        placeholder="SSS"
         required
         className="w-full p-2 mb-2 border rounded"
       />
       <input
         type="text"
-        onChange={(e) => setWorkPermitNumber(e.target.value)}
-        value={workPermitNumber}
-        placeholder="Work Permit Number"
+        onChange={(e) => setPhilHealthNumber(e.target.value)}
+        value={philHealthNumber}
+        placeholder="Philhealth Number"
+        required
+        className="w-full p-2 mb-2 border rounded"
+      />
+      <input
+        type="text"
+        onChange={(e) => setPagIbigNumber(e.target.value)}
+        value={pagIbigNumber}
+        placeholder="Pag-ibig Number"
+        required
+        className="w-full p-2 mb-2 border rounded"
+      />
+      <input
+        type="text"
+        onChange={(e) => setTinNumber(e.target.value)}
+        value={tinNumber}
+        placeholder="TIN Number"
         required
         className="w-full p-2 mb-2 border rounded"
       />
