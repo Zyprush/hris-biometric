@@ -10,25 +10,11 @@ export const validateStep = (step: number, formData: any): boolean => {
   switch (step) {
     case 1: // Personal Information
       return (
-        formData.name !== "" &&
-        formData.nickname !== "" &&
-        formData.birthday !== "" &&
-        formData.gender !== "" &&
-        formData.nationality !== "" &&
-        formData.currentAddress !== "" &&
-        (formData.isPermanentSameAsCurrent || formData.permanentAddress !== "") &&
-        formData.phone !== "" &&
-        formData.email !== "" &&
-        formData.emergencyContactName !== "" &&
-        formData.emergencyContactPhone !== "" &&
-        formData.emergencyContactAddress !== ""
+        formData.name !== "" 
       );
     case 2: // Employment Info
       return (
-        formData.position !== "" &&
-        formData.department !== "" &&
-        formData.startDate !== "" &&
-        formData.employeeId !== ""
+        formData.position !== "" 
       );
     case 3: // Legal Compliance and Documents
       return (

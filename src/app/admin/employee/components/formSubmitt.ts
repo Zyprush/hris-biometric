@@ -31,6 +31,8 @@ interface SubmitParams {
     employeeId: string;
     ssn: string;
     workPermitNumber: string;
+    status: string;
+    supervisor: string;
     role: "user" | "admin";
   };
 }

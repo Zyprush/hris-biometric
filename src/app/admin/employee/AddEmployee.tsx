@@ -34,10 +34,12 @@ const AddEmployee = () => {
   const [emergencyContactAddress, setEmergencyContactAddress] = useState<string>("");
 
   // Employment Info
+  const [employeeId, setEmployeeId] = useState<string>("");
   const [position, setPosition] = useState<string>("");
   const [department, setDepartment] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
-  const [employeeId, setEmployeeId] = useState<string>("");
+  const [status, setStatus] = useState<string>("");
+  const [supervisor, setSupervisor] = useState<string>("");
 
   // Legal Compliance and Documents
   const [ssn, setSsn] = useState<string>("");
@@ -55,7 +57,7 @@ const AddEmployee = () => {
       name, email, phone, birthday,
       position, department, startDate, employeeId,
       ssn, workPermitNumber, documents,
-      autoGeneratePassword, password, rePassword
+      autoGeneratePassword, password, rePassword, status, supervisor
     })) {
       setStep(step + 1);
     } else {
@@ -82,7 +84,7 @@ const AddEmployee = () => {
         documents,
         formData: {
           name, nickname, gender, maritalStatus, nationality, currentAddress, permanentAddress, isPermanentSameAsCurrent, email, phone, birthday, emergencyContactName, emergencyContactPhone, emergencyContactAddress, position, department, startDate, employeeId,
-          ssn, workPermitNumber, role
+          ssn, workPermitNumber, role, status, supervisor
         }
       });
       successToast("User created successfully.");
@@ -99,7 +101,7 @@ const AddEmployee = () => {
       case 1:
         return <PersonalInfo {...{ name, setName, nickname, setNickname,  birthday, setBirthday, gender, setGender, maritalStatus, setMaritalStatus, nationality, setNationality, currentAddress, setCurrentAddress, permanentAddress, setPermanentAddress, isPermanentSameAsCurrent, setIsPermanentSameAsCurrent, phone, setPhone, email, setEmail, emergencyContactName, setEmergencyContactName, emergencyContactPhone, setEmergencyContactPhone, emergencyContactAddress, setEmergencyContactAddress }} />;
       case 2:
-        return <EmploymentInfo {...{ position, setPosition, department, setDepartment, startDate, setStartDate, employeeId, setEmployeeId }} />;
+        return <EmploymentInfo {...{ employeeId, setEmployeeId, position, setPosition, department, setDepartment, startDate, setStartDate, status, setStatus, supervisor, setSupervisor }} />;
       case 3:
         return <LegalDocuments {...{ ssn, setSsn, workPermitNumber, setWorkPermitNumber, documents, setDocuments }} />;
       case 4:
