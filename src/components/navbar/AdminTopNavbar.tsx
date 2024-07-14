@@ -5,7 +5,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
-import { FaUserCircle, FaSignOutAlt, FaUserAlt, FaBuilding } from "react-icons/fa";
+import {
+  FaUserCircle,
+  FaSignOutAlt,
+  FaUserAlt,
+  FaBuilding,
+  FaCalendarCheck,
+} from "react-icons/fa";
 import { LuFingerprint } from "react-icons/lu";
 import { auth } from "@/firebase";
 import { TiThMenu } from "react-icons/ti";
@@ -23,10 +29,17 @@ interface NavLinkProps {
   isActive: boolean;
 }
 
-const NavLink: React.FC<NavLinkProps> = ({ href, icon: Icon, label, isActive }) => (
+const NavLink: React.FC<NavLinkProps> = ({
+  href,
+  icon: Icon,
+  label,
+  isActive,
+}) => (
   <Link
     href={href}
-    className={`navlink ${isActive ? "bg-neutral text-white" : "text-zinc-700"}`}
+    className={`navlink ${
+      isActive ? "bg-neutral text-white" : "text-zinc-700"
+    }`}
   >
     <Icon className="text-xl" /> {label}
   </Link>
@@ -88,6 +101,12 @@ const AdminTopNavbar: React.FC<NavbarProps> = ({ children }) => {
               icon={MdPayments}
               label="Payroll"
               isActive={pathname === "/admin/payroll"}
+            />
+            <NavLink
+              href="/admin/request"
+              icon={FaCalendarCheck}
+              label="Leave"
+              isActive={pathname === "/admin/request"}
             />
             <NavLink
               href="/admin/branch"

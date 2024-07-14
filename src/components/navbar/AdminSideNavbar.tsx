@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
-import { FaUserCircle, FaSignOutAlt, FaUserAlt, FaBuilding } from "react-icons/fa";
+import { FaUserCircle, FaSignOutAlt, FaUserAlt, FaBuilding,  FaCalendarCheck } from "react-icons/fa";
 import { LuFingerprint } from "react-icons/lu";
 import { auth } from "@/firebase";
 
@@ -87,6 +87,13 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
             label="Payroll"
             isMinimized={isMinimized}
             isActive={pathname === "/admin/payroll"}
+          />
+           <NavLink
+            href="/admin/request"
+            icon={FaCalendarCheck}
+            label="Leave"
+            isMinimized={isMinimized}
+            isActive={pathname === "/admin/request"}
           />
           <NavLink
             href="/admin/branch"
