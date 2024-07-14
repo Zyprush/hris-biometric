@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { collection, getDocs, doc, deleteDoc, updateDoc, getDoc, setDoc } from "firebase/firestore";
-import { ref, deleteObject } from "firebase/storage";
-import { db, storage } from "@/firebase";
+import { db } from "@/firebase";
 import Modal from "./components/employeeModal";
 import AdminRouteGuard from "@/app/AdminRouteGuard/page";
 import { toast } from 'react-toastify';
@@ -43,9 +42,14 @@ const EmployeeList = () => {
     setFilteredEmployees(filtered);
   };
 
-  const handleViewDetails = (employee: any) => {
+  const handleRowClick = (employee: any) => {
     setSelectedEmployee(employee);
-    setIsModalOpen(true);
+  };
+
+  const handleViewDetails = () => {
+    if (selectedEmployee) {
+      setIsModalOpen(true);
+    }
   };
 
   const handleCloseModal = () => {
@@ -68,26 +72,18 @@ const EmployeeList = () => {
 
   const handleDelete = async (employeeId: string, documentUrls: string[]) => {
     try {
-      // Get the employee document
       const employeeDoc = await getDoc(doc(db, "users", employeeId));
       if (employeeDoc.exists()) {
         const employeeData = employeeDoc.data();
 
-        // Add the employee to the former_employees collection with all data
         await setDoc(doc(db, "former_employees", employeeId), {
           ...employeeData,
-          documentUrls: documentUrls, // Store the document URLs
+          documentUrls: documentUrls,
           deletedAt: new Date()
         });
 
-        // Delete employee document from users collection
         await deleteDoc(doc(db, "users", employeeId));
 
-        // Note: We're not deleting the actual documents from Storage
-        // This way, we retain access to these documents for former employees
-        // If you want to move the documents, you'd need to implement a Storage transfer
-
-        // Update local state
         setEmployees(employees.filter(emp => emp.id !== employeeId));
         setFilteredEmployees(filteredEmployees.filter(emp => emp.id !== employeeId));
 
@@ -105,48 +101,52 @@ const EmployeeList = () => {
     <AdminRouteGuard>
       <div className="container mx-auto p-4 h-full">
         <div className="grid grid-cols-1 gap-4">
-          <div className="mb-2">
-            <input
-              type="text"
-              placeholder="Search by name or ID"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="input input-sm input-bordered mr-2 rounded-sm w-full max-w-sm"
-            />
-            <button onClick={handleSearch} className="btn rounded-md btn-sm btn-primary text-white">
-              Search
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center space-x-2 w-full max-w-sm">
+              <input
+                type="text"
+                placeholder="Search by name or ID"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input input-sm input-bordered rounded-sm flex-grow"
+              />
+              <button onClick={handleSearch} className="btn rounded-md btn-sm btn-primary text-white">
+                Search
+              </button>
+            </div>
+            <button
+              onClick={handleViewDetails}
+              className={`btn btn-sm rounded-md text-white ml-2 ${selectedEmployee ? 'btn-primary' : 'btn-disabled'}`}
+              disabled={!selectedEmployee}
+            >
+              View Details
             </button>
           </div>
-          <table className="table-auto w-full border rounded border-gray-200">
+          <table className="table border rounded border-zinc-200">
             <thead>
               <tr className="text-xs text-gray-500 bg-gray-100">
                 <th className="px-4 py-2">Employee ID</th>
                 <th className="px-4 py-2">Name</th>
                 <th className="px-4 py-2">Remarks</th>
-                <th className="px-4 py-2">Action</th>
               </tr>
             </thead>
             <tbody>
               {filteredEmployees.length < 1 ? (
                 <tr>
-                  <td colSpan={4} className="text-red-500 text-xs">
+                  <td colSpan={3} className="text-red-500 text-xs">
                     No results
                   </td>
                 </tr>
               ) : (
                 filteredEmployees.map((employee) => (
-                  <tr key={employee.id}>
+                  <tr
+                    key={employee.id}
+                    onClick={() => handleRowClick(employee)}
+                    className={`cursor-pointer ${selectedEmployee?.id === employee.id ? 'bg-blue-100 hover:bg-blue-200' : 'hover:bg-gray-100'}`}
+                  >
                     <td className="px-4 py-2 text-xs">{employee.employeeId}</td>
                     <td className="px-4 py-2 text-xs text-gray-600">{employee.name}</td>
                     <td className="px-4 py-2 text-xs text-gray-600">{employee.status}</td>
-                    <td className="px-4 py-2">
-                      <button
-                        onClick={() => handleViewDetails(employee)}
-                        className="btn btn-sm btn-outline-primary"
-                      >
-                        View Details
-                      </button>
-                    </td>
                   </tr>
                 ))
               )}
