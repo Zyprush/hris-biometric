@@ -5,7 +5,6 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase";
-import Loading from "@/components/Loading";
 import { warnToast } from "@/components/toast";
 
 interface UserData {

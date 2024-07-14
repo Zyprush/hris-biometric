@@ -49,7 +49,7 @@ const Dtr = ({ userData, date }: { userData: any, date: string }) => {
         <th className="py-2 px-4 border border-gray-300">Overtime</th>
         <th className="py-2 px-4 border border-gray-300">Undertime</th>
       </tr>
-      {Array.from({ length: 15 }, (_, i) => (
+      {Array.from({ length: 31 }, (_, i) => (
         <tr key={i} className="border border-gray-300">
           <td className="py-2 px-4 border border-gray-300">{i + 1}</td>
           <td className="py-2 px-4 border border-gray-300">08:00 AM</td>
