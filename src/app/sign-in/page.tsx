@@ -2,7 +2,7 @@
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { AuroraBackground } from "@/components/ui/aurora-background";
 import { warnToast, errorToast } from "@/components/toast";
 import { FirebaseError } from 'firebase/app';
@@ -17,11 +17,11 @@ const SignInPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+  const togglePasswordVisibility = useCallback(() => {
+    setShowPassword(prevShowPassword => !prevShowPassword);
+  }, []);
 
-  const onSubmit = async () => {
+  const handleSignIn = useCallback(async () => {
     setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -31,14 +31,9 @@ const SignInPage = () => {
       const userDocSnap = await getDoc(userDocRef);
 
       if (userDocSnap.exists()) {
-        const userData = userDocSnap.data();
-        const role = userData.role;
+        const { role } = userDocSnap.data();
         console.log('role:', role);
-        if (role === "admin") {
-          router.push("/admin/dashboard");
-        } else {
-          router.push("/user/dashboard");
-        }
+        router.push(role === "admin" ? "/admin/dashboard" : "/user/dashboard");
       } else {
         warnToast("User data not found. Please contact support.");
       }
@@ -46,32 +41,25 @@ const SignInPage = () => {
       console.error("Error during sign in:", error);
 
       if (error instanceof FirebaseError) {
-        switch (error.code) {
-          case "auth/invalid-credential":
-            errorToast("Invalid email or password. Please try again.");
-            break;
-          case "auth/user-disabled":
-            errorToast("This account has been disabled. Please contact support.");
-            break;
-          case "auth/too-many-requests":
-            errorToast("Too many failed login attempts. Please try again later.");
-            break;
-          default:
-            errorToast("An unexpected error occurred. Please try again.");
-        }
+        const errorMessages: { [key: string]: string } = {
+          "auth/invalid-credential": "Invalid email or password. Please try again.",
+          "auth/user-disabled": "This account has been disabled. Please contact support.",
+          "auth/too-many-requests": "Too many failed login attempts. Please try again later."
+        };
+        errorToast(errorMessages[error.code as string] || "An unexpected error occurred. Please try again.");
       } else {
         errorToast("An unexpected error occurred. Please try again.");
       }
     } finally {
       setLoading(false);
     }
-  };
+  }, [email, password, router]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      onSubmit();
+      handleSignIn();
     }
-  };
+  }, [handleSignIn]);
 
   return (
     <AuroraBackground>
@@ -105,7 +93,7 @@ const SignInPage = () => {
             </div>
             <button
               className="bg-gradient-to-r from-indigo-500 to-blue-500 bg-opacity-80 hover:bg-opacity-100 text-white font-bold py-2 px-4 rounded-md mt-4 transition ease-in-out duration-150"
-              onClick={onSubmit}
+              onClick={handleSignIn}
               disabled={loading}
             >
               {loading ? "LOADING..." : "SIGN IN"}
@@ -113,8 +101,8 @@ const SignInPage = () => {
           </div>
         </div>
       </div>
-
     </AuroraBackground>
   );
 };
+
 export default SignInPage;

@@ -34,6 +34,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
   const [isMinimized, setIsMinimized] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  
 
   const toggleNavbar = () => {
     setIsMinimized(!isMinimized);

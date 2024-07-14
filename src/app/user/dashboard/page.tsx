@@ -9,6 +9,7 @@ import Userlayout from "@/components/UserLayout";
 import FingerprintLoading from "@/components/Loading";
 import { FaClipboardList, FaUserAlt, FaMoneyCheckAlt } from "react-icons/fa";
 import Link from "next/link";
+import UserRouteGuard from "@/app/UserRouteGuard/page";
 
 interface UserData {
   name: string;
@@ -17,7 +18,10 @@ interface UserData {
   role: string;
 }
 
-const fetchUserData = async (user: any, setUserData: (data: UserData | null) => void) => {
+const fetchUserData = async (
+  user: any,
+  setUserData: (data: UserData | null) => void
+) => {
   if (user) {
     const userDocRef = doc(db, "users", user.uid);
     const userDocSnap = await getDoc(userDocRef);
@@ -41,13 +45,28 @@ const RedirectToAdmin = ({ router }: { router: any }) => {
   return null;
 };
 
-const DashboardLink = ({ href, icon: Icon, title, description }: { href: string, icon: any, title: string, description: string }) => (
-  <Link href={href} className="bg-white text-zinc-700 rounded-lg p-8 gap-3 flex flex-col border max-w-[23rem] hover:bg-neutral hover:text-white group">
+const DashboardLink = ({
+  href,
+  icon: Icon,
+  title,
+  description,
+}: {
+  href: string;
+  icon: any;
+  title: string;
+  description: string;
+}) => (
+  <Link
+    href={href}
+    className="bg-white text-zinc-700 rounded-lg p-8 gap-3 flex flex-col border max-w-[23rem] hover:bg-neutral hover:text-white group"
+  >
     <span className="flex gap-3">
       <Icon className="text-3xl" />
       <p className="text-2xl font-bold ">{title}</p>
     </span>
-    <p className="text-sm text-zinc-500 group-hover:text-zinc-200">{description}</p>
+    <p className="text-sm text-zinc-500 group-hover:text-zinc-200">
+      {description}
+    </p>
   </Link>
 );
 
@@ -69,29 +88,31 @@ export default function UserDashboard() {
   }
 
   return (
-    <SignedIn>
-      <Userlayout>
-        <div className="container flex flex-col items-center justify-center p-8 gap-10">
-          <DashboardLink
-            href="/user/attendance"
-            icon={FaClipboardList}
-            title="Attendance"
-            description="Track your daily attendance records and monitor your punctuality over time here."
-          />
-          <DashboardLink
-            href="/user/request"
-            icon={FaUserAlt}
-            title="Leave Request"
-            description="Submit your leave requests and check the status of your previous requests here."
-          />
-          <DashboardLink
-            href="/user/payslip"
-            icon={FaMoneyCheckAlt}
-            title="View Pay Slip"
-            description="Access your monthly pay slips and review your salary and bonus details here."
-          />
-        </div>
-      </Userlayout>
-    </SignedIn>
+    <UserRouteGuard>
+      <SignedIn>
+        <Userlayout>
+          <div className="container flex flex-col items-center justify-center p-8 gap-10">
+            <DashboardLink
+              href="/user/attendance"
+              icon={FaClipboardList}
+              title="Attendance"
+              description="Track your daily attendance records and monitor your punctuality over time here."
+            />
+            <DashboardLink
+              href="/user/request"
+              icon={FaUserAlt}
+              title="Leave Request"
+              description="Submit your leave requests and check the status of your previous requests here."
+            />
+            <DashboardLink
+              href="/user/payslip"
+              icon={FaMoneyCheckAlt}
+              title="View Pay Slip"
+              description="Access your monthly pay slips and review your salary and bonus details here."
+            />
+          </div>
+        </Userlayout>
+      </SignedIn>
+    </UserRouteGuard>
   );
 }
