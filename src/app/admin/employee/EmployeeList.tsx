@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/firebase";
+import { collection, getDocs, doc, deleteDoc, updateDoc, getDoc, setDoc } from "firebase/firestore";
+import { ref, deleteObject } from "firebase/storage";
+import { db, storage } from "@/firebase";
 import Modal from "./components/employeeModal";
 import AdminRouteGuard from "@/app/AdminRouteGuard/page";
+import { toast } from 'react-toastify';
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState<any[]>([]);
@@ -14,25 +16,23 @@ const EmployeeList = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchEmployees = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "users"));
-        const fetchedEmployees: React.SetStateAction<any[]> = [];
-        querySnapshot.forEach((doc) => {
-          fetchedEmployees.push({
-            id: doc.id,
-            ...doc.data(),
-          });
-        });
-        setEmployees(fetchedEmployees);
-        setFilteredEmployees(fetchedEmployees); // Initialize filtered list
-      } catch (error) {
-        console.error("Error fetching employees: ", error);
-      }
-    };
-
     fetchEmployees();
   }, []);
+
+  const fetchEmployees = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "users"));
+      const fetchedEmployees = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setEmployees(fetchedEmployees);
+      setFilteredEmployees(fetchedEmployees);
+    } catch (error) {
+      console.error("Error fetching employees: ", error);
+      toast.error("Failed to fetch employees");
+    }
+  };
 
   const handleSearch = () => {
     const filtered = employees.filter(
@@ -53,9 +53,57 @@ const EmployeeList = () => {
     setSelectedEmployee(null);
   };
 
+  const handleEdit = async (updatedEmployee: any) => {
+    try {
+      const employeeRef = doc(db, "users", updatedEmployee.id);
+      await updateDoc(employeeRef, updatedEmployee);
+      setEmployees(employees.map(emp => emp.id === updatedEmployee.id ? updatedEmployee : emp));
+      setFilteredEmployees(filteredEmployees.map(emp => emp.id === updatedEmployee.id ? updatedEmployee : emp));
+      toast.success("Employee updated successfully");
+    } catch (error) {
+      console.error("Error updating employee: ", error);
+      toast.error("Failed to update employee");
+    }
+  };
+
+  const handleDelete = async (employeeId: string, documentUrls: string[]) => {
+    try {
+      // Get the employee document
+      const employeeDoc = await getDoc(doc(db, "users", employeeId));
+      if (employeeDoc.exists()) {
+        const employeeData = employeeDoc.data();
+
+        // Add the employee to the former_employees collection with all data
+        await setDoc(doc(db, "former_employees", employeeId), {
+          ...employeeData,
+          documentUrls: documentUrls, // Store the document URLs
+          deletedAt: new Date()
+        });
+
+        // Delete employee document from users collection
+        await deleteDoc(doc(db, "users", employeeId));
+
+        // Note: We're not deleting the actual documents from Storage
+        // This way, we retain access to these documents for former employees
+        // If you want to move the documents, you'd need to implement a Storage transfer
+
+        // Update local state
+        setEmployees(employees.filter(emp => emp.id !== employeeId));
+        setFilteredEmployees(filteredEmployees.filter(emp => emp.id !== employeeId));
+
+        toast.success("Employee moved to former employees successfully");
+      } else {
+        toast.error("Employee not found");
+      }
+    } catch (error) {
+      console.error("Error moving employee to former employees: ", error);
+      toast.error("Failed to move employee to former employees");
+    }
+  };
+
   return (
     <AdminRouteGuard>
-      <div className="container mx-auto p-4 h-full ">
+      <div className="container mx-auto p-4 h-full">
         <div className="grid grid-cols-1 gap-4">
           <div className="mb-2">
             <input
@@ -90,7 +138,7 @@ const EmployeeList = () => {
                   <tr key={employee.id}>
                     <td className="px-4 py-2 text-xs">{employee.employeeId}</td>
                     <td className="px-4 py-2 text-xs text-gray-600">{employee.name}</td>
-                    <td className="px-4 py-2 text-xs text-gray-600">{employee.birthday}</td>
+                    <td className="px-4 py-2 text-xs text-gray-600">{employee.status}</td>
                     <td className="px-4 py-2">
                       <button
                         onClick={() => handleViewDetails(employee)}
@@ -106,11 +154,15 @@ const EmployeeList = () => {
           </table>
         </div>
 
-        {/* Modal Component */}
-        <Modal isOpen={isModalOpen} onClose={handleCloseModal} employee={selectedEmployee} />
+        <Modal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onEdit={handleEdit}
+          onDelete={(employeeId) => handleDelete(employeeId, selectedEmployee?.documentUrls || [])}
+          employee={selectedEmployee}
+        />
       </div>
     </AdminRouteGuard>
-
   );
 };
 

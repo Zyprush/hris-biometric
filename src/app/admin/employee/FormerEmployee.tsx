@@ -1,41 +1,51 @@
 "use client";
+
 import AdminRouteGuard from "@/app/AdminRouteGuard/page";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { collection, getDocs, DocumentData, Timestamp } from "firebase/firestore";
+import { db } from "@/firebase"; // Adjust this import path as needed
 
-const FormerEmployee = () => {
-  const employees = [
-    { employeeId: "E003", name: "Alice Johnson", remarks: "Permanent" },
-    { employeeId: "E004", name: "Bob Brown", remarks: "Contractual" },
-    { employeeId: "E006", name: "David Wilson", remarks: "Permanent" },
-    { employeeId: "E007", name: "Emma Thomas", remarks: "Permanent" },
-    { employeeId: "E008", name: "Frank White", remarks: "Contractual" },
-    { employeeId: "E009", name: "Grace Hall", remarks: "Permanent" },
-    { employeeId: "E010", name: "Henry King", remarks: "Contractual" },
-    { employeeId: "E011", name: "Ivy Scott", remarks: "Permanent" },
-    { employeeId: "E012", name: "Jack Green", remarks: "Permanent" },
-    { employeeId: "E013", name: "Kathy Adams", remarks: "Contractual" },
-    { employeeId: "E014", name: "Liam Baker", remarks: "Permanent" },
-    { employeeId: "E015", name: "Mia Clark", remarks: "Contractual" },
-    { employeeId: "E016", name: "Noah Lewis", remarks: "Permanent" },
+interface Employee extends DocumentData {
+  id: string;
+  name: string;
+  remarks: string;
+  deletedAt: Timestamp;
+  documentUrls?: string[];
+}
 
-  ];
+const FormerEmployee: React.FC = () => {
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredEmployees, setFilteredEmployees] = useState(employees);
+  useEffect(() => {
+    const fetchFormerEmployees = async () => {
+      const formerEmployeesCollection = collection(db, "former_employees");
+      const formerEmployeesSnapshot = await getDocs(formerEmployeesCollection);
+      const formerEmployeesList = formerEmployeesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      } as Employee));
+      setEmployees(formerEmployeesList);
+      setFilteredEmployees(formerEmployeesList);
+    };
+
+    fetchFormerEmployees();
+  }, []);
 
   const handleSearch = () => {
     const filtered = employees.filter(
       (employee) =>
         employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        employee.employeeId.toLowerCase().includes(searchTerm.toLowerCase())
+        employee.id.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredEmployees(filtered);
   };
 
   return (
     <AdminRouteGuard>
-      <div className="container mx-auto p-4 borde">
-        <div className="grid grid-col-1 gap-4">
+      <div className="container mx-auto p-4 border">
+        <div className="grid grid-cols-1 gap-4">
           <div className="mb-2">
             <input
               type="text"
@@ -51,25 +61,44 @@ const FormerEmployee = () => {
           <table className="table table-zebra border rounded border-zinc-200">
             <thead>
               <tr className="text-xs text-zinc-500">
-                <th>Employee ID </th>
+                <th>Employee ID</th>
                 <th>Name</th>
                 <th>Remarks</th>
+                <th>Deleted At</th>
+                <th>Documents</th>
               </tr>
             </thead>
             <tbody>
               {filteredEmployees.length < 1 ? (
                 <tr>
-                  <td colSpan={3} className="text-red-500 text-xs">
-                    {" "}
+                  <td colSpan={5} className="text-red-500 text-xs">
                     No result
                   </td>
                 </tr>
               ) : (
-                filteredEmployees.map((info, ind) => (
-                  <tr key={ind}>
-                    <td className="text-xs">{info.employeeId}</td>
-                    <td className="text-xs text-zinc-600">{info.name}</td>
-                    <td className="text-xs text-zinc-600">{info.remarks}</td>
+                filteredEmployees.map((employee) => (
+                  <tr key={employee.id}>
+                    <td className="text-xs">{employee.employeeId}</td>
+                    <td className="text-xs text-zinc-600">{employee.name}</td>
+                    <td className="text-xs text-zinc-600">{employee.status}</td>
+                    <td className="text-xs text-zinc-600">
+                      {employee.deletedAt.toDate().toLocaleDateString()}
+                    </td>
+                    <td className="text-xs text-zinc-600">
+                      {employee.documentUrls && employee.documentUrls.length > 0 ? (
+                        <ul>
+                          {employee.documentUrls.map((url, index) => (
+                            <li key={index}>
+                              <a href={url} target="_blank" rel="noopener noreferrer">
+                                Document {index + 1}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        "No documents"
+                      )}
+                    </td>
                   </tr>
                 ))
               )}
@@ -78,7 +107,6 @@ const FormerEmployee = () => {
         </div>
       </div>
     </AdminRouteGuard>
-
   );
 };
 
