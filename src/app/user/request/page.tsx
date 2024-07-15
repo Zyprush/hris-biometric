@@ -15,12 +15,15 @@ import {
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { FaCalendarCheck, FaCalendarTimes, FaCheckCircle } from "react-icons/fa";
+import {
+  FaCalendarTimes,
+  FaCheckCircle,
+} from "react-icons/fa";
 import { MdViewTimeline } from "react-icons/md";
 import { ToastContainer } from "react-toastify";
 import { format } from "date-fns";
 import { successToast } from "@/components/toast";
-import RequestForm from "@/app/user/request/RequestForm"; 
+import RequestForm from "@/app/user/request/RequestForm";
 
 const Request = () => {
   const [user] = useAuthState(auth);
@@ -51,28 +54,28 @@ const Request = () => {
     fetchRequests();
   }, [user, showRequestForm, status]);
 
-    const deleteRequest = async (requestId: string) => {
-      try {
-        setLoading(true); // Set loading to true when starting deletion
-        const postRef = doc(db, "requests", requestId);
-        const docSnap = await getDoc(postRef);
-        if (docSnap.exists() && docSnap.data().status === "pending") {
-          await deleteDoc(postRef);
-          successToast("Request deleted!");
-          setRequests(requests.filter((request) => request.id !== requestId));
-        } else {
-          console.error("Request not found or not in pending status.");
-        }
-      } catch (error) {
-        console.error("Error deleting request:", error);
-      } finally {
-        setLoading(false); // Set loading back to false after deletion attempt
+  const deleteRequest = async (requestId: string) => {
+    try {
+      setLoading(true); // Set loading to true when starting deletion
+      const postRef = doc(db, "requests", requestId);
+      const docSnap = await getDoc(postRef);
+      if (docSnap.exists() && docSnap.data().status === "pending") {
+        await deleteDoc(postRef);
+        successToast("Request deleted!");
+        setRequests(requests.filter((request) => request.id !== requestId));
+      } else {
+        console.error("Request not found or not in pending status.");
       }
-    };
+    } catch (error) {
+      console.error("Error deleting request:", error);
+    } finally {
+      setLoading(false); // Set loading back to false after deletion attempt
+    }
+  };
 
-    const toggleRequestForm = () => {
-      setShowRequestForm(!showRequestForm);
-    };
+  const toggleRequestForm = () => {
+    setShowRequestForm(!showRequestForm);
+  };
 
   return (
     <UserRouteGuard>
@@ -120,32 +123,40 @@ const Request = () => {
             <div className="flex flex-col rounded-md bg-white p-3 w-full md:max-w-[25rem]">
               {requests.map((request) => (
                 <div
-                  className="alert bg-slate-100 mb-4 flex justify-between"
+                  className="p-4 border-2 rounded-lg mb-4 flex justify-between bg-base"
                   key={request.id}
                 >
                   <span className="flex gap-2 items-start justify-start">
-                    <span className="flex mt-1">
-                      <FaCalendarCheck className="text-base" />
-                    </span>
                     <div>
-                      <h3 className="font-bold text-zinc-700 text-sm flex gap-2 items-center">
-                        {format(new Date(request.leaveDate), "MMM dd, yyyy")}{" "}
-                        <p className="font-normal text-xs text-zinc-500">
+                      <div className="text-zinc-700 mb-2 flex gap-2 items-center">
+                        <span
+                          className="bg-zinc-700 rounded text-sm font-semibold p-2 py-1 text-white tooltip tooltip-right"
+                          data-tip="Date of leave"
+                        >
+                          {format(new Date(request.leaveDate), "MMM dd yyyy")}{" "}
+                        </span>
+                        <p
+                          className="font-normal text-sm text-zinc-500 tooltip tooltip-right"
+                          data-tip="Total days of Leave"
+                        >
                           {request.totalDays} days
                         </p>
-                      </h3>
-                      <div className="text-xs">{request.reason}</div>
+
+                        {status === "pending" && (
+                          <button
+                            onClick={() => deleteRequest(request.id)}
+                            disabled={loading}
+                            className="btn mr-2 m-auto btn-sm btn-error rounded-md text-white text-xs"
+                          >
+                            {loading ? "Deleting..." : "Delete"}
+                          </button>
+                        )}
+                      </div>
+                      <div className="text-sm text-zinc-500 leading-5 ml-1">
+                        {request.reason}
+                      </div>
                     </div>
                   </span>
-                  {status === "pending" && (
-                    <button
-                      onClick={() => deleteRequest(request.id)}
-                      disabled={loading} 
-                      className="btn btn-sm btn-error rounded-md text-white text-xs"
-                    >
-                      {loading ? "Deleting..." : "Delete"} 
-                    </button>
-                  )}
                 </div>
               ))}
             </div>

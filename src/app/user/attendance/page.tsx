@@ -15,7 +15,7 @@ const Attendance = () => {
   const [user, authLoading] = useAuthState(auth);
   const [month, setMonth] = useState<string>("");
   const [year, setYear] = useState<string>("");
-  const { user: userData, loading, fetchUserData } = useUserStore();
+  const { userData: userData, loading, fetchUserData } = useUserStore();
   useEffect(() => {
     if (user) {
       fetchUserData(user.uid);

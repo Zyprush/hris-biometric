@@ -10,12 +10,11 @@ import { MdEmail, MdWork } from "react-icons/md";
 import { FaIdBadge, FaPhone } from "react-icons/fa";
 import { FaBuildingUser } from "react-icons/fa6";
 import { useEffect } from "react";
-import AdminRouteGuard from "@/app/AdminRouteGuard/page";
 import UserRouteGuard from "@/app/UserRouteGuard/page";
 
 const UserDashboard = () => {
   const [user, authLoading] = useAuthState(auth);
-  const { user: userData, loading, fetchUserData, signOut } = useUserStore();
+  const { userData, loading, fetchUserData, signOut } = useUserStore();
   const router = useRouter();
 
   const handleSignOut = async (
@@ -81,12 +80,7 @@ const UserDashboard = () => {
               />
               <UserInfo
                 label="SSN"
-                value={userData?.ssn || ""}
-                icon={FaIdBadge}
-              />
-              <UserInfo
-                label="Work Permit Number"
-                value={userData?.workPermitNumber || ""}
+                value={userData?.sss || ""}
                 icon={FaIdBadge}
               />
               <UserInfo

@@ -3,7 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import 'react-toastify/dist/ReactToastify.css';
 
-const inter = Poppins({ subsets: ["latin"], weight: ["400", "500", "600", "700","900"] });
+const inter = Poppins({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700","900"] });
 
 export const metadata: Metadata = {
   title: "HRIS",

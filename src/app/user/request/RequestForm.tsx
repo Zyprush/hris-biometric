@@ -1,9 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { errorToast, successToast } from "@/components/toast";
 import { auth, db } from "@/firebase";
 import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { useUserStore } from "@/state/user";
 
 const RequestForm = ({ setShowRequestForm}: { setShowRequestForm: React.Dispatch<React.SetStateAction<boolean>>}) => {
   const [user] = useAuthState(auth);
@@ -11,6 +12,14 @@ const RequestForm = ({ setShowRequestForm}: { setShowRequestForm: React.Dispatch
   const [totalDays, setTotalDays] = useState<string>("");
   const [reason, setReason] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const { userData, fetchUserData, signOut } = useUserStore();
+
+
+  useEffect(() => {
+    if (user) {
+      fetchUserData(user.uid);
+    }
+  }, [user, fetchUserData]);
 
   const createRequest = async (): Promise<void> => {
     setLoading(true);
@@ -34,11 +43,13 @@ const RequestForm = ({ setShowRequestForm}: { setShowRequestForm: React.Dispatch
     const requestData = {
       leaveDate,
       totalDays,
+      reason,
       creationDate: currentDate,
       userId: user?.uid,
       status: "pending",
       remarks: "",
-      reason,
+      department: userData?.department,
+      submittedBy: userData?.name,
     };
     try {
       const submittedDoc = await addDoc(collection(db, "requests"), requestData);
@@ -98,14 +109,14 @@ const RequestForm = ({ setShowRequestForm}: { setShowRequestForm: React.Dispatch
                             onChange={(e) => setTotalDays(e.target.value)}
                             placeholder="Number of Days"
                             required
-                            className="p-2 mb-2 border rounded text-zinc-500 w-40"
+                            className="p-2 mb-2 border text-sm rounded text-zinc-500 w-40"
                           />
                         </div>
                         <textarea
                           value={reason}
                           placeholder="Reason"
                           onChange={(e) => setReason(e.target.value)}
-                          className="w-full p-2 mb-2 border rounded"
+                          className="w-full p-2 text-sm mb-2 border rounded"
                           rows={5}
                           style={{ resize: "none" }}
                         />
