@@ -1,110 +1,190 @@
 "use client";
 
-import AdminRouteGuard from "@/app/AdminRouteGuard/page";
 import React, { useState, useEffect } from "react";
-import { collection, getDocs, DocumentData, Timestamp } from "firebase/firestore";
-import { db } from "@/firebase"; // Adjust this import path as needed
+import { collection, getDocs, doc, deleteDoc, updateDoc, getDoc, setDoc } from "firebase/firestore";
+import { db, storage } from "@/firebase";
+import Modal from "./components/employeeModal";
+import AdminRouteGuard from "@/app/AdminRouteGuard/page";
+import { toast } from 'react-toastify';
+import { EmployeeDetails } from "./components/employeeModal";
+import { deleteObject, ref } from "firebase/storage";
+import { deleteUser, getAuth } from "firebase/auth";
 
-interface Employee extends DocumentData {
-  id: string;
-  name: string;
-  remarks: string;
-  deletedAt: Timestamp;
-  documentUrls?: string[];
-}
-
-const FormerEmployee: React.FC = () => {
-  const [employees, setEmployees] = useState<Employee[]>([]);
+const FormerEmployee = () => {
+  const [employees, setEmployees] = useState<EmployeeDetails[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
+  const [filteredEmployees, setFilteredEmployees] = useState<EmployeeDetails[]>([]);
+  const [selectedEmployee, setSelectedEmployee] = useState<EmployeeDetails | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  const ADMIN_EMAIL = "hrisbiometric@gmail.com";
 
   useEffect(() => {
-    const fetchFormerEmployees = async () => {
-      const formerEmployeesCollection = collection(db, "former_employees");
-      const formerEmployeesSnapshot = await getDocs(formerEmployeesCollection);
-      const formerEmployeesList = formerEmployeesSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      } as Employee));
-      setEmployees(formerEmployeesList);
-      setFilteredEmployees(formerEmployeesList);
-    };
-
-    fetchFormerEmployees();
+    fetchEmployees();
   }, []);
+
+  const fetchEmployees = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "former_employees"));
+      const fetchedEmployees = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.name || '',
+          nickname: data.nickname || '',
+          employeeId: data.employeeId || '',
+          email: data.email || '',
+          phone: data.phone || '',
+          birthday: data.birthday || '',
+          gender: data.gender || '',
+          nationality: data.nationality || '',
+          currentAddress: data.currentAddress || '',
+          permanentAddress: data.permanentAddress || '',
+          emergencyContactName: data.emergencyContactName || '',
+          emergencyContactPhone: data.emergencyContactPhone || '',
+          emergencyContactAddress: data.emergencyContactAddress || '',
+          position: data.position || '',
+          department: data.department || '',
+          branch: data.branch || '',
+          startDate: data.startDate || '',
+          status: data.status || '',
+          supervisor: data.supervisor || '',
+          sss: data.sss || '',
+          philHealthNumber: data.philHealthNumber || '',
+          pagIbigNumber: data.pagIbigNumber || '',
+          tinNumber: data.tinNumber || '',
+          role: data.role || '',
+          documentUrls: data.documentUrls || [],
+        } as EmployeeDetails;
+      }).filter((employee) => employee.email !== ADMIN_EMAIL);
+      setEmployees(fetchedEmployees);
+      setFilteredEmployees(fetchedEmployees);
+    } catch (error) {
+      console.error("Error fetching employees: ", error);
+      toast.error("Failed to fetch employees");
+    }
+  };
 
   const handleSearch = () => {
     const filtered = employees.filter(
       (employee) =>
         employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        employee.id.toLowerCase().includes(searchTerm.toLowerCase())
+        employee.employeeId.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredEmployees(filtered);
   };
 
+  const handleRowClick = (employee: any) => {
+    setSelectedEmployee(employee);
+  };
+
+  const handleViewDetails = () => {
+    if (selectedEmployee) {
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedEmployee(null);
+  };
+
+  const handleEdit = async (updatedEmployee: any) => {
+    try {
+      const employeeRef = doc(db, "former_employees", updatedEmployee.id);
+      await updateDoc(employeeRef, updatedEmployee);
+      setEmployees(employees.map(emp => emp.id === updatedEmployee.id ? updatedEmployee : emp));
+      setFilteredEmployees(filteredEmployees.map(emp => emp.id === updatedEmployee.id ? updatedEmployee : emp));
+      toast.success("Employee updated successfully");
+    } catch (error) {
+      console.error("Error updating employee: ", error);
+      toast.error("Failed to update employee");
+    }
+  };
+  
+  const handleDelete = async (employeeId: string, documentUrls: string[]) => {
+    try {
+      // Delete employee document from Firestore
+      await deleteDoc(doc(db, "former_employees", employeeId));
+      // Delete associated documents from Storage
+      for (const url of documentUrls) {
+        const fileRef = ref(storage, url);
+        await deleteObject(fileRef);
+      }
+      // Update local state
+      setEmployees(employees.filter(emp => emp.id !== employeeId));
+      setFilteredEmployees(filteredEmployees.filter(emp => emp.id !== employeeId));
+      toast.success("Employee and associated documents deleted successfully");
+    } catch (error) {
+      console.error("Error deleting employee and documents: ", error);
+      toast.error("Failed to delete employee and associated documents");
+    }
+  };
+
   return (
     <AdminRouteGuard>
-      <div className="container mx-auto p-4 border">
+      <div className="container mx-auto p-4 h-full">
         <div className="grid grid-cols-1 gap-4">
-          <div className="mb-2">
-            <input
-              type="text"
-              placeholder="Search by name or ID"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="input input-sm input-bordered mr-2 rounded-sm w-full max-w-sm"
-            />
-            <button onClick={handleSearch} className="btn rounded-md btn-sm btn-primary text-white">
-              Search
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center space-x-2 w-full max-w-sm">
+              <input
+                type="text"
+                placeholder="Search by name or ID"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input input-sm input-bordered rounded-sm flex-grow"
+              />
+              <button onClick={handleSearch} className="btn rounded-md btn-sm btn-primary text-white">
+                Search
+              </button>
+            </div>
+            <button
+              onClick={handleViewDetails}
+              className={`btn btn-sm rounded-md text-white ml-2 ${selectedEmployee ? 'btn-primary' : 'btn-disabled'}`}
+              disabled={!selectedEmployee}
+            >
+              View Details
             </button>
           </div>
-          <table className="table table-zebra border rounded border-zinc-200">
+          <table className="table border rounded border-zinc-200">
             <thead>
-              <tr className="text-xs text-zinc-500">
-                <th>Employee ID</th>
-                <th>Name</th>
-                <th>Remarks</th>
-                <th>Deleted At</th>
-                <th>Documents</th>
+              <tr className="text-xs text-gray-500 bg-gray-100">
+                <th className="px-4 py-2">Employee ID</th>
+                <th className="px-4 py-2">Name</th>
+                <th className="px-4 py-2">Remarks</th>
               </tr>
             </thead>
             <tbody>
               {filteredEmployees.length < 1 ? (
                 <tr>
-                  <td colSpan={5} className="text-red-500 text-xs">
-                    No result
+                  <td colSpan={3} className="text-red-500 text-xs">
+                    No results
                   </td>
                 </tr>
               ) : (
                 filteredEmployees.map((employee) => (
-                  <tr key={employee.id}>
-                    <td className="text-xs">{employee.employeeId}</td>
-                    <td className="text-xs text-zinc-600">{employee.name}</td>
-                    <td className="text-xs text-zinc-600">{employee.status}</td>
-                    <td className="text-xs text-zinc-600">
-                      {employee.deletedAt.toDate().toLocaleDateString()}
-                    </td>
-                    <td className="text-xs text-zinc-600">
-                      {employee.documentUrls && employee.documentUrls.length > 0 ? (
-                        <ul>
-                          {employee.documentUrls.map((url, index) => (
-                            <li key={index}>
-                              <a href={url} target="_blank" rel="noopener noreferrer">
-                                Document {index + 1}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        "No documents"
-                      )}
-                    </td>
+                  <tr
+                    key={employee.id}
+                    onClick={() => handleRowClick(employee)}
+                    className={`cursor-pointer ${selectedEmployee?.id === employee.id ? 'bg-blue-100 hover:bg-blue-200' : 'hover:bg-gray-100'}`}
+                  >
+                    <td className="px-4 py-2 text-xs">{employee.employeeId}</td>
+                    <td className="px-4 py-2 text-xs text-gray-600">{employee.name}</td>
+                    <td className="px-4 py-2 text-xs text-gray-600">{employee.status}</td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
         </div>
+
+        <Modal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onEdit={handleEdit}
+          onDelete={(employeeId) => handleDelete(employeeId, selectedEmployee?.documentUrls || [])}
+          employee={selectedEmployee}
+        />
       </div>
     </AdminRouteGuard>
   );
