@@ -7,7 +7,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { BsPersonCircle } from "react-icons/bs";
 import { SlOptions } from "react-icons/sl";
 import LeaveModal from "./LeaveModal";
-import { FaQuestion } from "react-icons/fa";
+import { FaCommentAlt, FaQuestion } from "react-icons/fa";
 
 const Leave = () => {
   const [user] = useAuthState(auth);
@@ -39,13 +39,15 @@ const Leave = () => {
 
   const openModal = (request: any) => {
     setShowModal(true);
-    setCurRequest(request)
+    setCurRequest(request);
   };
 
   return (
     <div className="flex w-full h-full">
       <div className="flex flex-col gap-4">
-        {showModal && <LeaveModal setShowModal={setShowModal} curRequest={curRequest}/>}
+        {showModal && (
+          <LeaveModal setShowModal={setShowModal} curRequest={curRequest} />
+        )}
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
@@ -56,41 +58,48 @@ const Leave = () => {
           <option value="rejected">Rejected</option>
         </select>
         <div className="flex flex-wrap rounded-md gap-4">
+          {requests.length == 0 && <span className="text-xs font-semibold text-zinc-700 p-2 border rounded-lg flex gap-2 items-center"> <FaCommentAlt/> No {status} leave request!</span>}
           {requests.map((request) => (
             <div
-              className="p-4 border-2 rounded-lg mb-4 flex justify-between bg-base w-[20rem]  md:w-[25rem]"
+              className={`p-4 border-2 rounded-lg mb-4 flex justify-between bg-base w-[20rem]  md:w-[25rem]`}
               key={request.id}
             >
-                <div className="flex flex-col gap-2 items-start justify-start">
-                  <div className="text-zinc-700 mb-2 flex gap-2 items-center w-full">
-                    <span
-                      className="bg-zinc-700 rounded text-sm font-semibold p-2 py-1 text-white"
-                    >
-                      {format(new Date(request.leaveDate), "MMM dd yyyy")}{" "}
-                    </span>
-                    <p
-                      className="font-normal text-sm text-zinc-500"
-                    >
-                      {request.totalDays} days
-                    </p>
-                    <span className="flex gap-2">
-                    <span className="flex gap-2 text-xs p-1 px-2 border rounded-lg" ><BsPersonCircle className="text-lg"/>{request?.submittedBy}</span>
+              <div className="flex flex-col gap-2 items-start justify-start">
+                <div className="text-zinc-700 mb-2 flex gap-2 items-center w-full">
+                  <span className="bg-zinc-700 rounded text-sm font-semibold p-2 py-1 text-white">
+                    {format(new Date(request.leaveDate), "MMM dd yyyy")}{" "}
                   </span>
+                  <p className="font-normal text-sm text-zinc-500">
+                    {request.totalDays} days
+                  </p>
+                  <span className="flex gap-2">
+                    <span className="flex gap-2 text-xs p-1 px-2 border rounded-lg">
+                      <BsPersonCircle className="text-lg" />
+                      {request?.submittedBy}
+                    </span>
+                  </span>
+                  {status === "pending" && (
                     <button
                       className="mr-2 m-auto"
                       onClick={() => openModal(request)}
                     >
                       <SlOptions />
                     </button>
-                  </div>
-  
-                  <div className="text-sm text-zinc-500 leading-5 ml-1">
-                    {request.reason}
-                  </div>
-                {request.remarks && (<div className="text-sm text-zinc-500 leading-5 ml-1 items-start flex flex-col">
-                  <span className="font-semibold text-zinc-700 flex items-center">Rejected  <FaQuestion className="text-sm"/> </span> {request?.remarks}
-                </div>)}
+                  )}
                 </div>
+
+                <div className="text-sm text-zinc-500 font-thin leading-5 ml-1">
+                  {request.reason}
+                </div>
+                {request.remarks && (
+                  <div className="text-sm font-thin text-zinc-500 leading-5 ml-1 items-start flex flex-col">
+                    <span className="font-semibold text-zinc-700 flex items-center">
+                      Rejected <FaQuestion className="text-sm" />{" "}
+                    </span>
+                    {request?.remarks}
+                  </div>
+                )}
+              </div>
             </div>
           ))}
         </div>

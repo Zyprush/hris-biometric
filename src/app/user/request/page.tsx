@@ -15,12 +15,18 @@ import {
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { FaCalendarTimes, FaCheckCircle, FaQuestion } from "react-icons/fa";
+import {
+  FaCalendarTimes,
+  FaCheckCircle,
+  FaCommentAlt,
+  FaQuestion,
+} from "react-icons/fa";
 import { MdViewTimeline } from "react-icons/md";
 import { ToastContainer } from "react-toastify";
 import { format } from "date-fns";
 import { successToast } from "@/components/toast";
 import RequestForm from "@/app/user/request/RequestForm";
+import { IoMailOpen } from "react-icons/io5";
 
 const Request = () => {
   const [user] = useAuthState(auth);
@@ -118,6 +124,12 @@ const Request = () => {
 
             {/* PENDING */}
             <div className="flex flex-col rounded-md bg-white p-3 w-full md:max-w-[25rem]">
+              {requests.length == 0 && (
+                <span className=" mx-auto text-xs font-semibold text-zinc-700 p-2 border rounded-lg flex gap-2 items-center">
+                  {" "}
+                  <FaCommentAlt /> No {status} leave request!
+                </span>
+              )}
               {requests.map((request) => (
                 <div
                   className="p-4 border-2 rounded-lg mb-4 flex justify-between bg-base"
@@ -139,7 +151,7 @@ const Request = () => {
                           {request.totalDays} days
                         </p>
 
-                        {status === "pending" && (
+                        {status === "pending" ? (
                           <button
                             onClick={() => deleteRequest(request.id)}
                             disabled={loading}
@@ -147,6 +159,16 @@ const Request = () => {
                           >
                             {loading ? "Deleting..." : "Delete"}
                           </button>
+                        ) : (
+                          request.seen === false && (
+                              <button
+                                // onClick={() => setStatus("")}
+                                data-tip="mark as read"
+                                className=" mr-0 ml-auto text-zinc-800 rounded tooltip text-xs"
+                              >
+                                <IoMailOpen className="text-2xl" />
+                              </button>
+                          )
                         )}
                       </div>
                       <div className="text-sm text-zinc-500 leading-5 ml-1">
