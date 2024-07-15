@@ -6,13 +6,16 @@ import { db } from "@/firebase";
 import Modal from "./components/employeeModal";
 import AdminRouteGuard from "@/app/AdminRouteGuard/page";
 import { toast } from 'react-toastify';
+import { EmployeeDetails } from "./components/employeeModal";
 
 const EmployeeList = () => {
-  const [employees, setEmployees] = useState<any[]>([]);
+  const [employees, setEmployees] = useState<EmployeeDetails[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filteredEmployees, setFilteredEmployees] = useState<any[]>([]);
-  const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
+  const [filteredEmployees, setFilteredEmployees] = useState<EmployeeDetails[]>([]);
+  const [selectedEmployee, setSelectedEmployee] = useState<EmployeeDetails | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  const ADMIN_EMAIL = "hrisbiometric@gmail.com";
 
   useEffect(() => {
     fetchEmployees();
@@ -21,10 +24,37 @@ const EmployeeList = () => {
   const fetchEmployees = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "users"));
-      const fetchedEmployees = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      const fetchedEmployees = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.name || '',
+          nickname: data.nickname || '',
+          employeeId: data.employeeId || '',
+          email: data.email || '',
+          phone: data.phone || '',
+          birthday: data.birthday || '',
+          gender: data.gender || '',
+          nationality: data.nationality || '',
+          currentAddress: data.currentAddress || '',
+          permanentAddress: data.permanentAddress || '',
+          emergencyContactName: data.emergencyContactName || '',
+          emergencyContactPhone: data.emergencyContactPhone || '',
+          emergencyContactAddress: data.emergencyContactAddress || '',
+          position: data.position || '',
+          department: data.department || '',
+          branch: data.branch || '',
+          startDate: data.startDate || '',
+          status: data.status || '',
+          supervisor: data.supervisor || '',
+          sss: data.sss || '',
+          philHealthNumber: data.philHealthNumber || '',
+          pagIbigNumber: data.pagIbigNumber || '',
+          tinNumber: data.tinNumber || '',
+          role: data.role || '',
+          documentUrls: data.documentUrls || [],
+        } as EmployeeDetails;
+      }).filter((employee) => employee.email !== ADMIN_EMAIL);
       setEmployees(fetchedEmployees);
       setFilteredEmployees(fetchedEmployees);
     } catch (error) {
