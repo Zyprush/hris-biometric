@@ -169,3 +169,4 @@ const DetailItem: React.FC<{
 );
 
 export default Modal;
+export type { EmployeeDetails };
