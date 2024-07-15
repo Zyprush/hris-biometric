@@ -1,15 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { ToastContainer } from "react-toastify";
-import { errorToast } from "@/components/toast";
+import { errorToast, successToast } from "@/components/toast";
 import { auth, db } from "@/firebase";
 import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
-import UserRouteGuard from "@/app/UserRouteGuard/page";
-import UserLayout from "@/components/UserLayout";
-import { SignedIn } from "@/components/signed-in";
 
-const Request = () => {
+const RequestForm = ({ setShowRequestForm}: { setShowRequestForm: React.Dispatch<React.SetStateAction<boolean>>}) => {
   const [user] = useAuthState(auth);
   const [leaveDate, setLeaveDate] = useState<string>("");
   const [totalDays, setTotalDays] = useState<string>("");
@@ -45,7 +41,12 @@ const Request = () => {
       reason,
     };
     try {
-      await addDoc(collection(db, "requests"), requestData);
+      const submittedDoc = await addDoc(collection(db, "requests"), requestData);
+      successToast("Request created successfully");
+      setLeaveDate(""); // Clear input fields after successful submission
+      setTotalDays("");
+      setReason("");
+      setShowRequestForm(false)
     } catch (error) {
       errorToast(`Error creating Request:${error}`);
     } finally {
@@ -71,11 +72,8 @@ const Request = () => {
   };
 
   return (
-    <UserRouteGuard>
-      <SignedIn>
-        <UserLayout>
-          <div className="min-h-screen bg-gray-100 py-6 flex p-4 flex-col justify-center sm:py-12">
-            <ToastContainer />
+
+          <div className="fixed top-0 bottom-0 right-0 left-0 w-full h-full bg-zinc-800 bg-opacity-50 py-6 flex p-4 flex-col justify-center sm:py-12">
             <div className="relative py-3 sm:max-w-xl sm:mx-auto">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 rounded-3xl"></div>
               <div className="relative px-4 py-10 bg-white shadow-lg rounded-3xl sm:p-5 sm:py-10 md:w-[24rem]">
@@ -120,7 +118,7 @@ const Request = () => {
                             loading ? "opacity-50 cursor-not-allowed" : ""
                           }`}
                         >
-                          {loading ? "Creating..." : "Submit"}
+                          {loading ? "Creating..." : "Submit Leave"}
                         </button>
                       </div>
                     </div>
@@ -129,10 +127,7 @@ const Request = () => {
               </div>
             </div>
           </div>
-        </UserLayout>
-      </SignedIn>
-    </UserRouteGuard>
   );
 };
 
-export default Request;
+export default RequestForm;
