@@ -103,12 +103,6 @@ const AdminTopNavbar: React.FC<NavbarProps> = ({ children }) => {
               isActive={pathname === "/admin/payroll"}
             />
             <NavLink
-              href="/admin/request"
-              icon={FaCalendarCheck}
-              label="Leave"
-              isActive={pathname === "/admin/request"}
-            />
-            <NavLink
               href="/admin/branch"
               icon={FaBuilding}
               label="Branch"

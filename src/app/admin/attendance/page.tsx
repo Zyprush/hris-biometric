@@ -17,7 +17,7 @@ const AdminAttendance = () => {
     <AdminRouteGuard>
       <SignedIn>
         <AdminLayout>
-          <div className="flex flex-col w-full h-full justify-start items-start p-4">
+          <div className="flex flex-col w-full h-full justify-start items-start p-3">
             <div className="flex gap-4">
               <button
                 onClick={() => setStatus("leave")}
@@ -27,7 +27,7 @@ const AdminAttendance = () => {
                     : "btn-outline text-zinc-700"
                 }`}
               >
-                <BsPersonBoundingBox className="text-base" /> Leave Management
+                <BsPersonBoundingBox className="text-base" /> Leave
               </button>
               <button
                 onClick={() => setStatus("attendance")}
@@ -47,7 +47,7 @@ const AdminAttendance = () => {
                     : "btn-outline text-zinc-700"
                 }`}
               >
-                <MdViewTimeline className="text-base" /> View Logs
+                <MdViewTimeline className="text-base" /> Logs
               </button>
             </div>
             <div className="flex">
