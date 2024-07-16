@@ -4,7 +4,7 @@ import AdminRouteGuard from "@/app/AdminRouteGuard/page";
 import AdminLayout from "@/components/AdminLayout";
 import { SignedIn } from "@/components/signed-in";
 import { useState } from "react";
-import { BsPersonBoundingBox, BsPersonCircle } from "react-icons/bs";
+import { BsCashStack, BsFileMinus } from "react-icons/bs";
 import Payroll from "./Payroll";
 import Deduction from "./Deduction";
 
@@ -34,13 +34,13 @@ const AdminPayroll = () => {
                   className={`btn join-item border-2 border-zinc-400 ${currentTab === "Payroll" ? "bg-primary text-white border-primary" : ""}`}
                   onClick={() => setCurrentTab("Payroll")}
                 >
-                  <BsPersonBoundingBox className="text-base" /> Payroll
+                  <BsCashStack className="text-base" /> Payroll
                 </button>
                 <button
                   className={`btn join-item border-2 border-zinc-400 ${currentTab === "Deduction" ? "bg-primary text-white border-primary" : ""}`}
                   onClick={() => setCurrentTab("Deduction")}
                 >
-                  <BsPersonCircle className="text-base" /> Deduction
+                  <BsFileMinus className="text-base" /> Deduction
                 </button>
               </div>
               {renderContent()}
