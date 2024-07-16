@@ -6,15 +6,12 @@ import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
 import {
-  FaUserCircle,
-  FaSignOutAlt,
   FaUserAlt,
   FaBuilding,
 } from "react-icons/fa";
-import { LuFingerprint } from "react-icons/lu";
-import { auth } from "@/firebase";
 import profileMale from "../../../public/img/profile-male.jpg";
 import Image from "next/image";
+import { GrFingerPrint } from "react-icons/gr";
 interface NavbarProps {
   children: ReactNode;
 }
@@ -59,11 +56,13 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
         <button
           onClick={toggleNavbar}
           data-tip="toggle width"
-          className="text-2xl text-zinc-700 flex tooltip tooltip-right p-2 font-bold rounded-md gap-2"
+          className=" flex items-center text-white tooltip tooltip-right font-semibold rounded-md gap-2"
         >
-          <LuFingerprint className="text-3xl" />
+          <span className="bg-zinc-800 rounded-full p-2">
+            <GrFingerPrint className="text-3xl text-white" />
+          </span>
           {!isMinimized && (
-            <p className="bg-neutral px-2 rounded-md text-white">HRIS</p>
+            <p className="px-3 py-1 rounded-md text-neutral border-2 border-neutral font-bold text-xs">HRIS</p>
           )}
         </button>
         <div className="dropdown dropdown-end">
@@ -129,22 +128,6 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
             isMinimized={isMinimized}
             isActive={pathname === "/admin/history"}
           />
-          <NavLink
-            href="/admin/account"
-            icon={FaUserCircle}
-            label="Account"
-            isMinimized={isMinimized}
-            isActive={pathname === "/admin/account"}
-          />
-          <button
-            className="navlink text-zinc-700"
-            onClick={() => {
-              auth.signOut();
-              router.push("/sign-in");
-            }}
-          >
-            <FaSignOutAlt className="text-xl" /> {!isMinimized && "Logout"}
-          </button>
         </nav>
         <div className="overflow-y-auto w-full h-full flex items-center justify-center">
           {children}

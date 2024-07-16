@@ -5,10 +5,10 @@ import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
 import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
-import { LuFingerprint } from "react-icons/lu";
 import { auth } from "@/firebase";
 import profileMale from "../../../public/img/profile-male.jpg"
 import Image from "next/image";
+import { GrFingerPrint } from "react-icons/gr";
 
 
 interface NavbarProps {
@@ -52,14 +52,16 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
   return (
     <div className="h-screen w-full flex flex-col">
       <span className="w-full h-14 bg-zinc-200 justify-between px-5 items-center border-b-2 border-zinc-300 hidden md:flex">
-        <button
+      <button
           onClick={toggleNavbar}
           data-tip="toggle width"
-          className="text-2xl text-zinc-700 flex tooltip tooltip-right p-2 font-bold rounded-md gap-2"
+          className=" flex items-center text-white tooltip tooltip-right font-semibold rounded-md gap-2"
         >
-          <LuFingerprint className="text-3xl" />
+          <span className="bg-zinc-800 rounded-full p-2">
+            <GrFingerPrint className="text-3xl text-white" />
+          </span>
           {!isMinimized && (
-            <p className="bg-neutral px-2 rounded-md text-white">HRIS</p>
+            <p className="px-3 py-1 rounded-md text-neutral border-2 border-neutral font-bold text-xs">HRIS</p>
           )}
         </button>
         <div className="dropdown dropdown-end">

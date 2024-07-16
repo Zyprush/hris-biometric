@@ -29,9 +29,8 @@ const Page = () => {
       <SignedIn>
         <AdminLayout>
           <div className="container h-full mx-auto p-4">
-            <div className="grid grid-col-1 py-4">
-              <p className="text-lg font-bold">{currentTable}</p>
-              <div className="join rounded-md my-5">
+            <div className="grid grid-col-1">
+              <div className="join rounded-md mb-4">
                 <button
                   className={`btn join-item border-2 border-zinc-400 ${currentTable === "Employee" ? "bg-primary text-white border-primary" : ""}`}
                   onClick={() => setCurrentTable("Employee")}

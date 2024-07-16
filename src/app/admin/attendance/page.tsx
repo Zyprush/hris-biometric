@@ -31,9 +31,8 @@ const AdminAttendance = () => {
       <SignedIn>
         <AdminLayout>
           <div className="container h-full mx-auto p-4">
-            <div className="grid grid-col-1 py-4">
-              <p className="text-lg font-bold">{currentTab}</p>
-              <div className="join rounded-md my-5">
+            <div className="grid grid-col-1">
+              <div className="join rounded-md mb-4">
                 <button
                   className={`btn join-item border-2 border-zinc-400 ${currentTab === "Leave" ? "bg-primary text-white border-primary" : ""}`}
                   onClick={() => setCurrentTab("Leave")}
@@ -50,7 +49,7 @@ const AdminAttendance = () => {
                   className={`btn join-item border-2 border-zinc-400 ${currentTab === "Logs" ? "bg-primary text-white border-primary" : ""}`}
                   onClick={() => setCurrentTab("Logs")}
                 >
-                  <MdViewTimeline className="text-base" /> Logs
+                  <MdViewTimeline className="text-base" /> View Logs
                 </button>
               </div>
               {renderContent()}
