@@ -6,6 +6,7 @@ import EmployeeList from "./EmployeeList";
 import FormerEmployee from "./FormerEmployee";
 import AddEmployee from "./AddEmployee";
 import AdminRouteGuard from "@/app/AdminRouteGuard/page";
+import { BsPersonBoundingBox, BsPersonDash, BsPersonPlus } from "react-icons/bs";
 
 const Page = () => {
   const [currentTable, setCurrentTable] = useState("Employee");
@@ -35,18 +36,20 @@ const Page = () => {
                   className={`btn join-item border-2 border-zinc-400 ${currentTable === "Employee" ? "bg-primary text-white border-primary" : ""}`}
                   onClick={() => setCurrentTable("Employee")}
                 >
-                  Employee
+                  <BsPersonBoundingBox className="text-base" /> Employee
                 </button>
                 <button
                   className={`btn join-item border-2 border-zinc-400 ${currentTable === "Add Employee" ? "bg-primary text-white border-primary" : ""}`}
                   onClick={() => setCurrentTable("Add Employee")}
                 >
+                  <BsPersonPlus className="text-base" />
                   Add Employee
                 </button>
                 <button
                   className={`btn join-item border-2 border-zinc-400 ${currentTable === "Former Employee" ? "bg-primary text-white border-primary" : ""}`}
                   onClick={() => setCurrentTable("Former Employee")}
                 >
+                  <BsPersonDash className="text-base" />
                   Former Employee
                 </button>
               </div>

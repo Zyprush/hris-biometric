@@ -11,49 +11,49 @@ import Leave from "./Leave";
 import Logs from "./Logs";
 
 const AdminAttendance = () => {
-  const [status, setStatus] = useState<string>("leave");
+  const [currentTab, setCurrentTab] = useState("Leave");
+
+  const renderContent = () => {
+    switch (currentTab) {
+      case "Leave":
+        return <Leave />;
+      case "Attendance":
+        return <Attendance />;
+      case "Logs":
+        return <Logs />;
+      default:
+        return <Leave />;
+    }
+  };
 
   return (
     <AdminRouteGuard>
       <SignedIn>
         <AdminLayout>
-          <div className="flex flex-col w-full h-full justify-start items-start p-3">
-            <div className="flex gap-4">
-              <button
-                onClick={() => setStatus("leave")}
-                className={`flex items-center gap-2 mx-auto text-xs rounded-md md:ml-0 md:mr-auto text-white p-2 font-semibold border-2 mb-5 ${
-                  status === "leave"
-                    ? "bg-zinc-800 border-zinc-800"
-                    : "btn-outline text-zinc-700"
-                }`}
-              >
-                <BsPersonBoundingBox className="text-base" /> Leave
-              </button>
-              <button
-                onClick={() => setStatus("attendance")}
-                className={`flex items-center gap-2 mx-auto text-xs rounded-md md:ml-0 md:mr-auto text-white p-2 font-semibold border-2 mb-5 ${
-                  status === "attendance"
-                    ? "bg-zinc-800 border-zinc-800"
-                    : "btn-outline text-zinc-700"
-                }`}
-              >
-                <BsPersonCircle className="text-base" /> Attendance
-              </button>
-              <button
-                onClick={() => setStatus("logs")}
-                className={`flex items-center gap-2 mx-auto text-xs rounded-md md:ml-0 md:mr-auto text-white p-2 font-semibold border-2 mb-5 ${
-                  status === "logs"
-                    ? "bg-zinc-800 border-zinc-800"
-                    : "btn-outline text-zinc-700"
-                }`}
-              >
-                <MdViewTimeline className="text-base" /> Logs
-              </button>
-            </div>
-            <div className="flex">
-              {status === "leave" && <Leave />}
-              {status === "attendance" && <Attendance />}
-              {status === "logs" && <Logs />}
+          <div className="container h-full mx-auto p-4">
+            <div className="grid grid-col-1 py-4">
+              <p className="text-lg font-bold">{currentTab}</p>
+              <div className="join rounded-md my-5">
+                <button
+                  className={`btn join-item border-2 border-zinc-400 ${currentTab === "Leave" ? "bg-primary text-white border-primary" : ""}`}
+                  onClick={() => setCurrentTab("Leave")}
+                >
+                  <BsPersonBoundingBox className="text-base" /> Leave Request
+                </button>
+                <button
+                  className={`btn join-item border-2 border-zinc-400 ${currentTab === "Attendance" ? "bg-primary text-white border-primary" : ""}`}
+                  onClick={() => setCurrentTab("Attendance")}
+                >
+                  <BsPersonCircle className="text-base" /> Attendance
+                </button>
+                <button
+                  className={`btn join-item border-2 border-zinc-400 ${currentTab === "Logs" ? "bg-primary text-white border-primary" : ""}`}
+                  onClick={() => setCurrentTab("Logs")}
+                >
+                  <MdViewTimeline className="text-base" /> Logs
+                </button>
+              </div>
+              {renderContent()}
             </div>
           </div>
         </AdminLayout>
