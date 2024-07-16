@@ -16,7 +16,7 @@ const Page = () => {
       case "Employee":
         return <EmployeeList />;
       case "Add Employee":
-        return <AddEmployee />; // Placeholder for Add Employee component
+        return <AddEmployee />;
       case "Former Employee":
         return <FormerEmployee />;
       default:

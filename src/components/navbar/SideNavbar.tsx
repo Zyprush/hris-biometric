@@ -9,6 +9,7 @@ import { auth } from "@/firebase";
 import profileMale from "../../../public/img/profile-male.jpg"
 import Image from "next/image";
 import { GrFingerPrint } from "react-icons/gr";
+import Account from "./Account";
 
 
 interface NavbarProps {
@@ -72,10 +73,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
           >
             <Image src={profileMale} alt="Logo.png" width={40} height={40} />
           </div>
-          <span
-            tabIndex={0}
-            className=" mt-2 dropdown-content menu bg-base-100 rounded-lg border z-[1] w-60 h-80 p-2 shadow-lg r"
-          ></span>
+         <Account/>
         </div>
       </span>
       <div className="w-full overflow-y-auto h-full flex">
@@ -112,22 +110,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
             isMinimized={isMinimized}
             isActive={pathname === "/user/history"}
           />
-          <NavLink
-            href="/user/account"
-            icon={FaUserCircle}
-            label="Account"
-            isMinimized={isMinimized}
-            isActive={pathname === "/user/account"}
-          />
-          <button
-            className="navlink text-zinc-700"
-            onClick={() => {
-              auth.signOut();
-              router.push("/sign-in");
-            }}
-          >
-            <FaSignOutAlt className="text-xl" /> {!isMinimized && "Logout"}
-          </button>
+    
         </nav>
         <div className="overflow-y-auto w-full">{children}</div>
       </div>

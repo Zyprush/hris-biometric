@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import React, { useState, ReactNode } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
@@ -12,6 +12,7 @@ import {
 import profileMale from "../../../public/img/profile-male.jpg";
 import Image from "next/image";
 import { GrFingerPrint } from "react-icons/gr";
+import Account from "./Account";
 interface NavbarProps {
   children: ReactNode;
 }
@@ -43,7 +44,6 @@ const NavLink: React.FC<NavLinkProps> = ({
 
 const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
   const [isMinimized, setIsMinimized] = useState(false);
-  const router = useRouter();
   const pathname = usePathname();
 
   const toggleNavbar = () => {
@@ -73,10 +73,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
           >
             <Image src={profileMale} alt="Logo.png" width={40} height={40} />
           </div>
-          <span
-            tabIndex={0}
-            className=" mt-2 dropdown-content menu bg-base-100 rounded-lg border z-[1] w-60 h-80 p-2 shadow-lg r"
-          ></span>
+         <Account/>
         </div>
       </span>
       <div className="w-full overflow-y-auto h-full flex">

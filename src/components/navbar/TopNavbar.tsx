@@ -6,11 +6,13 @@ import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
 import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
-import { LuFingerprint } from "react-icons/lu";
 import { auth } from "@/firebase";
 import { TiThMenu } from "react-icons/ti";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoClose } from "react-icons/io5";
+import Image from "next/image";
+import profileMale from "../../../public/img/profile-male.jpg";
+import Account from "./Account";
 
 interface NavbarProps {
   children: ReactNode;
@@ -45,12 +47,16 @@ const TopNavbar: React.FC<NavbarProps> = ({ children }) => {
     <div className="h-screen w-screen flex flex-col">
       {/* topbar */}
       <span className="w-full h-14 z-50 bg-zinc-200 justify-between px-3 items-center border-b-2 border-zinc-300 flex fixed top-0">
-        <button
-          className={`text-xl text-zinc-700 flex p-2 font-bold rounded-md gap-2`}
-        >
-          <LuFingerprint className="text-2xl" />
-          <p className="bg-neutral px-2 rounded-md text-white">HRIS</p>
-        </button>
+      <div className="dropdown dropdown-start">
+          <div
+            tabIndex={0}
+            role="button"
+            className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-zinc-500 bg-zinc-500 rounded-full"
+          >
+            <Image src={profileMale} alt="Logo.png" width={40} height={40} />
+          </div>
+          <Account />
+        </div>
         <button onClick={toggleMenu} className="text-2xl text-zinc-700 p-2">
           {isMenuOpen ? <IoClose /> : <TiThMenu />}
         </button>
@@ -84,26 +90,11 @@ const TopNavbar: React.FC<NavbarProps> = ({ children }) => {
               isActive={pathname === "/user/payroll"}
             />
             <NavLink
-              href="/user/history"
-              icon={RiFolderHistoryFill}
-              label="History"
-              isActive={pathname === "/user/history"}
+              href="/user/request"
+              icon={MdTry}
+              label="Reaquest Leave"
+              isActive={pathname === "/user/request"}
             />
-            <NavLink
-              href="/user/account"
-              icon={FaUserCircle}
-              label="Account"
-              isActive={pathname === "/user/account"}
-            />
-            <button
-              className="navlink text-zinc-700"
-              onClick={() => {
-                auth.signOut();
-                router.push("/sign-in");
-              }}
-            >
-              <FaSignOutAlt className="text-xl" /> Logout
-            </button>
           </motion.nav>
         )}
       </AnimatePresence>
