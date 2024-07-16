@@ -192,16 +192,16 @@ const AdminDashboard = () => {
               ))}
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="bg-white shadow-md rounded-lg p-4">
+              <div className="bg-white shadow-md rounded-lg p-4 border">
                 <h2 className="text-lg font-semibold mb-2">Attendance Summary</h2>
                 <Doughnut data={doughnutData} />
               </div>
               <div className="grid grid-cols-1 gap-4">
-                <div className="bg-white shadow-md rounded-lg p-4">
+                <div className="bg-white shadow-md rounded-lg p-4 border">
                   <h2 className="text-lg font-semibold mb-2">Main Branch</h2>
                   <Bar data={branch1} />
                 </div>
-                <div className="bg-white shadow-md rounded-lg p-4">
+                <div className="bg-white shadow-md rounded-lg p-4 border">
                   <h2 className="text-lg font-semibold mb-2">Branch 1</h2>
                   <Bar data={branch2} />
                 </div>
