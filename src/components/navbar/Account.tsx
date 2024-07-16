@@ -91,7 +91,7 @@ const Account = () => {
     >
       <ToastContainer />
       <span className="w-full p-2">
-        <h2 className="text-sm font-bold mb-2 ">Welcome, {userData.name}</h2>
+        <h2 className="font-bold mb-2 text-zinc-700">Welcome, {userData.name} 🎉</h2>
 
         <UserInfo label="Email" value={userData?.email || ""} icon={MdEmail} />
         <UserInfo
@@ -99,9 +99,6 @@ const Account = () => {
           value={userData?.department || ""}
           icon={FaBuildingUser}
         />
-
-        <UserInfo label="Phone" value={userData?.phone || ""} icon={FaPhone} />
-
         <UserInfo
           label="Position"
           value={userData?.position || ""}
@@ -112,6 +109,7 @@ const Account = () => {
           value={userData?.employeeId || ""}
           icon={FaIdBadge}
         />
+        <UserInfo label="Phone" value={userData?.phone || ""} icon={FaPhone} />
         <UserInfo label="SSS" value={userData?.sss || ""} icon={FaIdBadge} />
         <UserInfo
           label="Philhealth"
