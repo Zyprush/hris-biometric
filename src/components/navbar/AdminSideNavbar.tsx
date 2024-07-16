@@ -5,10 +5,16 @@ import { usePathname, useRouter } from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
-import { FaUserCircle, FaSignOutAlt, FaUserAlt, FaBuilding } from "react-icons/fa";
+import {
+  FaUserCircle,
+  FaSignOutAlt,
+  FaUserAlt,
+  FaBuilding,
+} from "react-icons/fa";
 import { LuFingerprint } from "react-icons/lu";
 import { auth } from "@/firebase";
-
+import profileMale from "../../../public/img/profile-male.jpg";
+import Image from "next/image";
 interface NavbarProps {
   children: ReactNode;
 }
@@ -21,10 +27,18 @@ interface NavLinkProps {
   isActive: boolean;
 }
 
-const NavLink: React.FC<NavLinkProps> = ({ href, icon: Icon, label, isMinimized, isActive }) => (
+const NavLink: React.FC<NavLinkProps> = ({
+  href,
+  icon: Icon,
+  label,
+  isMinimized,
+  isActive,
+}) => (
   <Link
     href={href}
-    className={`navlink ${isActive ? "bg-neutral text-white" : "text-zinc-700"}`}
+    className={`navlink ${
+      isActive ? "bg-neutral text-white" : "text-zinc-700"
+    }`}
   >
     <Icon className="text-xl" /> {!isMinimized && label}
   </Link>
@@ -52,7 +66,19 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
             <p className="bg-neutral px-2 rounded-md text-white">HRIS</p>
           )}
         </button>
-        <span className="h-10 w-10 flex bg-zinc-500 rounded-full "></span>
+        <div className="dropdown dropdown-end">
+          <div
+            tabIndex={0}
+            role="button"
+            className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-zinc-500 bg-zinc-500 rounded-full"
+          >
+            <Image src={profileMale} alt="Logo.png" width={40} height={40} />
+          </div>
+          <span
+            tabIndex={0}
+            className=" mt-2 dropdown-content menu bg-base-100 rounded-lg border z-[1] w-60 h-80 p-2 shadow-lg r"
+          ></span>
+        </div>
       </span>
       <div className="w-full overflow-y-auto h-full flex">
         <nav
@@ -88,7 +114,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
             isMinimized={isMinimized}
             isActive={pathname === "/admin/payroll"}
           />
-  
+
           <NavLink
             href="/admin/branch"
             icon={FaBuilding}
@@ -120,7 +146,9 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
             <FaSignOutAlt className="text-xl" /> {!isMinimized && "Logout"}
           </button>
         </nav>
-        <div className="overflow-y-auto w-full h-full flex items-center justify-center">{children}</div>
+        <div className="overflow-y-auto w-full h-full flex items-center justify-center">
+          {children}
+        </div>
       </div>
     </div>
   );

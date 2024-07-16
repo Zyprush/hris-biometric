@@ -3,8 +3,8 @@ import { BiLoaderCircle } from "react-icons/bi";
 
 const Loading = () => {
   return (
-    <div className="text-lg border-2 bg-neutral text-white rounded-lg p-8 py-4 flex gap-4 mx-auto">
-      <BiLoaderCircle className="text-3xl animate-spin" /> Loading...
+    <div className="flex gap-2 font-semibold text-lg border-2 bg-neutral text-white rounded-lg p-6 pr-8 py-3 mx-auto">
+      <span className="loading loading-spinner loading-sm"></span> Loading...
     </div>
   );
 };
