@@ -15,10 +15,7 @@ import {
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import {
-  FaCalendarTimes,
-  FaCheckCircle,
-} from "react-icons/fa";
+import { FaCalendarTimes, FaCheckCircle, FaQuestion } from "react-icons/fa";
 import { MdViewTimeline } from "react-icons/md";
 import { ToastContainer } from "react-toastify";
 import { format } from "date-fns";
@@ -155,6 +152,14 @@ const Request = () => {
                       <div className="text-sm text-zinc-500 leading-5 ml-1">
                         {request.reason}
                       </div>
+                      {request.remarks && (
+                        <div className="text-sm text-zinc-500 leading-5 ml-1 mt-2 items-start flex flex-col">
+                          <span className="font-semibold text-zinc-700 flex items-center">
+                            Rejected <FaQuestion className="text-sm" />
+                          </span>
+                          {request?.remarks}
+                        </div>
+                      )}
                     </div>
                   </span>
                 </div>
