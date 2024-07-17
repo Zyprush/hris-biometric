@@ -7,8 +7,8 @@ import { useUserStore } from "@/state/user";
 import React, { useEffect, useRef, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import ReactToPrint from "react-to-print";
-import Dtr from "./Dtr";
 import { UserRouteGuard } from "@/components/UserRouteGuard";
+import Dtr from "./Dtr";
 
 const Attendance = () => {
   const componentRef = useRef<HTMLTableElement>(null);
@@ -21,13 +21,7 @@ const Attendance = () => {
       fetchUserData(user.uid);
     }
   }, [user, fetchUserData]);
-  if (loading || !userData) {
-    return (
-      <UserLayout>
-        <FingerprintLoading />
-      </UserLayout>
-    );
-  }
+
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setMonth(e.target.value);
@@ -94,5 +88,6 @@ const Attendance = () => {
     </UserRouteGuard>
   );
 };
+
 
 export default Attendance;

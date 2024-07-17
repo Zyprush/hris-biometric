@@ -11,81 +11,69 @@ import { FaClipboardList, FaUserAlt, FaMoneyCheckAlt } from "react-icons/fa";
 import Link from "next/link";
 import { UserRouteGuard } from "@/components/UserRouteGuard";
 
-interface UserData {
-  name: string;
-  email: string;
-  employeeId: string;
-  role: string;
-}
-
-const fetchUserData = async (
-  user: any,
-  setUserData: (data: UserData | null) => void
-) => {
-  if (user) {
-    const userDocRef = doc(db, "users", user.uid);
-    const userDocSnap = await getDoc(userDocRef);
-    if (userDocSnap.exists()) {
-      setUserData(userDocSnap.data() as UserData);
-    }
-  }
-};
-
-const LoadingComponent = () => (
-  <Userlayout>
-    <FingerprintLoading />
-  </Userlayout>
-);
-
-const RedirectToAdmin = ({ router }: { router: any }) => {
-  useEffect(() => {
-    router.push("/admin-dashboard");
-  }, [router]);
-
-  return null;
-};
-
-const DashboardLink = ({
-  href,
-  icon: Icon,
-  title,
-  description,
-}: {
-  href: string;
-  icon: any;
-  title: string;
-  description: string;
-}) => (
-  <Link
-    href={href}
-    className="bg-white text-zinc-700 rounded-lg p-8 gap-3 flex flex-col border max-w-[23rem] hover:bg-neutral hover:text-white group"
-  >
-    <span className="flex gap-3">
-      <Icon className="text-3xl" />
-      <p className="text-2xl font-bold ">{title}</p>
-    </span>
-    <p className="text-sm text-zinc-500 group-hover:text-zinc-200">
-      {description}
-    </p>
-  </Link>
-);
-
 export default function UserDashboard() {
   const [user, loading] = useAuthState(auth);
   const [userData, setUserData] = useState<UserData | null>(null);
   const router = useRouter();
 
+  interface UserData {
+    name: string;
+    email: string;
+    employeeId: string;
+    role: string;
+  }
+
+  const fetchUserData = async (
+    user: any,
+    setUserData: (data: UserData | null) => void
+  ) => {
+    if (user) {
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+      if (userDocSnap.exists()) {
+        setUserData(userDocSnap.data() as UserData);
+      }
+    }
+  };
+
+  // const LoadingComponent = () => (
+  //   <Userlayout>
+  //     <FingerprintLoading />
+  //   </Userlayout>
+  // );
+
+  const DashboardLink = ({
+    href,
+    icon: Icon,
+    title,
+    description,
+  }: {
+    href: string;
+    icon: any;
+    title: string;
+    description: string;
+  }) => (
+    <Link
+      href={href}
+      className="bg-white text-zinc-700 rounded-lg p-8 gap-3 flex flex-col border max-w-[23rem] hover:bg-neutral hover:text-white group"
+    >
+      <span className="flex gap-3">
+        <Icon className="text-3xl" />
+        <p className="text-2xl font-bold ">{title}</p>
+      </span>
+      <p className="text-sm text-zinc-500 group-hover:text-zinc-200">
+        {description}
+      </p>
+    </Link>
+  );
+
   useEffect(() => {
     fetchUserData(user, setUserData);
   }, [user]);
 
-  if (loading || !userData) {
-    return <LoadingComponent />;
-  }
-
-  if (userData && userData.role === "admin") {
-    return <RedirectToAdmin router={router} />;
-  }
+  // if (loading || !userData) {
+  //   return <LoadingComponent />;
+  // }
 
   return (
     <UserRouteGuard>
