@@ -25,7 +25,7 @@ import {
 import { MdEmail, MdViewTimeline } from "react-icons/md";
 import { ToastContainer } from "react-toastify";
 import { format } from "date-fns";
-import { successToast, warnToast } from "@/components/toast";
+// import { successToast, warnToast } from "@/components/toast";
 import RequestForm from "@/app/user/request/RequestForm";
 import Link from "next/link";
 
@@ -72,9 +72,9 @@ const Request = () => {
 
     fetchRequests();
     fetchNotRead()
-    if (notRead) {
-      warnToast(`${notRead} unread updated request!`)
-    }
+    // if (notRead) {
+    //   warnToast(`${notRead} unread updated request!`)
+    // }
   }, [user, status, notRead]);
 
   const deleteRequest = async (requestId: string) => {
@@ -84,7 +84,7 @@ const Request = () => {
       const docSnap = await getDoc(postRef);
       if (docSnap.exists() && docSnap.data().status === "pending") {
         await deleteDoc(postRef);
-        successToast("Request deleted!");
+        // successToast("Request deleted!");
         setRequests(requests.filter((request) => request.id !== requestId));
       } else {
         console.error("Request not found or not in pending status.");
@@ -157,7 +157,6 @@ const Request = () => {
             <div className="flex flex-col rounded-md bg-white p-3 w-full md:max-w-[25rem]">
               {requests.length == 0 && (
                 <span className=" mx-auto text-xs font-semibold text-zinc-700 p-2 border rounded-lg flex gap-2 items-center">
-                  {" "}
                   <FaCommentAlt /> No {status} leave request!
                 </span>
               )}
@@ -171,12 +170,12 @@ const Request = () => {
                       <span className="bg-zinc-700 rounded text-sm font-semibold p-2 py-1 text-white">
                         {format(new Date(request.leaveDate), "MMM dd yyyy")}{" "}
                       </span>
-                      <p
+                      <span
                         className="font-normal text-sm text-zinc-500 tooltip tooltip-right"
                         data-tip="Total days of Leave"
                       >
                         {request.totalDays} days
-                      </p>
+                      </span>
 
                       {status === "pending" && (
                         <button
