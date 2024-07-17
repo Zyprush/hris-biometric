@@ -8,12 +8,12 @@ import Loading from "@/components/Loading";
 import { warnToast } from "@/components/toast";
 import { ReactNode } from "react";
 
-interface UserData {
-  role: "user" | "admin";
-}
-
 interface AdminRouteGuardProps {
   children: ReactNode;
+}
+
+interface UserData {
+  role: "user" | "admin";
 }
 
 export function AdminRouteGuard({ children }: AdminRouteGuardProps) {
