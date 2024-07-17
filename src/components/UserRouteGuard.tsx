@@ -1,17 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase";
 import { warnToast } from "@/components/toast";
 
+interface UserRouteGuardProps {
+  children: ReactNode;
+}
 interface UserData {
   role: "user" | "admin";
 }
 
-const UserRouteGuard = ({ children }: { children: React.ReactNode }) => {
+export function UserRouteGuard({ children }: UserRouteGuardProps) {
   const [user, loading] = useAuthState(auth);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [userDataLoading, setUserDataLoading] = useState(true);
@@ -64,5 +67,3 @@ const UserRouteGuard = ({ children }: { children: React.ReactNode }) => {
 
   return <>{children}</>;
 };
-
-export default UserRouteGuard;

@@ -8,7 +8,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import ReactToPrint from "react-to-print";
 import Dtr from "./Dtr";
-import UserRouteGuard from "@/app/UserRouteGuard/page";
+import { UserRouteGuard } from "@/components/UserRouteGuard";
 
 const Attendance = () => {
   const componentRef = useRef<HTMLTableElement>(null);

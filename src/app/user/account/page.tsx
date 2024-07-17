@@ -10,7 +10,7 @@ import { MdEmail, MdWork } from "react-icons/md";
 import { FaIdBadge, FaPhone } from "react-icons/fa";
 import { FaBuildingUser } from "react-icons/fa6";
 import { useEffect } from "react";
-import UserRouteGuard from "@/app/UserRouteGuard/page";
+import { UserRouteGuard } from "@/components/UserRouteGuard";
 
 const UserDashboard = () => {
   const [user, authLoading] = useAuthState(auth);

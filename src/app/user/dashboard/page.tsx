@@ -9,7 +9,7 @@ import Userlayout from "@/components/UserLayout";
 import FingerprintLoading from "@/components/Loading";
 import { FaClipboardList, FaUserAlt, FaMoneyCheckAlt } from "react-icons/fa";
 import Link from "next/link";
-import UserRouteGuard from "@/app/UserRouteGuard/page";
+import { UserRouteGuard } from "@/components/UserRouteGuard";
 
 interface UserData {
   name: string;

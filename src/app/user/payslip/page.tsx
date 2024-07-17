@@ -1,5 +1,5 @@
-import AdminRouteGuard from "@/components/AdminRouteGuard";
-import UserRouteGuard from "@/app/UserRouteGuard/page";
+
+import { UserRouteGuard } from "@/components/UserRouteGuard";
 import UserLayout from "@/components/UserLayout";
 import { SignedIn } from "@/components/signed-in";
 import React from "react";
