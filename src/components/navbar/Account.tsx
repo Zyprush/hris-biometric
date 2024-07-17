@@ -12,19 +12,20 @@ import { MdEmail, MdWork } from "react-icons/md";
 import { BsFillCalendar2DateFill } from "react-icons/bs";
 import { format } from "date-fns/format";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
+import { useUserStore } from "@/state/user";
 
 interface UserData {
   name: string;
   nickname: string;
   email: string;
   employeeId: string;
-  role: string; 
+  role: string;
   phone: string;
   department: string;
   position: string;
   sss: string;
   startDate: string;
-  philHealthNumber: string; 
+  philHealthNumber: string;
   tinNumber: string;
 }
 
@@ -33,6 +34,7 @@ const Account = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isEmailVerified, setIsEmailVerified] = useState(true);
   const router = useRouter();
+  const { setUser } = useUserStore();
 
   const [isResendingVerification, setIsResendingVerification] = useState(false);
 
@@ -47,6 +49,7 @@ const Account = () => {
         const userDocSnap = await getDoc(userDocRef);
         if (userDocSnap.exists()) {
           setUserData(userDocSnap.data() as UserData);
+          setUser(userDocSnap.data() as UserData);
           if (!user.emailVerified) {
             setIsEmailVerified(false);
             warnToast(
@@ -57,7 +60,7 @@ const Account = () => {
       }
     };
     fetchUserData();
-  }, [user]);
+  }, [user, setUser]);
 
   const handleSignOut = async () => {
     await auth.signOut();
@@ -89,7 +92,9 @@ const Account = () => {
       className="flex flex-col mt-2 dropdown-content menu bg-base-100 rounded-xl border border-zinc-300 z-[1] h-auto p-5  shadow-2xl w-[20rem] md:w-[23rem]"
     >
       <span className="w-full p-2">
-        <h2 className="font-bold mb-2 text-zinc-700">Welcome, {userData.name} 🎉</h2>
+        <h2 className="font-bold mb-2 text-zinc-700">
+          Welcome, {userData.name} 🎉
+        </h2>
 
         <UserInfo label="Email" value={userData?.email || ""} icon={MdEmail} />
         <UserInfo

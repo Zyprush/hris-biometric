@@ -1,11 +1,12 @@
 import { create } from "zustand";
 import { db } from "@/firebase";
-import { collection, getDocs, limit, query } from "firebase/firestore";
+import { addDoc, collection, getDocs, limit, query } from "firebase/firestore";
 
 interface HistoryStore {
   history: Array<any> | null;
   loadingHistory: boolean;
   fetchHistory: () => Promise<void>;
+  addHistory: (data: object) => Promise<void>;
 }
 
 export const useHistoryStore = create<HistoryStore>((set) => ({
@@ -24,12 +25,17 @@ export const useHistoryStore = create<HistoryStore>((set) => ({
       }
     } catch (error: any) {
       console.log('error', error)
-      set({loadingHistory: false });
     }
-  },
-  addHistory: async (data: object)=> {
-    set({ loadingHistory: true});
     set({loadingHistory: false });
-
+  },
+  addHistory: async (data: object) => {
+    set({ loadingHistory: true});
+    try {
+      const submittedDoc = await addDoc(collection(db, "history"), data);
+      set((state) => ({ history: state.history ? [...state.history, submittedDoc] : [submittedDoc], loadingHistory: false }));
+    } catch (error) {
+      console.log('error', error)
+    }
+    set({loadingHistory: false });
   }
 }));

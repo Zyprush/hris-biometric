@@ -3,15 +3,11 @@ import AdminLayout from "@/components/AdminLayout";
 import Loading from "@/components/bioLoading";
 import { SignedIn } from "@/components/signed-in";
 import { useHistoryStore } from "@/state/history";
-import { format } from "date-fns/format";
+import { format , parse} from "date-fns";
 import { useEffect } from "react";
 
 const AdminHistory = () => {
-  const {
-    history,
-    loadingHistory: loadingHistory,
-    fetchHistory,
-  } = useHistoryStore();
+  const { history, loadingHistory, fetchHistory } = useHistoryStore();
   useEffect(() => {
     fetchHistory();
   }, [fetchHistory]); // Add fetchHistory as a dependency to useEffect
@@ -32,18 +28,8 @@ const AdminHistory = () => {
               <tbody>
                 {history?.map((h) => (
                   <tr key={h.id} className="hover">
-                    <td>
-                      {new Date(h.time.seconds * 1000).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </td>
-                    <td>
-                      {format(
-                        new Date(h.time.nanoseconds / 1000000),
-                        "MMM dd, yyyy"
-                      )}
-                    </td>
+                    <td>{h?.time ? format(parse(h.time), 'yyyy-MM-dd HH:mm:ss', new Date()) : ""}</td>
+                    <td></td>
                     <td>{h.text}</td>
                   </tr>
                 ))}

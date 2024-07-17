@@ -21,6 +21,7 @@ interface UserStore {
   loading: boolean;
   error: string | null;
   fetchUserData: (uid: string) => Promise<void>;
+  setUser: (data: Partial<User>) => void;
   signOut: () => Promise<void>;
 }
 
@@ -42,6 +43,10 @@ export const useUserStore = create<UserStore>((set) => ({
     } catch (error: any) {
       set({ error: error.message, loading: false });
     }
+  },
+
+  setUser: (data: Partial<User>) => {
+    set((state) => ({ userData: { ...state.userData!, ...data } }));
   },
 
   signOut: async () => {
