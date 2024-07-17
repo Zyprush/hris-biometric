@@ -62,7 +62,7 @@ const Account = () => {
 
   const handleSignOut = async () => {
     await auth.signOut();
-    router.push("/");
+    router.push("/sing-in");
   };
 
   const handleResendVerification = async () => {
