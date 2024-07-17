@@ -1,5 +1,5 @@
 "use client";
-import UserRouteGuard from "@/app/UserRouteGuard/page";
+
 import UserLayout from "@/components/UserLayout";
 import { SignedIn } from "@/components/signed-in";
 import { auth, db } from "@/firebase";
@@ -12,6 +12,7 @@ import { format } from "date-fns";
 import Link from "next/link";
 import { errorToast, successToast, warnToast } from "@/components/toast";
 import Loading from "@/components/bioLoading";
+import { UserRouteGuard } from "@/components/UserRouteGuard";
 
 const Request = () => {
   const [user] = useAuthState(auth);
