@@ -50,9 +50,8 @@ const SignInPage = () => {
       } else {
         errorToast("An unexpected error occurred. Please try again.");
       }
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   }, [email, password, router]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {

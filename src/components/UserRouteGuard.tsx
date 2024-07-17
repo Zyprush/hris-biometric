@@ -50,20 +50,12 @@ export function UserRouteGuard({ children }: UserRouteGuardProps) {
       if (!user) {
         console.log("User not authenticated. Redirecting to sign-in page...");
         router.push("../sign-in");
-      } else if (userData && userData.role !== "user") {
-        console.log("Redirecting to admin dashboard...");
-        router.push("/admin/dashboard");
       } else if (user && !user.emailVerified) {
         warnToast("Your email is not verified. Please check your inbox for a verification email.");
         console.log("Email not verified.");
       }
     }
   }, [user, userData, loading, userDataLoading, router]);
-
-
-  if (!user || (userData && userData.role !== "user")) {
-    return null;
-  }
 
   return <>{children}</>;
 };

@@ -7,10 +7,9 @@ import { collection, doc, getDocs, limit, query, updateDoc, where } from "fireba
 import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { FaCommentAlt, FaQuestion } from "react-icons/fa";
-import { ToastContainer } from "react-toastify";
 import { format } from "date-fns";
 import Link from "next/link";
-import { errorToast, warnToast } from "@/components/toast";
+import { errorToast } from "@/components/toast";
 import Loading from "@/components/bioLoading";
 import { UserRouteGuard } from "@/components/UserRouteGuard";
 
@@ -72,10 +71,8 @@ const Request = () => {
       <SignedIn>
         <UserLayout>
           <div className="container flex flex-col justify-start items-center md:p-10 p-4 mx-auto">
-            <ToastContainer />
             {loading && <span className="fixed top-2"><Loading/></span>}
             
-
             <div className="flex flex-col rounded-md bg-white p-3 w-full md:max-w-[25rem]">
               {requests?.length == 0 && (
                 <span className=" mx-auto text-xs font-semibold text-zinc-700 p-2 border rounded-lg flex gap-2 items-center">

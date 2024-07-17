@@ -6,7 +6,7 @@ import { auth, db } from "@/firebase";
 import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { useUserStore } from "@/state/user";
 
-const RequestForm = ({ setShowRequestForm}: { setShowRequestForm: React.Dispatch<React.SetStateAction<boolean>>}) => {
+const RequestForm = ({ setShowRequestForm, requests}: { setShowRequestForm: React.Dispatch<React.SetStateAction<boolean>>, requests: object}) => {
   const [user] = useAuthState(auth);
   const [leaveDate, setLeaveDate] = useState<string>("");
   const [totalDays, setTotalDays] = useState<string>("");

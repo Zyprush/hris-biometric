@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { sendEmailVerification } from "firebase/auth";
-import { ToastContainer } from "react-toastify";
 import { warnToast } from "@/components/toast";
 import { FaIdBadge, FaPhone, FaBuildingUser } from "react-icons/fa6";
 import { MdEmail, MdWork } from "react-icons/md";
@@ -89,7 +88,6 @@ const Account = () => {
       tabIndex={0}
       className="flex flex-col mt-2 dropdown-content menu bg-base-100 rounded-xl border border-zinc-300 z-[1] h-auto p-5  shadow-2xl w-[20rem] md:w-[23rem]"
     >
-      <ToastContainer />
       <span className="w-full p-2">
         <h2 className="font-bold mb-2 text-zinc-700">Welcome, {userData.name} 🎉</h2>
 
@@ -169,10 +167,10 @@ const UserInfo = ({ label, value, icon: Icon }: UserInfoProps) => {
   return (
     <>
       {value ? (
-        <p className="text-gray-600 text-xs flex gap-2 items-center">
-          <Icon className="" /> <p className="font-semibold">{label}:</p>{" "}
+        <span className="text-gray-600 text-xs flex gap-2 items-center">
+          <Icon className="" /> <p className="font-semibold">{label}:</p>
           {value}
-        </p>
+        </span>
       ) : null}
     </>
   );

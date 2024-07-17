@@ -1,20 +1,11 @@
 "use client";
-import { auth, db } from "@/firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { useRouter } from "next/navigation";
 import { SignedIn } from "@/components/signed-in";
 import Userlayout from "@/components/UserLayout";
-import FingerprintLoading from "@/components/Loading";
 import { FaClipboardList, FaUserAlt, FaMoneyCheckAlt } from "react-icons/fa";
 import Link from "next/link";
 import { UserRouteGuard } from "@/components/UserRouteGuard";
 
 export default function UserDashboard() {
-  const [user, loading] = useAuthState(auth);
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const router = useRouter();
 
   interface UserData {
     name: string;
@@ -23,24 +14,6 @@ export default function UserDashboard() {
     role: string;
   }
 
-  const fetchUserData = async (
-    user: any,
-    setUserData: (data: UserData | null) => void
-  ) => {
-    if (user) {
-      const userDocRef = doc(db, "users", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
-      if (userDocSnap.exists()) {
-        setUserData(userDocSnap.data() as UserData);
-      }
-    }
-  };
-
-  // const LoadingComponent = () => (
-  //   <Userlayout>
-  //     <FingerprintLoading />
-  //   </Userlayout>
-  // );
 
   const DashboardLink = ({
     href,
@@ -66,14 +39,7 @@ export default function UserDashboard() {
       </p>
     </Link>
   );
-
-  useEffect(() => {
-    fetchUserData(user, setUserData);
-  }, [user]);
-
-  // if (loading || !userData) {
-  //   return <LoadingComponent />;
-  // }
+console.log("RENDER")
 
   return (
     <UserRouteGuard>
