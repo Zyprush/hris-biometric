@@ -10,7 +10,7 @@ import PersonalInfo from "./components/PersonalInfo";
 import EmploymentInfo from "./components/EmployeeInfo";
 import Credentials from "./components/CredentialInfo";
 import { auth } from "@/firebase";
-import AdminRouteGuard from "@/app/AdminRouteGuard/page";
+import AdminRouteGuard from "@/components/AdminRouteGuard";
 import LegalDocuments from "./components/LegalInfo";
 
 const AddEmployee = () => {

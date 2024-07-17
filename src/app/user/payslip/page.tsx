@@ -1,4 +1,4 @@
-import AdminRouteGuard from "@/app/AdminRouteGuard/page";
+import AdminRouteGuard from "@/components/AdminRouteGuard";
 import UserRouteGuard from "@/app/UserRouteGuard/page";
 import UserLayout from "@/components/UserLayout";
 import { SignedIn } from "@/components/signed-in";

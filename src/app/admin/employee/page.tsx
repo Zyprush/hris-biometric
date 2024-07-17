@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import EmployeeList from "./EmployeeList";
 import FormerEmployee from "./FormerEmployee";
 import AddEmployee from "./AddEmployee";
-import AdminRouteGuard from "@/app/AdminRouteGuard/page";
+import AdminRouteGuard from "@/components/AdminRouteGuard";
 import { BsPersonBoundingBox, BsPersonDash, BsPersonPlus } from "react-icons/bs";
 
 const Page = () => {

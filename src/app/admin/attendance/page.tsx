@@ -1,6 +1,6 @@
 "use client";
 
-import AdminRouteGuard from "@/app/AdminRouteGuard/page";
+import AdminRouteGuard from "@/components/AdminRouteGuard";
 import AdminLayout from "@/components/AdminLayout";
 import { SignedIn } from "@/components/signed-in";
 import { useState } from "react";
