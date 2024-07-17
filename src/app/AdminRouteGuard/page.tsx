@@ -7,12 +7,17 @@ import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase";
 import Loading from "@/components/Loading";
 import { warnToast } from "@/components/toast";
+import { ReactNode } from "react";
 
 interface UserData {
   role: "user" | "admin";
 }
 
-const AdminRouteGuard = ({ children }: { children: React.ReactNode }) => {
+interface AdminRouteGuardProps {
+  children: ReactNode;
+}
+
+const AdminRouteGuard = ({ children }: AdminRouteGuardProps) => {
   const [user, loading] = useAuthState(auth);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [userDataLoading, setUserDataLoading] = useState(true);
