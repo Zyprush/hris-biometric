@@ -14,7 +14,7 @@ import {
   Title,
 } from "chart.js";
 import { FaUsers, FaUserCheck, FaUserTimes, FaUserAltSlash, FaCalendarAlt, FaUserMinus, FaBuilding, FaUserPlus, FaBirthdayCake } from 'react-icons/fa';
-import AdminRouteGuard from "@/components/AdminRouteGuard";
+import {AdminRouteGuard} from "@/components/AdminRouteGuard";
 import { ToastContainer } from "react-toastify";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";

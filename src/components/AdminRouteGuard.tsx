@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/navigation";
@@ -17,7 +16,7 @@ interface AdminRouteGuardProps {
   children: ReactNode;
 }
 
-const AdminRouteGuard = ({ children }: AdminRouteGuardProps) => {
+export function AdminRouteGuard({ children }: AdminRouteGuardProps) {
   const [user, loading] = useAuthState(auth);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [userDataLoading, setUserDataLoading] = useState(true);
@@ -72,6 +71,4 @@ const AdminRouteGuard = ({ children }: AdminRouteGuardProps) => {
   }
 
   return <>{children}</>;
-};
-
-export default AdminRouteGuard;
+}

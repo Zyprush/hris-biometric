@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { collection, getDocs, doc, deleteDoc, updateDoc, getDoc, setDoc } from "firebase/firestore";
 import { db, storage } from "@/firebase";
 import Modal from "./components/employeeModal";
-import AdminRouteGuard from "@/components/AdminRouteGuard";
+import {AdminRouteGuard} from "@/components/AdminRouteGuard";
 import { toast } from 'react-toastify';
 import { EmployeeDetails } from "./components/employeeModal";
 import { deleteObject, ref } from "firebase/storage";
