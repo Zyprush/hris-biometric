@@ -112,6 +112,16 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
                 )
               ))}
             </div>
+            {editedEmployee.documentUrls && editedEmployee.documentUrls.length > 0 && (
+              <div className="mt-4">
+                <h4 className="text-xl font-semibold text-gray-900">Documents</h4>
+                <ul className="list-disc pl-5">
+                  {editedEmployee.documentUrls.map((url, index) => (
+                    <DocumentListItem key={index} url={url} />
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
           {/* Footer */}
           <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
@@ -167,6 +177,18 @@ const DetailItem: React.FC<{
     )}
   </div>
 );
+
+const DocumentListItem: React.FC<{ url: string }> = ({ url }) => {
+  const decodedUrl = decodeURIComponent(url);
+  const fileName = decodedUrl.split('/').pop()?.split('?')[0] || 'Unknown Document';
+  return (
+    <li className="text-blue-500 hover:underline">
+      <a href={url} target="_blank" rel="noopener noreferrer">
+        {fileName}
+      </a>
+    </li>
+  );
+};
 
 export default Modal;
 export type { EmployeeDetails };
