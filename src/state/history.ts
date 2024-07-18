@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { db } from "@/firebase";
-import { addDoc, collection, getDocs, limit, query } from "firebase/firestore";
+import { addDoc, collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 
 interface HistoryStore {
   history: Array<any> | null;
@@ -16,7 +16,7 @@ export const useHistoryStore = create<HistoryStore>((set) => ({
   fetchHistory: async () => {
     set({ loadingHistory: true });
     try {
-      const historyQuery = query(collection(db, "history"), limit(50));
+      const historyQuery = query(collection(db, "history"), limit(50), orderBy("time", "desc"));
       const historyDocSnap = await getDocs(historyQuery);
       if (historyDocSnap) {
         set({ history: historyDocSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })), loadingHistory: false });

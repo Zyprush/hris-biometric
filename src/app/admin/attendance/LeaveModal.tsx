@@ -41,12 +41,13 @@ const LeaveModal = ({
         } else {
           updateData.status = "rejected";
           updateData.remarks = reason;
+          const currentDate = new Date().toISOString();
           await updateDoc(docRef, updateData);
           addHistory({
             userId: curRequest.userId,
             adminId: userData?.id,
             text: `${userData?.name} rejected ${curRequest.submittedBy} leave request`,
-            time: new Date(),
+            time: currentDate,
           });
           successToast("Request Rejected!");
           setShowModal(false);
@@ -54,11 +55,12 @@ const LeaveModal = ({
       } else {
         updateData.status = "approved";
         await updateDoc(docRef, updateData);
+        const currentDate = new Date().toISOString();
         addHistory({
           userId: curRequest.userId,
           adminId: userData?.id,
           text: `${userData?.name} approved ${curRequest.submittedBy} leave request`,
-          time: new Date().toISOString(),
+          time: currentDate,
         });
         successToast("Request Approved!");
         setShowModal(false);
