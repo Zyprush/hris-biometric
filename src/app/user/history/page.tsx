@@ -1,54 +1,63 @@
+"use client";
 import { UserRouteGuard } from "@/components/UserRouteGuard";
 import UserLayout from "@/components/UserLayout";
 import { SignedIn } from "@/components/signed-in";
-import React from "react";
-import { MdWorkHistory } from "react-icons/md";
+import React, { useEffect } from "react";
+import { useHistoryStore } from "@/state/history";
+import Loading from "@/components/bioLoading";
+import { useUserStore } from "@/state/user";
+import { format } from "date-fns";
+import { FaCommentAlt } from "react-icons/fa";
 
-const page = () => {
-  const data = Array.from({ length: 20 }, (_, ind) => ({
-    date: `Jul ${String(ind + 1).padStart(2, "0")}, 022`,
-    time: `10:${String(ind).padStart(2, "0")}`,
-    actions: ind % 2 === 0 ? "Leave Request" : "Report Absence",
-  }));
+const UserHistory = () => {
+  const { history, loadingHistory, fetchHistoryByUser } = useHistoryStore();
+  const { userData } = useUserStore();
+  useEffect(() => {
+    if (userData) {
+      fetchHistoryByUser(userData.id);
+    }
+  }, [fetchHistoryByUser, userData]);
 
   return (
     <UserRouteGuard>
       <SignedIn>
         <UserLayout>
-          <div className="container flex flex-col justify-start items-center md:p-10 p-4">
-            <span className="flex gap-1 mx-auto md:ml-0 md:mr-auto font-bold mb-5">
-              <MdWorkHistory className="text-xl" /> History
-            </span>
-            <span className="border flex container md:min-w-[40rem]">
-              <table className="table table-zebra">
-                <thead>
-                  <tr className="text-xs text-zinc-500">
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.length < 1 ? (
-                    <tr>
-                      <td colSpan={3} className="text-red-500 text-xs">
-                        No Actions History to show.
-                      </td>
+          <div className="flex h-full w-full p-5">
+            {history?.length ?? 0 > 0 ? (
+              <div className="flex flex-col mx-auto border border-zinc-300 rounded-lg mt-5 overflow-x-auto scroll-container max-h-[32rem]">
+                <table className="table table-zebra max-w-[72rem]">
+                  <thead>
+                    <tr className="text-sm text-zinc-500 font-semibold">
+                      <th className="">Date</th>
+                      <th className="">Time</th>
+                      <th className="">Action</th>
                     </tr>
-                  ) : (
-                    data.map((info, ind) => (
-                      <tr key={ind}>
-                        <td className="text-xs">{info.date}</td>
-                        <td className="text-xs text-zinc-600">{info.time}</td>
-                        <td className="text-xs text-zinc-600">
-                          {info.actions}
+                  </thead>
+                  <tbody>
+                    {history?.map((h) => (
+                      <tr key={h.id} className="hover">
+                        <td>
+                          {h?.time
+                            ? format(new Date(h?.time), "MMM dd, yyyy")
+                            : ""}
                         </td>
+                        <td>
+                          {h?.time
+                            ? format(new Date(h?.time), "hh:mm aaa")
+                            : ""}
+                        </td>
+                        <td>{h.text}</td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <span className="flex mx-auto text-xs font-semibold text-zinc-700 p-2 border rounded-lg gap-2 items-center">
+              <FaCommentAlt /> No {status} leave request!
             </span>
+            )}
+            {loadingHistory ? <Loading /> : null}
           </div>
         </UserLayout>
       </SignedIn>
@@ -56,4 +65,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default UserHistory;

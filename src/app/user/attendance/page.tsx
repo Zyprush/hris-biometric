@@ -70,7 +70,7 @@ const Attendance = () => {
                 trigger={() => (
                   <button
                     data-tip="Save or Print DTR"
-                    className="p-4 rounded-md tooltip tooltip-bottom text-white text-sm font-[600] bg-neutral fixed bottom-4 right-4"
+                    className="p-4 text-xs md:text-sm rounded-md tooltip tooltip-top text-white font-[600] bg-neutral fixed bottom-4 right-4"
                   >
                     Download PDF
                   </button>
