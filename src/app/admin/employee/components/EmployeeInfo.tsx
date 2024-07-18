@@ -1,6 +1,7 @@
 // components/EmploymentInfo.tsx
-import { stat } from 'fs';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { db } from '@/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 interface EmploymentInfoProps {
   employeeId: string;
@@ -22,6 +23,28 @@ interface EmploymentInfoProps {
 const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
   employeeId, setEmployeeId, position, setPosition, department, setDepartment, branch, setBranch, startDate, setStartDate, status, setStatus, supervisor, setSupervisor
 }) => {
+  const [departments, setDepartments] = useState<string[]>([]);
+  const [branches, setBranches] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      const departmentsCollection = collection(db, 'departments');
+      const departmentSnapshot = await getDocs(departmentsCollection);
+      const departmentList = departmentSnapshot.docs.map(doc => doc.data().name);
+      setDepartments(departmentList);
+    };
+
+    const fetchBranches = async () => {
+      const branchesCollection = collection(db, 'branches');
+      const branchSnapshot = await getDocs(branchesCollection);
+      const branchList = branchSnapshot.docs.map(doc => doc.data().name);
+      setBranches(branchList);
+    };
+
+    fetchDepartments();
+    fetchBranches();
+  }, []);
+
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">Employment Info</h2>
@@ -41,14 +64,17 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
         required
         className="w-full p-2 mb-2 border rounded"
       />
-      <input
-        type="text"
+      <select
         onChange={(e) => setDepartment(e.target.value)}
         value={department}
-        placeholder="Department"
         required
         className="w-full p-2 mb-2 border rounded"
-      />
+      >
+        <option value="">Select Department</option>
+        {departments.map((dept, index) => (
+          <option key={index} value={dept}>{dept}</option>
+        ))}
+      </select>
       <select
         onChange={(e) => setBranch(e.target.value)}
         value={branch}
@@ -56,11 +82,12 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
         className="w-full p-2 mb-2 border rounded"
       >
         <option value="">Select Branch</option>
-        <option value="Branch 1">Branch 1</option>
-        <option value="Branch 2">Branch 2</option>
+        {branches.map((branch, index) => (
+          <option key={index} value={branch}>{branch}</option>
+        ))}
       </select>
       <div className="flex flex-col mb-2">
-        <label htmlFor="birthday" className="text-sm text-gray-500 mb-1">
+        <label htmlFor="startDate" className="text-sm text-gray-500 mb-1">
           Employment Start Date
         </label>
         <input

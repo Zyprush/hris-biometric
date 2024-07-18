@@ -50,6 +50,9 @@ const Department = () => {
                             <h2 className="text-lg font-semibold text-blue-600 mb-3 truncate text-center">{dept.name}</h2>
                             <div className="space-y-1 text-sm">
                                 <p className="text-gray-700">
+                                    <span className="font-medium">Total Employee:</span> 0
+                                </p>
+                                <p className="text-gray-700">
                                     <span className="font-medium">Present:</span> 0
                                 </p>
                                 <p className="text-gray-700">

@@ -145,7 +145,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
         return (
           <div>
             {editedEmployee.documentUrls && editedEmployee.documentUrls.length > 0 ? (
-              <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <ul className="flex flex-col gap-4">
                 {editedEmployee.documentUrls.map((url, index) => (
                   <DocumentListItem key={index} url={url} />
                 ))}
@@ -285,6 +285,7 @@ const DocumentListItem: React.FC<{ url: string }> = ({ url }) => {
     </li>
   );
 };
+
 
 export default Modal;
 export type { EmployeeDetails };
