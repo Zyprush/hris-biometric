@@ -1,16 +1,15 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { db } from '@/firebase';
-import { collection, getDocs, addDoc, query, where } from 'firebase/firestore';
+import { collection, getDocs, addDoc } from 'firebase/firestore';
 import { AdminRouteGuard } from '@/components/AdminRouteGuard';
 
 interface Department {
     id: string;
     name: string;
-    totalEmployees: number;
 }
 
-const DepartmentComponent = () => {
+const Department = () => {
     const [departments, setDepartments] = useState<Department[]>([]);
 
     useEffect(() => {
@@ -20,23 +19,11 @@ const DepartmentComponent = () => {
     const fetchDepartments = async () => {
         const departmentsCollection = collection(db, 'departments');
         const departmentsSnapshot = await getDocs(departmentsCollection);
-        const departmentsList = await Promise.all(departmentsSnapshot.docs.map(async doc => {
-            const departmentData = doc.data() as { name: string };
-            const totalEmployees = await fetchTotalEmployees(departmentData.name);
-            return {
-                id: doc.id,
-                name: departmentData.name,
-                totalEmployees
-            };
-        }));
+        const departmentsList = departmentsSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        } as Department));
         setDepartments(departmentsList);
-    };
-
-    const fetchTotalEmployees = async (departmentName: string): Promise<number> => {
-        const usersCollection = collection(db, 'users');
-        const q = query(usersCollection, where('department', '==', departmentName));
-        const usersSnapshot = await getDocs(q);
-        return usersSnapshot.size;
     };
 
     const addDepartment = async () => {
@@ -63,7 +50,7 @@ const DepartmentComponent = () => {
                             <h2 className="text-lg font-semibold text-blue-600 mb-3 truncate text-center">{dept.name}</h2>
                             <div className="space-y-1 text-sm">
                                 <p className="text-gray-700">
-                                    <span className="font-medium">Total Employee:</span> {dept.totalEmployees}
+                                    <span className="font-medium">Total Employee:</span> 0
                                 </p>
                                 <p className="text-gray-700">
                                     <span className="font-medium">Present:</span> 0
@@ -86,4 +73,4 @@ const DepartmentComponent = () => {
     )
 }
 
-export default DepartmentComponent;
+export default Department
