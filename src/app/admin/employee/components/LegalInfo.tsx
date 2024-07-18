@@ -20,6 +20,7 @@ const LegalDocuments: React.FC<LegalDocumentsProps> = ({
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">Legal Compliance and Documents</h2>
+      <h2 className="text-sm font-thin mb-4">Put &quot;N/A&quot; if not applicable</h2>
       <input
         type="text"
         onChange={(e) => setSss(e.target.value)}

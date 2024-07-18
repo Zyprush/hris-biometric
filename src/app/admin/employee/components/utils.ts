@@ -89,52 +89,60 @@ export const validateStep = (step: number, formData: any): ValidationResult => {
         return { isValid: false, errorMessage: "Supervisor is required." };
       return { isValid: true };
 
-    case 3: // Legal Compliance and Documents
-      if (formData.sss === "") {
-        return { isValid: false, errorMessage: "SSS number is required." };
+      case 3: // Legal Compliance and Documents
+      if (formData.sss === "" || formData.sss === "N/A") {
+        if (formData.sss === "") {
+          return { isValid: false, errorMessage: "SSS number is required." };
+        }
       } else if (!/^\d{10}$/.test(formData.sss)) {
         return {
           isValid: false,
           errorMessage: "SSS number must be exactly 10 digits.",
         };
       }
-
-      if (formData.philHealthNumber === "") {
-        return {
-          isValid: false,
-          errorMessage: "PhilHealth number is required.",
-        };
+    
+      if (formData.philHealthNumber === "" || formData.philHealthNumber === "N/A") {
+        if (formData.philHealthNumber === "") {
+          return {
+            isValid: false,
+            errorMessage: "PhilHealth number is required.",
+          };
+        }
       } else if (!/^\d{12}$/.test(formData.philHealthNumber)) {
         return {
           isValid: false,
           errorMessage: "PhilHealth number must be exactly 12 digits.",
         };
       }
-
-      if (formData.pagIbigNumber === "") {
-        return { isValid: false, errorMessage: "Pag-IBIG number is required." };
+    
+      if (formData.pagIbigNumber === "" || formData.pagIbigNumber === "N/A") {
+        if (formData.pagIbigNumber === "") {
+          return { isValid: false, errorMessage: "Pag-IBIG number is required." };
+        }
       } else if (!/^\d{12}$/.test(formData.pagIbigNumber)) {
         return {
           isValid: false,
           errorMessage: "Pag-IBIG number must be exactly 12 digits.",
         };
       }
-
-      if (formData.tinNumber === "") {
-        return { isValid: false, errorMessage: "TIN is required." };
+    
+      if (formData.tinNumber === "" || formData.tinNumber === "N/A") {
+        if (formData.tinNumber === "") {
+          return { isValid: false, errorMessage: "TIN is required." };
+        }
       } else if (!/^\d{14}$/.test(formData.tinNumber)) {
         return {
           isValid: false,
           errorMessage: "TIN must be exactly 14 digits.",
         };
       }
-
+    
       if (formData.documents === null) {
         return { isValid: false, errorMessage: "Documents are required." };
       }
-
+    
       return { isValid: true };
-
+    
     case 4: // Credentials
       if (!formData.autoGeneratePassword) {
         if (formData.password === "")
