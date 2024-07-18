@@ -1,8 +1,7 @@
 import { useHistoryStore } from "@/state/history";
 import { useUserStore } from "@/state/user";
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import { FaTimes, FaEdit, FaTrash, FaSave, FaUser, FaEnvelope, FaPhone, FaBriefcase, FaBuilding } from 'react-icons/fa';
+import { FaTimes, FaEdit, FaTrash, FaSave } from 'react-icons/fa';
 
 interface EmployeeDetails {
   id: string;
@@ -31,7 +30,6 @@ interface EmployeeDetails {
   tinNumber: string;
   role: string;
   documentUrls?: string[];
-  profilePicture?: string;
 }
 
 interface ModalProps {
@@ -47,12 +45,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
   const [editedEmployee, setEditedEmployee] = useState<EmployeeDetails | null>(null);
   const { userData } = useUserStore();
   const { addHistory } = useHistoryStore();
-
   useEffect(() => {
     if (isOpen && employee) {
       setEditedEmployee({ ...employee });
-      setIsEditing(false);
+      setIsEditing(false); // Reset edit mode when modal opens or employee changes
     }
+
+    // Cleanup function to reset state when component unmounts or modal closes
     return () => {
       setIsEditing(false);
       setEditedEmployee(null);
@@ -61,9 +60,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
 
   if (!isOpen || !employee || !editedEmployee) return null;
 
-  const handleEdit = () => setIsEditing(true);
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
   const handleSave = () => {
     onEdit(editedEmployee);
+    // add to history
     const currentDate = new Date().toISOString();
     addHistory({
       adminId: userData?.id,
@@ -82,23 +85,23 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setEditedEmployee(prev => prev ? { ...prev, [name]: value } : null);
+    setEditedEmployee(prev => ({ ...prev!, [name]: value }));
   };
 
   const handleCloseModal = () => {
-    setIsEditing(false);
+    setIsEditing(false); // Reset edit mode when closing the modal
     onClose();
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-black bg-opacity-50">
-      <div className="relative w-full max-w-8xl mx-9 my-6">
+      <div className="relative w-full max-w-4xl mx-auto my-6">
         <div className="relative flex flex-col w-full bg-white border-0 rounded-lg shadow-lg outline-none focus:outline-none">
           {/* Header */}
-          <div className="flex items-center justify-between p-5 bg-gray-100 border-b border-solid border-gray-300 rounded-t">
-            <h3 className="text-3xl font-bold text-gray-900">{employee.name}</h3>
+          <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t">
+            <h3 className="text-3xl font-semibold text-gray-900">{employee.name}</h3>
             <button
-              className="p-1 ml-auto text-gray-900 text-3xl leading-none font-semibold outline-none focus:outline-none"
+              className="p-1 ml-auto bg-transparent border-0 text-gray-900 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
               onClick={handleCloseModal}
             >
               <FaTimes />
@@ -106,68 +109,29 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
           </div>
           {/* Body */}
           <div className="relative p-6 flex-auto overflow-y-auto max-h-[70vh]">
-            <div className="flex flex-col md:flex-row">
-              {/* Left column - Photo and basic info */}
-              <div className="w-full md:w-1/3 pr-4 mb-6 md:mb-0">
-                <div className="mb-6 flex justify-center">
-                  <div className="relative w-48 h-48 mx-auto">
-                    <Image
-                      src={editedEmployee.profilePicture || "/img/profile-admin.jpg"}
-                      alt={editedEmployee.name}
-                      layout="fill"
-                      objectFit="cover"
-                      className="rounded-full"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-3 m-9">
-                  <InfoItem icon={<FaBriefcase />} label="Position" value={editedEmployee.position} />
-                  <InfoItem icon={<FaBuilding />} label="Department" value={editedEmployee.department} />
-                  <InfoItem icon={<FaEnvelope />} label="Email" value={editedEmployee.email} />
-                  <InfoItem icon={<FaPhone />} label="Phone" value={editedEmployee.phone} />
-                </div>
-              </div>
-              {/* Right column - Detailed info */}
-              <div className="w-full md:w-2/3">
-                <h4 className="text-xl font-semibold text-gray-900 mb-4">Personal Information</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <DetailItem label="Employee ID" value={editedEmployee.employeeId} isEditing={isEditing} onChange={handleInputChange} />
-                  <DetailItem label="Birthday" value={editedEmployee.birthday} isEditing={isEditing} onChange={handleInputChange} />
-                  <DetailItem label="Gender" value={editedEmployee.gender} isEditing={isEditing} onChange={handleInputChange} />
-                  <DetailItem label="Nationality" value={editedEmployee.nationality} isEditing={isEditing} onChange={handleInputChange} />
-                  <DetailItem label="Current Address" value={editedEmployee.currentAddress} isEditing={isEditing} onChange={handleInputChange} />
-                  <DetailItem label="Permanent Address" value={editedEmployee.permanentAddress} isEditing={isEditing} onChange={handleInputChange} />
-                </div>
-
-                <h4 className="text-xl font-semibold text-gray-900 mt-6 mb-4">Employment Details</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <DetailItem label="Branch" value={editedEmployee.branch} isEditing={isEditing} onChange={handleInputChange} />
-                  <DetailItem label="Start Date" value={editedEmployee.startDate} isEditing={isEditing} onChange={handleInputChange} />
-                  <DetailItem label="Status" value={editedEmployee.status} isEditing={isEditing} onChange={handleInputChange} />
-                  <DetailItem label="Supervisor" value={editedEmployee.supervisor} isEditing={isEditing} onChange={handleInputChange} />
-                </div>
-
-                <h4 className="text-xl font-semibold text-gray-900 mt-6 mb-4">Government IDs</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <DetailItem label="SSS" value={editedEmployee.sss} isEditing={isEditing} onChange={handleInputChange} />
-                  <DetailItem label="PhilHealth Number" value={editedEmployee.philHealthNumber} isEditing={isEditing} onChange={handleInputChange} />
-                  <DetailItem label="Pag-IBIG Number" value={editedEmployee.pagIbigNumber} isEditing={isEditing} onChange={handleInputChange} />
-                  <DetailItem label="TIN Number" value={editedEmployee.tinNumber} isEditing={isEditing} onChange={handleInputChange} />
-                </div>
-
-                {editedEmployee.documentUrls && editedEmployee.documentUrls.length > 0 && (
-                  <div className="mt-6">
-                    <h4 className="text-xl font-semibold text-gray-900 mb-2">Documents</h4>
-                    <ul className="list-disc pl-5">
-                      {editedEmployee.documentUrls.map((url, index) => (
-                        <DocumentListItem key={index} url={url} />
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Object.entries(editedEmployee).map(([key, value]) => (
+                key !== 'id' && key !== 'documentUrls' && (
+                  <DetailItem
+                    key={key}
+                    label={key}
+                    value={value as string}
+                    isEditing={isEditing}
+                    onChange={handleInputChange}
+                  />
+                )
+              ))}
             </div>
+            {editedEmployee.documentUrls && editedEmployee.documentUrls.length > 0 && (
+              <div className="mt-4">
+                <h4 className="text-xl font-semibold text-gray-900">Documents</h4>
+                <ul className="list-disc pl-5">
+                  {editedEmployee.documentUrls.map((url, index) => (
+                    <DocumentListItem key={index} url={url} />
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
           {/* Footer */}
           <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
@@ -202,17 +166,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
   );
 };
 
-const InfoItem: React.FC<{ icon: React.ReactNode; label: string; value: string }> = ({ icon, label, value }) => (
-  <div className="flex items-center space-x-2">
-    <span className="text-gray-600">{icon}</span>
-    <span className="font-semibold text-gray-700">{label}:</span>
-    <span className="text-gray-800">{value}</span>
-  </div>
-);
-
-const DetailItem: React.FC<{
-  label: string;
-  value: string;
+const DetailItem: React.FC<{ 
+  label: string; 
+  value: string; 
   isEditing: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }> = ({ label, value, isEditing, onChange }) => (
@@ -224,10 +180,10 @@ const DetailItem: React.FC<{
         name={label}
         value={value}
         onChange={onChange}
-        className="border rounded px-2 py-1 w-full mt-1"
+        className="border rounded px-2 py-1 w-full"
       />
     ) : (
-      <span className="text-gray-800">{value}</span>
+      <span className="text-gray-600">{value}</span>
     )}
   </div>
 );
