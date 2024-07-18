@@ -50,6 +50,7 @@ const AddEmployee = () => {
   const [pagIbigNumber, setPagIbigNumber] = useState<string>("");
   const [tinNumber, setTinNumber] = useState<string>("");
   const [documents, setDocuments] = useState<FileList | null>(null);
+  const [profilePic, setProfilePic] = useState<File | null>(null);
 
   // Credentials
   const [autoGeneratePassword, setAutoGeneratePassword] = useState<boolean>(false);
@@ -91,6 +92,7 @@ const AddEmployee = () => {
         email,
         password,
         documents,
+        profilePic,
         formData: {
           name, nickname, gender, maritalStatus, nationality, currentAddress, permanentAddress, isPermanentSameAsCurrent, email, phone, birthday, emergencyContactName, emergencyContactPhone, emergencyContactAddress, position, department, startDate, employeeId,
           sss, philHealthNumber, pagIbigNumber, tinNumber, role, status, supervisor, branch
@@ -120,7 +122,7 @@ const AddEmployee = () => {
       case 1:
         return <PersonalInfo {...{ name, setName, nickname, setNickname, birthday, setBirthday, gender, setGender, maritalStatus, setMaritalStatus, nationality, setNationality, currentAddress, setCurrentAddress, permanentAddress, setPermanentAddress, isPermanentSameAsCurrent, setIsPermanentSameAsCurrent, phone, setPhone, email, setEmail, emergencyContactName, setEmergencyContactName, emergencyContactPhone, setEmergencyContactPhone, emergencyContactAddress, setEmergencyContactAddress }} />;
       case 2:
-        return <EmploymentInfo {...{ employeeId, setEmployeeId, position, setPosition, department, setDepartment, branch, setBranch, startDate, setStartDate, status, setStatus, supervisor, setSupervisor }} />;
+        return <EmploymentInfo {...{ employeeId, setEmployeeId, position, setPosition, department, setDepartment, branch, setBranch, startDate, setStartDate, status, setStatus, supervisor, setSupervisor, profilePic, setProfilePic }} />;
       case 3:
         return <LegalDocuments {...{ sss, setSss, philHealthNumber, setPhilHealthNumber, pagIbigNumber, setPagIbigNumber, tinNumber, setTinNumber, documents, setDocuments }} />;
       case 4:

@@ -10,6 +10,7 @@ interface SubmitParams {
   email: string;
   password: string;
   documents: FileList | null;
+  profilePic: File | null;
   formData: {
     name: string;
     nickname: string;
@@ -45,6 +46,7 @@ export const handleSubmit = async ({
   email,
   password,
   documents,
+  profilePic,
   formData,
 }: SubmitParams) => {
   const currentUser = auth.currentUser;
@@ -77,10 +79,22 @@ export const handleSubmit = async ({
         }
       }
 
+      let profilePicUrl = '';
+      if (profilePic) {
+        const profilePicRef = ref(storage, `profile_pictures/${newUser.uid}/${profilePic.name}`);
+        try {
+          const profilePicSnapshot = await uploadBytes(profilePicRef, profilePic);
+          profilePicUrl = await getDownloadURL(profilePicSnapshot.ref);
+        } catch (error) {
+          console.error("Error uploading profile picture: ", error);
+        }
+      }
+
       try {
         await setDoc(doc(db, "users", newUser.uid), {
           ...formData,
           documentUrls: uploadedDocumentUrls,
+          profilePicUrl,
         });
         console.log("Document successfully written!");
       } catch (firestoreError) {

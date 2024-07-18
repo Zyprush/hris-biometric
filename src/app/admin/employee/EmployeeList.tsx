@@ -70,6 +70,7 @@ const EmployeeList = () => {
             tinNumber: data.tinNumber || "",
             role: data.role || "",
             documentUrls: data.documentUrls || [],
+            profilePicUrl: data.profilePicUrl || "",
           } as EmployeeDetails;
         })
         .filter((employee) => employee.email !== ADMIN_EMAIL);

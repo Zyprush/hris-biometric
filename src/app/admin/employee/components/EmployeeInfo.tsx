@@ -18,10 +18,12 @@ interface EmploymentInfoProps {
   setStatus: (status: string) => void;
   supervisor: string;
   setSupervisor: (supervisor: string) => void;
+  profilePic: File | null;
+  setProfilePic: (profilePic: File | null) => void;
 }
 
 const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
-  employeeId, setEmployeeId, position, setPosition, department, setDepartment, branch, setBranch, startDate, setStartDate, status, setStatus, supervisor, setSupervisor
+  employeeId, setEmployeeId, position, setPosition, department, setDepartment, branch, setBranch, startDate, setStartDate, status, setStatus, supervisor, setSupervisor, profilePic, setProfilePic
 }) => {
   const [departments, setDepartments] = useState<string[]>([]);
   const [branches, setBranches] = useState<string[]>([]);
@@ -45,9 +47,21 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
     fetchBranches();
   }, []);
 
+  const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setProfilePic(e.target.files[0]);
+    }
+  };
+
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">Employment Info</h2>
+      <input
+        type="file"
+        onChange={handleProfilePicChange}
+        accept="image/*"
+        className="w-full p-2 mb-2 border rounded"
+      />
       <input
         type="text"
         onChange={(e) => setEmployeeId(e.target.value)}
