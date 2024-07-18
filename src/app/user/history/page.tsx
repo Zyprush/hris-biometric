@@ -54,7 +54,7 @@ const UserHistory = () => {
               </div>
             ) : (
               <span className="flex mx-auto text-xs font-semibold text-zinc-700 p-2 border rounded-lg gap-2 items-center">
-              <FaCommentAlt /> No {status} leave request!
+              <FaCommentAlt /> No history to display!
             </span>
             )}
             {loadingHistory ? <Loading /> : null}
