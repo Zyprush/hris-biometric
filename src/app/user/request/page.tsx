@@ -101,7 +101,7 @@ const Request = () => {
         setLoading(false);
       }
     },
-    [requests]
+    []
   );
 
   const statusButtons = useMemo(() => {
@@ -153,13 +153,13 @@ const Request = () => {
 
             <div className="flex flex-col rounded-md bg-white p-3 w-full md:max-w-[25rem]">
               {requests.length === 0 ? (
-                <span className="mx-auto text-xs font-semibold text-zinc-700 p-2 border rounded-lg flex gap-2 items-center">
+                <span className="flex mx-auto text-xs font-semibold text-zinc-700 p-2 border rounded-lg gap-2 items-center">
                   <FaCommentAlt /> No {status} leave request!
                 </span>
               ) : (
                 requests.map((request) => (
                   <div
-                    className="p-4 border-2 rounded-lg mb-4 flex justify-between bg-base"
+                    className="p-4 border-2 rounded-lg mb-4 flex justify-between bg-base h-auto"
                     key={request.id}
                   >
                     <div className="flex gap-2 items-start justify-start w-full flex-col">
@@ -183,11 +183,11 @@ const Request = () => {
                           </button>
                         )}
                       </div>
-                      <div className="text-sm text-zinc-500 leading-5 ml-1">
+                      <div className="text-xs text-zinc-500 h-full leading-5 ml-1">
                         {request.reason}
                       </div>
                       {request.remarks && (
-                        <div className="text-sm text-zinc-500 leading-5 ml-1 mt-2 items-start flex flex-col">
+                        <div className="text-xs text-zinc-500 leading-5 ml-1 mt-2 items-start flex flex-col">
                           <span className="font-semibold text-zinc-700 flex items-center">
                             Rejected <FaQuestion className="text-sm" />
                           </span>

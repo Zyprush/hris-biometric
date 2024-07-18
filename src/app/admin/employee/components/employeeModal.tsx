@@ -72,6 +72,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
       adminId: userData?.id,
       text: `${userData?.name} edited ${employee.name} account`,
       time: currentDate,
+      userId: employee?.id
     });
     setIsEditing(false);
   };

@@ -7,13 +7,14 @@ import {
   limit,
   orderBy,
   query,
+  where,
 } from "firebase/firestore";
 
 interface HistoryStore {
   history: Array<any> | null;
   loadingHistory: boolean;
   fetchHistory: () => Promise<void>;
-  fetchHistoryByUser: (userID: string) => Promise<void>;
+  fetchHistoryByUser: (userId: string) => Promise<void>;
   addHistory: (data: object) => Promise<void>;
 }
 
@@ -48,15 +49,16 @@ export const useHistoryStore = create<HistoryStore>((set) => ({
   },
 
 
-  fetchHistoryByUser: async (userID) => {
+  fetchHistoryByUser: async (userId) => {
     set({ loadingHistory: true });
     try {
-      const historyQuery = query(
+      const historyByUserQuery = query(
         collection(db, "history"),
+        where("userId", "==", userId),
         limit(50),
         orderBy("time", "desc")
       );
-      const historyDocSnap = await getDocs(historyQuery);
+      const historyDocSnap = await getDocs(historyByUserQuery);
       if (historyDocSnap) {
         set({
           history: historyDocSnap.docs.map((doc) => ({
