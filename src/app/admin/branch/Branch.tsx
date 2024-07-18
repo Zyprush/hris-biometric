@@ -1,16 +1,17 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { db } from '@/firebase';
-import { collection, getDocs, addDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, query, where } from 'firebase/firestore';
 import { AdminRouteGuard } from '@/components/AdminRouteGuard';
 
 interface Branch {
     id: string;
     name: string;
     location: string;
+    totalEmployees: number;
 }
 
-const Branch = () => {
+const BranchComponent = () => {
     const [branches, setBranches] = useState<Branch[]>([]);
 
     useEffect(() => {
@@ -20,11 +21,33 @@ const Branch = () => {
     const fetchBranches = async () => {
         const branchesCollection = collection(db, 'branches');
         const branchesSnapshot = await getDocs(branchesCollection);
-        const branchesList = branchesSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        } as Branch));
+        const branchesList = await Promise.all(branchesSnapshot.docs.map(async doc => {
+            const branchData = doc.data() as { name: string, location: string };
+            const totalEmployees = await fetchTotalEmployees(branchData.name);
+            const totalDepartments = await fetchTotalDepartments(branchData.name);
+            return {
+                id: doc.id,
+                name: branchData.name,
+                location: branchData.location,
+                totalEmployees,
+                totalDepartments
+            };
+        }));
         setBranches(branchesList);
+    };
+
+    const fetchTotalEmployees = async (branchName: string): Promise<number> => {
+        const usersCollection = collection(db, 'users');
+        const q = query(usersCollection, where('branch', '==', branchName));
+        const usersSnapshot = await getDocs(q);
+        return usersSnapshot.size;
+    };
+
+    const fetchTotalDepartments = async (branchName: string): Promise<number> => {
+        const departmentsCollection = collection(db, 'departments');
+        const q = query(departmentsCollection, where('branch', '==', branchName));
+        const departmentsSnapshot = await getDocs(q);
+        return departmentsSnapshot.size;
     };
 
     const addBranch = async () => {
@@ -55,10 +78,7 @@ const Branch = () => {
                                     <span className="font-medium">Location:</span> {branch.location}
                                 </p>
                                 <p className="text-gray-700">
-                                    <span className="font-medium">Employees:</span> 120
-                                </p>
-                                <p className="text-gray-700">
-                                    <span className="font-medium">Departments:</span> 10
+                                    <span className="font-medium">Employees:</span> {branch.totalEmployees}
                                 </p>
                             </div>
                         </div>
@@ -69,4 +89,4 @@ const Branch = () => {
     )
 }
 
-export default Branch
+export default BranchComponent;
