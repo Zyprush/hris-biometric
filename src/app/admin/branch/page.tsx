@@ -4,7 +4,7 @@ import {AdminRouteGuard} from "@/components/AdminRouteGuard";
 import AdminLayout from "@/components/AdminLayout";
 import { SignedIn } from "@/components/signed-in";
 import { useState } from "react";
-import { BsCashStack, BsFileMinus } from "react-icons/bs";
+import { BsBuilding, BsBuildingDash, BsBuildingFill, BsCashStack, BsFileMinus } from "react-icons/bs";
 import Department from "./Department";
 import Branch from "./Branch";
 
@@ -34,13 +34,13 @@ const AdminBranch = () => {
                   className={`btn join-item border-2 border-zinc-400 ${currentTab === "Department" ? "bg-primary text-white border-primary" : ""}`}
                   onClick={() => setCurrentTab("Department")}
                 >
-                  <BsCashStack className="text-base" /> Department
+                  <BsBuilding className="text-base" /> Department
                 </button>
                 <button
                   className={`btn join-item border-2 border-zinc-400 ${currentTab === "Branch" ? "bg-primary text-white border-primary" : ""}`}
                   onClick={() => setCurrentTab("Branch")}
                 >
-                  <BsFileMinus className="text-base" /> Branch
+                  <BsBuildingFill className="text-base" /> Branch
                 </button>
               </div>
               {renderContent()}
