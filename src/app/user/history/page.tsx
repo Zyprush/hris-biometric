@@ -22,7 +22,7 @@ const UserHistory = () => {
     <UserRouteGuard>
       <SignedIn>
         <UserLayout>
-          <div className="flex h-full w-full p-5">
+          <div className="flex h-auto w-full p-5">
             {history?.length ?? 0 > 0 ? (
               <div className="flex flex-col mx-auto border border-zinc-300 rounded-lg mt-5 overflow-x-auto scroll-container max-h-[32rem]">
                 <table className="table table-zebra max-w-[72rem]">

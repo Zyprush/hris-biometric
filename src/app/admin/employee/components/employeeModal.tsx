@@ -65,10 +65,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
 
   const handleEdit = () => setIsEditing(true);
 
-  const handleSave = () => {
+  const handleSave = async() => {
     onEdit(editedEmployee);
     const currentDate = new Date().toISOString();
-    addHistory({
+    await addHistory({
       adminId: userData?.id,
       text: `${userData?.name} edited ${employee.name} account`,
       time: currentDate,
