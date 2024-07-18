@@ -51,7 +51,7 @@ const AdminAttendance = () => {
                   className={`btn join-item border-2 border-zinc-400 ${currentTab === "Logs" ? "bg-primary text-white border-primary" : ""}`}
                   onClick={() => setCurrentTab("Logs")}
                 >
-                  <MdViewTimeline className="text-base" /> View Logs
+                  <MdViewTimeline className="text-base" /> Logs
                 </button>
               </div>
               {renderContent()}
