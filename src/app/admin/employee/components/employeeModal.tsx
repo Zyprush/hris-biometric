@@ -181,11 +181,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
               <div className="w-full md:w-1/3 mb-4 md:mb-0 md:mr-6">
                 <div className="rounded-lg p-4 flex items-center justify-center">
                   <div className="relative w-48 h-48 mx-auto">
-                    <Image
+                    <img
                       src={editedEmployee.profilePicUrl || "/img/profile-admin.jpg"}
                       alt={editedEmployee.name}
-                      layout="fill"
-                      objectFit="cover"
                       className="rounded-full"
                     />
                   </div>
