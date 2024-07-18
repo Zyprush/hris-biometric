@@ -1,7 +1,8 @@
 import { useHistoryStore } from "@/state/history";
 import { useUserStore } from "@/state/user";
 import React, { useState, useEffect } from "react";
-import { FaTimes, FaEdit, FaTrash, FaSave } from 'react-icons/fa';
+import { FaTimes, FaEdit, FaTrash, FaSave, FaUser, FaIdCard, FaAddressCard, FaBriefcase, FaFileAlt } from 'react-icons/fa';
+import Image from 'next/image';
 
 interface EmployeeDetails {
   id: string;
@@ -18,6 +19,7 @@ interface EmployeeDetails {
   emergencyContactName: string;
   emergencyContactPhone: string;
   emergencyContactAddress: string;
+  maritalStatus: string;
   position: string;
   department: string;
   branch: string;
@@ -30,6 +32,7 @@ interface EmployeeDetails {
   tinNumber: string;
   role: string;
   documentUrls?: string[];
+  profilePicture?: string;
 }
 
 interface ModalProps {
@@ -43,15 +46,15 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employee }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedEmployee, setEditedEmployee] = useState<EmployeeDetails | null>(null);
+  const [activeTab, setActiveTab] = useState('personal');
   const { userData } = useUserStore();
   const { addHistory } = useHistoryStore();
+
   useEffect(() => {
     if (isOpen && employee) {
       setEditedEmployee({ ...employee });
-      setIsEditing(false); // Reset edit mode when modal opens or employee changes
+      setIsEditing(false);
     }
-
-    // Cleanup function to reset state when component unmounts or modal closes
     return () => {
       setIsEditing(false);
       setEditedEmployee(null);
@@ -60,13 +63,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
 
   if (!isOpen || !employee || !editedEmployee) return null;
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
+  const handleEdit = () => setIsEditing(true);
 
   const handleSave = () => {
     onEdit(editedEmployee);
-    // add to history
     const currentDate = new Date().toISOString();
     addHistory({
       adminId: userData?.id,
@@ -89,8 +89,74 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
   };
 
   const handleCloseModal = () => {
-    setIsEditing(false); // Reset edit mode when closing the modal
+    setIsEditing(false);
     onClose();
+  };
+
+  const tabs = [
+    { id: 'personal', label: 'Personal', icon: FaUser },
+    { id: 'contact', label: 'Contact', icon: FaAddressCard },
+    { id: 'employment', label: 'Employment', icon: FaBriefcase },
+    { id: 'documents', label: 'Documents', icon: FaFileAlt },
+  ];
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'personal':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <DetailItem label="name" value={editedEmployee.name} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="nickname" value={editedEmployee.nickname} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="birthday" value={editedEmployee.birthday} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="gender" value={editedEmployee.gender} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="nationality" value={editedEmployee.nationality} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="maritalStatus" value={editedEmployee.maritalStatus} isEditing={isEditing} onChange={handleInputChange} />
+          </div>
+        );
+      case 'contact':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <DetailItem label="email" value={editedEmployee.email} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="phone" value={editedEmployee.phone} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="currentAddress" value={editedEmployee.currentAddress} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="permanentAddress" value={editedEmployee.permanentAddress} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="emergencyContactName" value={editedEmployee.emergencyContactName} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="emergencyContactPhone" value={editedEmployee.emergencyContactPhone} isEditing={isEditing} onChange={handleInputChange} />
+          </div>
+        );
+      case 'employment':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <DetailItem label="employeeId" value={editedEmployee.employeeId} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="position" value={editedEmployee.position} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="department" value={editedEmployee.department} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="branch" value={editedEmployee.branch} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="startDate" value={editedEmployee.startDate} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="status" value={editedEmployee.status} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="supervisor" value={editedEmployee.supervisor} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="sss" value={editedEmployee.sss} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="philHealthNumber" value={editedEmployee.philHealthNumber} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="pagIbigNumber" value={editedEmployee.pagIbigNumber} isEditing={isEditing} onChange={handleInputChange} />
+            <DetailItem label="tinNumber" value={editedEmployee.tinNumber} isEditing={isEditing} onChange={handleInputChange} />
+          </div>
+        );
+      case 'documents':
+        return (
+          <div>
+            {editedEmployee.documentUrls && editedEmployee.documentUrls.length > 0 ? (
+              <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {editedEmployee.documentUrls.map((url, index) => (
+                  <DocumentListItem key={index} url={url} />
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-600">No documents available.</p>
+            )}
+          </div>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -98,10 +164,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
       <div className="relative w-full max-w-4xl mx-auto my-6">
         <div className="relative flex flex-col w-full bg-white border-0 rounded-lg shadow-lg outline-none focus:outline-none">
           {/* Header */}
-          <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t">
-            <h3 className="text-3xl font-semibold text-gray-900">{employee.name}</h3>
+          <div className="flex items-center justify-between p-5 border-b border-solid border-gray-200 rounded-t bg-gray-100">
+            <h3 className="text-3xl font-semibold text-gray-900">{editedEmployee.name}</h3>
             <button
-              className="p-1 ml-auto bg-transparent border-0 text-gray-900 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+              className="p-1 ml-auto bg-transparent border-0 text-gray-600 float-right text-3xl leading-none font-semibold outline-none focus:outline-none hover:text-gray-900 transition-colors duration-200"
               onClick={handleCloseModal}
             >
               <FaTimes />
@@ -109,32 +175,51 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
           </div>
           {/* Body */}
           <div className="relative p-6 flex-auto overflow-y-auto max-h-[70vh]">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(editedEmployee).map(([key, value]) => (
-                key !== 'id' && key !== 'documentUrls' && (
-                  <DetailItem
-                    key={key}
-                    label={key}
-                    value={value as string}
-                    isEditing={isEditing}
-                    onChange={handleInputChange}
-                  />
-                )
-              ))}
-            </div>
-            {editedEmployee.documentUrls && editedEmployee.documentUrls.length > 0 && (
-              <div className="mt-4">
-                <h4 className="text-xl font-semibold text-gray-900">Documents</h4>
-                <ul className="list-disc pl-5">
-                  {editedEmployee.documentUrls.map((url, index) => (
-                    <DocumentListItem key={index} url={url} />
-                  ))}
-                </ul>
+            <div className="flex flex-col md:flex-row">
+              {/* Profile Picture */}
+              <div className="w-full md:w-1/3 mb-4 md:mb-0 md:mr-6">
+                <div className="rounded-lg p-4 flex items-center justify-center">
+                  <div className="relative w-48 h-48 mx-auto">
+                    <Image
+                      src={editedEmployee.profilePicture || "/img/profile-admin.jpg"}
+                      alt={editedEmployee.name}
+                      layout="fill"
+                      objectFit="cover"
+                      className="rounded-full"
+                    />
+                  </div>
+                </div>
+                <div className="mt-4 text-center">
+                  <h4 className="text-xl font-semibold">{editedEmployee.name}</h4>
+                  <p className="text-gray-600">{editedEmployee.position}</p>
+                </div>
               </div>
-            )}
+              {/* Tabs and Employee Details */}
+              <div className="w-full md:w-2/3">
+                <div className="mb-4 border-b border-gray-200">
+                  <ul className="flex flex-wrap -mb-px">
+                    {tabs.map((tab) => (
+                      <li className="mr-2" key={tab.id}>
+                        <button
+                          className={`inline-flex items-center py-2 px-4 text-sm font-medium text-center rounded-t-lg border-b-2 ${activeTab === tab.id
+                            ? 'text-blue-600 border-blue-600'
+                            : 'text-gray-500 border-transparent hover:text-gray-600 hover:border-gray-300'
+                            }`}
+                          onClick={() => setActiveTab(tab.id)}
+                        >
+                          <tab.icon className="mr-2" />
+                          {tab.label}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                {renderTabContent()}
+              </div>
+            </div>
           </div>
           {/* Footer */}
-          <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
+          <div className="flex items-center justify-end p-6 border-t border-solid border-gray-200 rounded-b bg-gray-50">
             {isEditing ? (
               <button
                 className="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-4 mb-1 ease-linear transition-all duration-150 flex items-center"
@@ -166,21 +251,21 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
   );
 };
 
-const DetailItem: React.FC<{ 
-  label: string; 
-  value: string; 
+const DetailItem: React.FC<{
+  label: string;
+  value: string;
   isEditing: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }> = ({ label, value, isEditing, onChange }) => (
   <div className="mb-2">
-    <span className="font-semibold text-gray-700">{label}: </span>
+    <span className="font-semibold text-gray-700 capitalize">{label.replace(/([A-Z])/g, ' $1').trim()}: </span>
     {isEditing ? (
       <input
         type="text"
         name={label}
         value={value}
         onChange={onChange}
-        className="border rounded px-2 py-1 w-full"
+        className="border rounded px-2 py-1 w-full mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
       />
     ) : (
       <span className="text-gray-600">{value}</span>
@@ -192,9 +277,9 @@ const DocumentListItem: React.FC<{ url: string }> = ({ url }) => {
   const decodedUrl = decodeURIComponent(url);
   const fileName = decodedUrl.split('/').pop()?.split('?')[0] || 'Unknown Document';
   return (
-    <li className="text-blue-500 hover:underline">
-      <a href={url} target="_blank" rel="noopener noreferrer">
-        {fileName}
+    <li className="bg-gray-100 p-3 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+      <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline flex items-center">
+        <FaFileAlt className="mr-2" /> {fileName}
       </a>
     </li>
   );

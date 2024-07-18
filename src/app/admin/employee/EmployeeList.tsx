@@ -37,6 +37,7 @@ const EmployeeList = () => {
           gender: data.gender || '',
           nationality: data.nationality || '',
           currentAddress: data.currentAddress || '',
+          maritalStatus: data.maritalStatus || '',
           permanentAddress: data.permanentAddress || '',
           emergencyContactName: data.emergencyContactName || '',
           emergencyContactPhone: data.emergencyContactPhone || '',
