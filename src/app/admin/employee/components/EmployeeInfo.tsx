@@ -56,12 +56,17 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">Employment Info</h2>
-      <input
-        type="file"
-        onChange={handleProfilePicChange}
-        accept="image/*"
-        className="w-full p-2 mb-2 border rounded"
-      />
+      <div className='flex flex-col mb-2'>
+        <label htmlFor="startDate" className="text-sm text-gray-500 mb-1">
+          Choose profile
+        </label>
+        <input
+          type="file"
+          onChange={handleProfilePicChange}
+          accept="image/*"
+          className="w-full p-2 mb-2 border rounded"
+        />
+      </div>
       <input
         type="text"
         onChange={(e) => setEmployeeId(e.target.value)}
