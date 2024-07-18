@@ -1,39 +1,43 @@
 "use client";
-
 import AdminLayout from "@/components/AdminLayout";
-import Loading from "@/components/Loading";
+import Loading from "@/components/bioLoading";
 import { SignedIn } from "@/components/signed-in";
-import { auth } from "@/firebase";
-import { useRouter } from "next/navigation";
+import { useHistoryStore } from "@/state/history";
+import { format } from "date-fns";
 import { useEffect } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
 
 const AdminHistory = () => {
-  const [user, loading] = useAuthState(auth);
-  const router = useRouter();
-
-  const setAuthChecked = (isChecked: boolean) => {
-    console.log("Auth checked:", isChecked);
-  };
-
+  const { history, loadingHistory, fetchHistory } = useHistoryStore();
   useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        console.log("User not authenticated. Redirecting to sign-in page...");
-        router.push("../sign-in");
-      }
-      setAuthChecked(true); 
-    }
-  }, [user, loading, router]);
-
-  if (loading) {
-    return <Loading />;
-  }
+    fetchHistory();
+  }, [fetchHistory]);
 
   return (
     <SignedIn>
       <AdminLayout>
-        <div>History</div>
+        <div className="flex h-full w-full p-5">
+          <div className="flex flex-col mx-auto border border-zinc-300 rounded-lg mt-5 overflow-x-auto scroll-container max-h-[32rem]">
+            <table className="table table-zebra max-w-[72rem]">
+              <thead>
+                <tr className="text-sm text-zinc-500 font-semibold">
+                  <th className="">Date</th>
+                  <th className="">Time</th>
+                  <th className="">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {history?.map((h) => (
+                  <tr key={h.id} className="hover">
+                    <td>{h?.time ? format(new Date(h?.time), "MMM dd, yyyy") : ""}</td>
+                    <td>{h?.time ? format(new Date(h?.time), "hh:mm aaa") : ""}</td>
+                    <td>{h.text}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {loadingHistory && <Loading />}
+          </div>
+        </div>
       </AdminLayout>
     </SignedIn>
   );

@@ -11,6 +11,8 @@ import { errorToast, successToast } from "@/components/toast";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebase";
 import { ToastContainer } from "react-toastify";
+import { useHistoryStore } from "@/state/history";
+import { useUserStore } from "@/state/user";
 
 const LeaveModal = ({
   setShowModal,
@@ -22,6 +24,8 @@ const LeaveModal = ({
   const [reason, setReason] = useState<string>("");
   const [respond, setRespond] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const { addHistory } = useHistoryStore();
+  const { userData } = useUserStore();
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -37,13 +41,27 @@ const LeaveModal = ({
         } else {
           updateData.status = "rejected";
           updateData.remarks = reason;
+          const currentDate = new Date().toISOString();
           await updateDoc(docRef, updateData);
+          addHistory({
+            userId: curRequest.userId,
+            adminId: userData?.id,
+            text: `${userData?.name} rejected ${curRequest.submittedBy} leave request`,
+            time: currentDate,
+          });
           successToast("Request Rejected!");
           setShowModal(false);
         }
       } else {
         updateData.status = "approved";
         await updateDoc(docRef, updateData);
+        const currentDate = new Date().toISOString();
+        addHistory({
+          userId: curRequest.userId,
+          adminId: userData?.id,
+          text: `${userData?.name} approved ${curRequest.submittedBy} leave request`,
+          time: currentDate,
+        });
         successToast("Request Approved!");
         setShowModal(false);
       }
