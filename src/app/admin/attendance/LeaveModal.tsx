@@ -43,7 +43,7 @@ const LeaveModal = ({
           updateData.remarks = reason;
           const currentDate = new Date().toISOString();
           await updateDoc(docRef, updateData);
-          addHistory({
+          await addHistory({
             userId: curRequest.userId,
             adminId: userData?.id,
             text: `${userData?.name} rejected ${curRequest.submittedBy} leave request`,
@@ -56,7 +56,7 @@ const LeaveModal = ({
         updateData.status = "approved";
         await updateDoc(docRef, updateData);
         const currentDate = new Date().toISOString();
-        addHistory({
+        await addHistory({
           userId: curRequest.userId,
           adminId: userData?.id,
           text: `${userData?.name} approved ${curRequest.submittedBy} leave request`,

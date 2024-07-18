@@ -1,18 +1,33 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { collection, getDocs, doc, deleteDoc, updateDoc, getDoc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  doc,
+  deleteDoc,
+  updateDoc,
+  getDoc,
+  setDoc,
+} from "firebase/firestore";
 import { db } from "@/firebase";
 import Modal from "./components/employeeModal";
-import {AdminRouteGuard} from "@/components/AdminRouteGuard";
-import { toast } from 'react-toastify';
+import { AdminRouteGuard } from "@/components/AdminRouteGuard";
+import { toast } from "react-toastify";
 import { EmployeeDetails } from "./components/employeeModal";
+import { useHistoryStore } from "@/state/history";
+import { useUserStore } from "@/state/user";
 
 const EmployeeList = () => {
+  const { userData } = useUserStore();
+  const { addHistory } = useHistoryStore();
   const [employees, setEmployees] = useState<EmployeeDetails[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filteredEmployees, setFilteredEmployees] = useState<EmployeeDetails[]>([]);
-  const [selectedEmployee, setSelectedEmployee] = useState<EmployeeDetails | null>(null);
+  const [filteredEmployees, setFilteredEmployees] = useState<EmployeeDetails[]>(
+    []
+  );
+  const [selectedEmployee, setSelectedEmployee] =
+    useState<EmployeeDetails | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const ADMIN_EMAIL = "hrisbiometric@gmail.com";
@@ -24,38 +39,40 @@ const EmployeeList = () => {
   const fetchEmployees = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "users"));
-      const fetchedEmployees = querySnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          name: data.name || '',
-          nickname: data.nickname || '',
-          employeeId: data.employeeId || '',
-          email: data.email || '',
-          phone: data.phone || '',
-          birthday: data.birthday || '',
-          gender: data.gender || '',
-          nationality: data.nationality || '',
-          currentAddress: data.currentAddress || '',
-          maritalStatus: data.maritalStatus || '',
-          permanentAddress: data.permanentAddress || '',
-          emergencyContactName: data.emergencyContactName || '',
-          emergencyContactPhone: data.emergencyContactPhone || '',
-          emergencyContactAddress: data.emergencyContactAddress || '',
-          position: data.position || '',
-          department: data.department || '',
-          branch: data.branch || '',
-          startDate: data.startDate || '',
-          status: data.status || '',
-          supervisor: data.supervisor || '',
-          sss: data.sss || '',
-          philHealthNumber: data.philHealthNumber || '',
-          pagIbigNumber: data.pagIbigNumber || '',
-          tinNumber: data.tinNumber || '',
-          role: data.role || '',
-          documentUrls: data.documentUrls || [],
-        } as EmployeeDetails;
-      }).filter((employee) => employee.email !== ADMIN_EMAIL);
+      const fetchedEmployees = querySnapshot.docs
+        .map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            name: data.name || "",
+            nickname: data.nickname || "",
+            employeeId: data.employeeId || "",
+            email: data.email || "",
+            phone: data.phone || "",
+            birthday: data.birthday || "",
+            gender: data.gender || "",
+            nationality: data.nationality || "",
+            currentAddress: data.currentAddress || "",
+            maritalStatus: data.maritalStatus || "",
+            permanentAddress: data.permanentAddress || "",
+            emergencyContactName: data.emergencyContactName || "",
+            emergencyContactPhone: data.emergencyContactPhone || "",
+            emergencyContactAddress: data.emergencyContactAddress || "",
+            position: data.position || "",
+            department: data.department || "",
+            branch: data.branch || "",
+            startDate: data.startDate || "",
+            status: data.status || "",
+            supervisor: data.supervisor || "",
+            sss: data.sss || "",
+            philHealthNumber: data.philHealthNumber || "",
+            pagIbigNumber: data.pagIbigNumber || "",
+            tinNumber: data.tinNumber || "",
+            role: data.role || "",
+            documentUrls: data.documentUrls || [],
+          } as EmployeeDetails;
+        })
+        .filter((employee) => employee.email !== ADMIN_EMAIL);
       setEmployees(fetchedEmployees);
       setFilteredEmployees(fetchedEmployees);
     } catch (error) {
@@ -92,8 +109,16 @@ const EmployeeList = () => {
     try {
       const employeeRef = doc(db, "users", updatedEmployee.id);
       await updateDoc(employeeRef, updatedEmployee);
-      setEmployees(employees.map(emp => emp.id === updatedEmployee.id ? updatedEmployee : emp));
-      setFilteredEmployees(filteredEmployees.map(emp => emp.id === updatedEmployee.id ? updatedEmployee : emp));
+      setEmployees(
+        employees.map((emp) =>
+          emp.id === updatedEmployee.id ? updatedEmployee : emp
+        )
+      );
+      setFilteredEmployees(
+        filteredEmployees.map((emp) =>
+          emp.id === updatedEmployee.id ? updatedEmployee : emp
+        )
+      );
       toast.success("Employee updated successfully");
     } catch (error) {
       console.error("Error updating employee: ", error);
@@ -110,13 +135,21 @@ const EmployeeList = () => {
         await setDoc(doc(db, "former_employees", employeeId), {
           ...employeeData,
           documentUrls: documentUrls,
-          deletedAt: new Date()
+          deletedAt: new Date(),
         });
 
         await deleteDoc(doc(db, "users", employeeId));
-
-        setEmployees(employees.filter(emp => emp.id !== employeeId));
-        setFilteredEmployees(filteredEmployees.filter(emp => emp.id !== employeeId));
+        const currentDate = new Date().toISOString();
+        await addHistory({
+          adminId: userData?.id,
+          text: `${userData?.name} deleted ${employeeData?.name} account`,
+          userId: employeeData?.id,
+          time: currentDate,
+        });
+        setEmployees(employees.filter((emp) => emp.id !== employeeId));
+        setFilteredEmployees(
+          filteredEmployees.filter((emp) => emp.id !== employeeId)
+        );
 
         toast.success("Employee moved to former employees successfully");
       } else {
@@ -141,13 +174,18 @@ const EmployeeList = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="input input-sm input-bordered rounded-sm flex-grow"
               />
-              <button onClick={handleSearch} className="btn rounded-md btn-sm btn-primary text-white">
+              <button
+                onClick={handleSearch}
+                className="btn rounded-md btn-sm btn-primary text-white"
+              >
                 Search
               </button>
             </div>
             <button
               onClick={handleViewDetails}
-              className={`btn btn-sm rounded-md text-white ml-2 ${selectedEmployee ? 'btn-primary' : 'btn-disabled'}`}
+              className={`btn btn-sm rounded-md text-white ml-2 ${
+                selectedEmployee ? "btn-primary" : "btn-disabled"
+              }`}
               disabled={!selectedEmployee}
             >
               View Details
@@ -173,11 +211,19 @@ const EmployeeList = () => {
                   <tr
                     key={employee.id}
                     onClick={() => handleRowClick(employee)}
-                    className={`cursor-pointer ${selectedEmployee?.id === employee.id ? 'bg-blue-100 hover:bg-blue-200' : 'hover:bg-gray-100'}`}
+                    className={`cursor-pointer ${
+                      selectedEmployee?.id === employee.id
+                        ? "bg-blue-100 hover:bg-blue-200"
+                        : "hover:bg-gray-100"
+                    }`}
                   >
                     <td className="px-4 py-2 text-xs">{employee.employeeId}</td>
-                    <td className="px-4 py-2 text-xs text-gray-600">{employee.name}</td>
-                    <td className="px-4 py-2 text-xs text-gray-600">{employee.status}</td>
+                    <td className="px-4 py-2 text-xs text-gray-600">
+                      {employee.name}
+                    </td>
+                    <td className="px-4 py-2 text-xs text-gray-600">
+                      {employee.status}
+                    </td>
                   </tr>
                 ))
               )}
@@ -189,7 +235,9 @@ const EmployeeList = () => {
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           onEdit={handleEdit}
-          onDelete={(employeeId) => handleDelete(employeeId, selectedEmployee?.documentUrls || [])}
+          onDelete={(employeeId) =>
+            handleDelete(employeeId, selectedEmployee?.documentUrls || [])
+          }
           employee={selectedEmployee}
         />
       </div>

@@ -33,9 +33,20 @@ const config: Config = {
     },
   },
   daisyui: {
-    themes: ["corporate"],
+    themes: [
+      {
+        mytheme: {
+          primary: "#135D66",
+          secondary: "#77B0AA",
+          accent: "#E3FEF7",
+          neutral: "#003C43",
+          "base-100": "#ffffff",
+        },
+      },
+      "corporate",
+    ],
   },
-  plugins: [require("daisyui"),addVariablesForColors],
+  plugins: [require("daisyui"), addVariablesForColors],
 };
 
 function addVariablesForColors({ addBase, theme }: any) {
@@ -43,7 +54,7 @@ function addVariablesForColors({ addBase, theme }: any) {
   let newVars = Object.fromEntries(
     Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
   );
- 
+
   addBase({
     ":root": newVars,
   });

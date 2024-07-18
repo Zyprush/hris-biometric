@@ -143,7 +143,7 @@ const Account = () => {
           <button
             onClick={handleResendVerification}
             disabled={isResendingVerification}
-            className={`mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ${
+            className={`mt-4 px-4 py-2 flex bg-blue-600 border-blue-600 text-white btn-sm btn rounded-md mr-2 hover:bg-blue-800 ${
               isResendingVerification ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
