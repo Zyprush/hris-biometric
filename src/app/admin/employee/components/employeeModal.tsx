@@ -1,7 +1,7 @@
 import { useHistoryStore } from "@/state/history";
 import { useUserStore } from "@/state/user";
 import React, { useState, useEffect } from "react";
-import { FaTimes, FaEdit, FaTrash, FaSave, FaUser, FaAddressCard, FaBriefcase, FaFileAlt } from 'react-icons/fa';
+import { FaTimes, FaEdit, FaTrash, FaSave, FaUser, FaIdCard, FaAddressCard, FaBriefcase, FaFileAlt } from 'react-icons/fa';
 import Image from 'next/image';
 
 interface EmployeeDetails {
@@ -65,7 +65,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
 
   const handleEdit = () => setIsEditing(true);
 
-  const handleSave = async () => {
+  const handleSave = async() => {
     onEdit(editedEmployee);
     const currentDate = new Date().toISOString();
     await addHistory({
@@ -200,7 +200,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
                     {tabs.map((tab) => (
                       <li className="mr-2" key={tab.id}>
                         <button
-                          className={`inline-flex items-center p-4 border-b-2 rounded-t-lg ${activeTab === tab.id ? 'border-blue-500 text-blue-500' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                          className={`inline-flex items-center py-2 px-4 text-sm font-medium text-center rounded-t-lg border-b-2 ${activeTab === tab.id
+                            ? 'text-blue-600 border-blue-600'
+                            : 'text-gray-500 border-transparent hover:text-gray-600 hover:border-gray-300'
                             }`}
                           onClick={() => setActiveTab(tab.id)}
                         >
@@ -211,42 +213,35 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
                     ))}
                   </ul>
                 </div>
-                <div>{renderTabContent()}</div>
+                {renderTabContent()}
               </div>
             </div>
           </div>
           {/* Footer */}
-          <div className="flex items-center justify-end p-6 border-t border-solid border-gray-200 rounded-b bg-gray-100">
-            <button
-              className="bg-red-500 text-white active:bg-red-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-4 transition-all duration-150"
-              type="button"
-              onClick={handleDelete}
-            >
-              Delete
-            </button>
-            {!isEditing ? (
+          <div className="flex items-center justify-end p-6 border-t border-solid border-gray-200 rounded-b bg-gray-50">
+            {isEditing ? (
               <button
-                className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none transition-all duration-150"
-                type="button"
-                onClick={handleEdit}
-              >
-                Edit
-              </button>
-            ) : (
-              <button
-                className="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none transition-all duration-150"
+                className="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-4 mb-1 ease-linear transition-all duration-150 flex items-center"
                 type="button"
                 onClick={handleSave}
               >
-                Save
+                <FaSave className="mr-2" /> Save
+              </button>
+            ) : (
+              <button
+                className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-4 mb-1 ease-linear transition-all duration-150 flex items-center"
+                type="button"
+                onClick={handleEdit}
+              >
+                <FaEdit className="mr-2" /> Edit
               </button>
             )}
             <button
-              className="text-gray-600 bg-transparent border-0 font-bold uppercase text-sm px-6 py-3 rounded outline-none focus:outline-none ml-4 hover:text-gray-900 transition-colors duration-200"
+              className="bg-red-500 text-white active:bg-red-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 flex items-center"
               type="button"
-              onClick={handleCloseModal}
+              onClick={handleDelete}
             >
-              Cancel
+              <FaTrash className="mr-2" /> Delete
             </button>
           </div>
         </div>
@@ -288,6 +283,7 @@ const DocumentListItem: React.FC<{ url: string }> = ({ url }) => {
     </li>
   );
 };
+
 
 export default Modal;
 export type { EmployeeDetails };
