@@ -53,7 +53,7 @@ const DepartmentComponent = () => {
             <div className="p-4 relative">
                 <button
                     onClick={addDepartment}
-                    className="absolute top-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    className="absolute top-4 right-4 bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded"
                 >
                     Add Department
                 </button>

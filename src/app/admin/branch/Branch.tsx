@@ -65,7 +65,7 @@ const BranchComponent = () => {
             <div className="p-4 relative">
                 <button
                     onClick={addBranch}
-                    className="absolute top-4 right-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                    className="absolute top-4 right-4 bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded"
                 >
                     Add Branch
                 </button>
