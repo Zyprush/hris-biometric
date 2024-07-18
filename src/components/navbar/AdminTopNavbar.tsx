@@ -119,21 +119,7 @@ const AdminTopNavbar: React.FC<NavbarProps> = ({ children }) => {
               label="History"
               isActive={pathname === "/admin/history"}
             />
-            <NavLink
-              href="/admin/account"
-              icon={FaUserCircle}
-              label="Account"
-              isActive={pathname === "/admin/account"}
-            />
-            <button
-              className="navlink text-zinc-700"
-              onClick={() => {
-                auth.signOut();
-                router.push("/sign-in");
-              }}
-            >
-              <FaSignOutAlt className="text-xl" /> Logout
-            </button>
+           
           </motion.nav>
         )}
       </AnimatePresence>
