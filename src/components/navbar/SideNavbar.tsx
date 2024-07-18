@@ -1,15 +1,18 @@
 import Link from "next/link";
-import React, { useState, ReactNode } from "react";
+import React, { useState, ReactNode, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
 import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
-import { auth } from "@/firebase";
+import { auth, db } from "@/firebase";
 import profileMale from "../../../public/img/profile-male.jpg"
 import Image from "next/image";
 import { GrFingerPrint } from "react-icons/gr";
 import Account from "./Account";
+import { UserRouteGuard } from "../UserRouteGuard";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { doc, getDoc } from "firebase/firestore";
 
 
 interface NavbarProps {
@@ -33,9 +36,8 @@ const NavLink: React.FC<NavLinkProps> = ({
 }) => (
   <Link
     href={href}
-    className={`navlink ${
-      isActive ? "bg-neutral text-white" : "text-zinc-700"
-    }`}
+    className={`navlink ${isActive ? "bg-neutral text-white" : "text-zinc-700"
+      }`}
   >
     <Icon className="text-xl" /> {!isMinimized && label}
   </Link>
@@ -45,15 +47,41 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
   const [isMinimized, setIsMinimized] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const [user, loading] = useAuthState(auth);
+  const [userData, setUserData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user) {
+        try {
+          const userDocRef = doc(db, "users", user.uid);
+          const userDocSnap = await getDoc(userDocRef);
+          if (userDocSnap.exists()) {
+            setUserData(userDocSnap.data());
+          } else {
+            console.log("No such document!");
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+
+    if (user) {
+      fetchUserData();
+    }
+  }, [user]);
 
   const toggleNavbar = () => {
     setIsMinimized(!isMinimized);
   };
 
+  if (loading) return <div>Loading...</div>;
+
   return (
     <div className="h-screen w-full flex flex-col">
       <span className="w-full h-14 bg-zinc-200 justify-between px-5 items-center border-b-2 border-zinc-300 hidden md:flex">
-      <button
+        <button
           onClick={toggleNavbar}
           data-tip="toggle width"
           className=" flex items-center text-white tooltip tooltip-right font-semibold rounded-md gap-2"
@@ -71,16 +99,19 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
             role="button"
             className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-zinc-500 bg-zinc-500 rounded-full"
           >
-            <Image src={profileMale} alt="Logo.png" width={40} height={40} />
+            <img
+              src={userData?.profilePicUrl || profileMale.src}
+              alt="profile"
+              className="h-full w-full object-cover"
+            />
           </div>
-         <Account/>
+          <Account />
         </div>
       </span>
       <div className="w-full overflow-y-auto h-full flex">
         <nav
-          className={`flex ${
-            isMinimized ? "w-20" : "w-56"
-          } bg-zinc-200 h-auto transition-width duration-300 flex-col items-start justify-start p-5 gap-2`}
+          className={`flex ${isMinimized ? "w-20" : "w-56"
+            } bg-zinc-200 h-auto transition-width duration-300 flex-col items-start justify-start p-5 gap-2`}
         >
           <NavLink
             href="/user/dashboard"
@@ -110,7 +141,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
             isMinimized={isMinimized}
             isActive={pathname === "/user/history"}
           />
-    
+
         </nav>
         <div className="overflow-y-auto w-full">{children}</div>
       </div>
