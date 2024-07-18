@@ -1,41 +1,54 @@
 "use client";
 
+import {AdminRouteGuard} from "@/components/AdminRouteGuard";
 import AdminLayout from "@/components/AdminLayout";
-import Loading from "@/components/Loading";
 import { SignedIn } from "@/components/signed-in";
-import { auth } from "@/firebase";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { useState } from "react";
+import { BsCashStack, BsFileMinus } from "react-icons/bs";
+import Department from "./Department";
+import Branch from "./Branch";
 
 const AdminBranch = () => {
-  const [user, loading] = useAuthState(auth);
-  const router = useRouter();
+  const [currentTab, setCurrentTab] = useState("Department");
 
-  const setAuthChecked = (isChecked: boolean) => {
-    console.log("Auth checked:", isChecked);
+  const renderContent = () => {
+    switch (currentTab) {
+      case "Department":
+        return <Department />;
+      case "Branch":
+        return <Branch />;
+      default:
+        return <Department />;
+    }
   };
 
-  useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        console.log("User not authenticated. Redirecting to sign-in page...");
-        router.push("../sign-in");
-      }
-      setAuthChecked(true); 
-    }
-  }, [user, loading, router]);
-
-  if (loading) {
-    return <Loading />;
-  }
-
   return (
-    <SignedIn>
-      <AdminLayout>
-        <div>Branch</div>
-      </AdminLayout>
-    </SignedIn>
+    <AdminRouteGuard>
+      <SignedIn>
+        <AdminLayout>
+          <div className="container h-full mx-auto p-4">
+            <div className="grid grid-col-1 py-4">
+              <p className="text-lg font-bold">{currentTab}</p>
+              <div className="join rounded-md my-5">
+                <button
+                  className={`btn join-item border-2 border-zinc-400 ${currentTab === "Department" ? "bg-primary text-white border-primary" : ""}`}
+                  onClick={() => setCurrentTab("Department")}
+                >
+                  <BsCashStack className="text-base" /> Department
+                </button>
+                <button
+                  className={`btn join-item border-2 border-zinc-400 ${currentTab === "Branch" ? "bg-primary text-white border-primary" : ""}`}
+                  onClick={() => setCurrentTab("Branch")}
+                >
+                  <BsFileMinus className="text-base" /> Branch
+                </button>
+              </div>
+              {renderContent()}
+            </div>
+          </div>
+        </AdminLayout>
+      </SignedIn>
+    </AdminRouteGuard>
   );
 };
 
