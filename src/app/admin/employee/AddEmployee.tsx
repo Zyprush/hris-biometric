@@ -12,6 +12,8 @@ import Credentials from "./components/CredentialInfo";
 import { auth } from "@/firebase";
 import {AdminRouteGuard} from "@/components/AdminRouteGuard";
 import LegalDocuments from "./components/LegalInfo";
+import { useUserStore } from "@/state/user";
+import { useHistoryStore } from "@/state/history";
 
 const AddEmployee = () => {
   const [step, setStep] = useState(1);
@@ -54,6 +56,9 @@ const AddEmployee = () => {
   const [password, setPassword] = useState<string>("");
   const [rePassword, setRePassword] = useState<string>("");
   const [role, setRole] = useState<"user" | "admin">("user");
+  
+  const { userData } = useUserStore();
+  const { addHistory } = useHistoryStore();
 
   const nextStep = () => {
     const validationResult = validateStep(step, {
@@ -90,6 +95,13 @@ const AddEmployee = () => {
           name, nickname, gender, maritalStatus, nationality, currentAddress, permanentAddress, isPermanentSameAsCurrent, email, phone, birthday, emergencyContactName, emergencyContactPhone, emergencyContactAddress, position, department, startDate, employeeId,
           sss, philHealthNumber, pagIbigNumber, tinNumber, role, status, supervisor, branch
         }
+      });
+      // add to history
+      const currentDate = new Date().toISOString();
+      addHistory({
+        adminId: userData?.id,
+        text: `${userData?.name} created ${name} account`,
+        time: currentDate,
       });
       successToast("User created successfully.");
       // Set a short timeout before reloading to ensure the success toast is visible

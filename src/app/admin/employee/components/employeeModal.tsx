@@ -1,3 +1,5 @@
+import { useHistoryStore } from "@/state/history";
+import { useUserStore } from "@/state/user";
 import React, { useState, useEffect } from "react";
 import { FaTimes, FaEdit, FaTrash, FaSave } from 'react-icons/fa';
 
@@ -41,7 +43,8 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employee }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedEmployee, setEditedEmployee] = useState<EmployeeDetails | null>(null);
-
+  const { userData } = useUserStore();
+  const { addHistory } = useHistoryStore();
   useEffect(() => {
     if (isOpen && employee) {
       setEditedEmployee({ ...employee });
@@ -63,6 +66,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
 
   const handleSave = () => {
     onEdit(editedEmployee);
+    // add to history
+    const currentDate = new Date().toISOString();
+    addHistory({
+      adminId: userData?.id,
+      text: `${userData?.name} edited ${employee.name} account`,
+      time: currentDate,
+    });
     setIsEditing(false);
   };
 

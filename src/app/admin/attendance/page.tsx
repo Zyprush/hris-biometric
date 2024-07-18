@@ -11,7 +11,7 @@ import Leave from "./Leave";
 import Logs from "./Logs";
 
 const AdminAttendance = () => {
-  const [currentTab, setCurrentTab] = useState("Attendance");
+  const [currentTab, setCurrentTab] = useState("Leave");
 
   const renderContent = () => {
     switch (currentTab) {
@@ -34,18 +34,19 @@ const AdminAttendance = () => {
             <div className="grid grid-col-1 py-4">
             <p className="text-lg font-bold">{currentTab}</p>
               <div className="join rounded-md my-4">
+              <button
+                  className={`btn join-item border-2 border-zinc-400 ${currentTab === "Leave" ? "bg-primary text-white border-primary" : ""}`}
+                  onClick={() => setCurrentTab("Leave")}
+                >
+                  <BsPersonBoundingBox className="text-base" /> Leave Request
+                </button>
                 <button
                   className={`btn join-item border-2 border-zinc-400 ${currentTab === "Attendance" ? "bg-primary text-white border-primary" : ""}`}
                   onClick={() => setCurrentTab("Attendance")}
                 >
                   <BsPersonCircle className="text-base" /> Attendance
                 </button>
-                <button
-                  className={`btn join-item border-2 border-zinc-400 ${currentTab === "Leave" ? "bg-primary text-white border-primary" : ""}`}
-                  onClick={() => setCurrentTab("Leave")}
-                >
-                  <BsPersonBoundingBox className="text-base" /> Leave Request
-                </button>
+        
                 <button
                   className={`btn join-item border-2 border-zinc-400 ${currentTab === "Logs" ? "bg-primary text-white border-primary" : ""}`}
                   onClick={() => setCurrentTab("Logs")}
