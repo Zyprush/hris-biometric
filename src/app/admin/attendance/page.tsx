@@ -11,18 +11,18 @@ import Leave from "./Leave";
 import Logs from "./Logs";
 
 const AdminAttendance = () => {
-  const [currentTab, setCurrentTab] = useState("Leave");
+  const [currentTab, setCurrentTab] = useState("Attendance");
 
   const renderContent = () => {
     switch (currentTab) {
-      case "Leave":
-        return <Leave />;
       case "Attendance":
         return <Attendance />;
+      case "Leave":
+        return <Leave />;
       case "Logs":
         return <Logs />;
       default:
-        return <Leave />;
+        return <Attendance />;
     }
   };
 
@@ -31,19 +31,20 @@ const AdminAttendance = () => {
       <SignedIn>
         <AdminLayout>
           <div className="container h-full mx-auto p-4">
-            <div className="grid grid-col-1">
-              <div className="join rounded-md mb-4">
-                <button
-                  className={`btn join-item border-2 border-zinc-400 ${currentTab === "Leave" ? "bg-primary text-white border-primary" : ""}`}
-                  onClick={() => setCurrentTab("Leave")}
-                >
-                  <BsPersonBoundingBox className="text-base" /> Leave Request
-                </button>
+            <div className="grid grid-col-1 py-4">
+            <p className="text-lg font-bold">{currentTab}</p>
+              <div className="join rounded-md my-4">
                 <button
                   className={`btn join-item border-2 border-zinc-400 ${currentTab === "Attendance" ? "bg-primary text-white border-primary" : ""}`}
                   onClick={() => setCurrentTab("Attendance")}
                 >
                   <BsPersonCircle className="text-base" /> Attendance
+                </button>
+                <button
+                  className={`btn join-item border-2 border-zinc-400 ${currentTab === "Leave" ? "bg-primary text-white border-primary" : ""}`}
+                  onClick={() => setCurrentTab("Leave")}
+                >
+                  <BsPersonBoundingBox className="text-base" /> Leave Request
                 </button>
                 <button
                   className={`btn join-item border-2 border-zinc-400 ${currentTab === "Logs" ? "bg-primary text-white border-primary" : ""}`}
