@@ -18,6 +18,7 @@ import { EmployeeDetails } from "./components/employeeModal";
 import { useHistoryStore } from "@/state/history";
 import { useUserStore } from "@/state/user";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { BsSearch } from "react-icons/bs";
 
 const EmployeeList = () => {
   const { userData } = useUserStore();
@@ -204,7 +205,7 @@ const EmployeeList = () => {
                 onClick={handleSearch}
                 className="btn rounded-md btn-sm btn-primary text-white flex-1 sm:flex-none"
               >
-                Search
+                <BsSearch className="text-xs sm:text-sm" />
               </button>
               <button
                 onClick={handleViewDetails}
