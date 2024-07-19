@@ -220,7 +220,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
                   <img
                       src={tempProfilePicUrl || editedEmployee?.profilePicUrl || "/img/profile-admin.jpg"}
                       alt={editedEmployee?.name}
-                      className="rounded-full object-cover w-full h-full"
+                      className="rounded-full object-cover w-full h-full border border-primary"
                     />
                   </div>
                   {isEditing && (
