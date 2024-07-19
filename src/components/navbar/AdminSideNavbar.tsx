@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useState, ReactNode } from "react";
+import React, { useState, ReactNode, Suspense } from "react";
 import { usePathname } from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
@@ -127,7 +127,9 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
           />
         </nav>
         <div className="overflow-y-auto w-full h-full flex items-center justify-center">
-          {children}
+          <React.Suspense fallback={<div>Loading...</div>}>
+            {children}
+          </React.Suspense>
         </div>
       </div>
     </div>

@@ -14,6 +14,7 @@ interface User {
   startDate: string;
   sss: string;
   nickname:  string,
+  isEmailVerified: boolean
 }
 
 interface UserStore {
@@ -21,7 +22,7 @@ interface UserStore {
   loading: boolean;
   error: string | null;
   fetchUserData: (uid: string) => Promise<void>;
-  setUser: (data: Partial<User>) => void;
+  setUserData: (data: Partial<User>) => void;
   signOut: () => Promise<void>;
 }
 
@@ -45,7 +46,7 @@ export const useUserStore = create<UserStore>((set) => ({
     }
   },
 
-  setUser: (data: Partial<User>) => {
+  setUserData: (data: Partial<User>) => {
     set((state) => ({ userData: { ...state.userData!, ...data } }));
   },
 

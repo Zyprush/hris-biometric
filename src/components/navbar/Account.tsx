@@ -2,7 +2,7 @@
 
 import { auth, db } from "@/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { sendEmailVerification } from "firebase/auth";
@@ -33,13 +33,8 @@ const Account = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isEmailVerified, setIsEmailVerified] = useState(true);
   const router = useRouter();
-  const { setUser } = useUserStore();
-
+  const { setUserData: setUser } = useUserStore();
   const [isResendingVerification, setIsResendingVerification] = useState(false);
-
-  const setAuthChecked = (isChecked: boolean) => {
-    console.log("Auth checked:", isChecked);
-  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -81,7 +76,11 @@ const Account = () => {
     }
   };
 
-  if (!userData || loading) {
+  const memoizedUserData = useMemo(() => userData, [userData]);
+  const memoizedIsEmailVerified = useMemo(() => isEmailVerified, [isEmailVerified]);
+  const memoizedIsResendingVerification = useMemo(() => isResendingVerification, [isResendingVerification]);
+
+  if (!memoizedUserData || loading) {
     return null;
   }
 
@@ -92,39 +91,39 @@ const Account = () => {
     >
       <span className="w-full p-2">
         <h2 className="font-bold mb-2 text-zinc-700">
-          Welcome, {userData.name} 🎉
+          Welcome, {memoizedUserData.name} 🎉
         </h2>
 
-        <UserInfo label="Email" value={userData?.email || ""} icon={MdEmail} />
+        <UserInfo label="Email" value={memoizedUserData?.email || ""} icon={MdEmail} />
         <UserInfo
           label="Department"
-          value={userData?.department || ""}
+          value={memoizedUserData?.department || ""}
           icon={FaBuildingUser}
         />
         <UserInfo
           label="Position"
-          value={userData?.position || ""}
+          value={memoizedUserData?.position || ""}
           icon={MdWork}
         />
         <UserInfo
           label="Employee ID"
-          value={userData?.employeeId || ""}
+          value={memoizedUserData?.employeeId || ""}
           icon={FaIdBadge}
         />
         <UserInfo
           label="Verified"
-          value={isEmailVerified ? "Yes" : "No"}
+          value={memoizedIsEmailVerified ? "Yes" : "No"}
           icon={RiVerifiedBadgeFill}
         />
-        {!isEmailVerified && (
+        {!memoizedIsEmailVerified && (
           <button
             onClick={handleResendVerification}
-            disabled={isResendingVerification}
+            disabled={memoizedIsResendingVerification}
             className={`mt-4 px-4 py-2 flex bg-blue-600 border-blue-600 text-white btn-sm btn rounded-md mr-2 hover:bg-blue-800 ${
-              isResendingVerification ? "opacity-50 cursor-not-allowed" : ""
+              memoizedIsResendingVerification ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
-            {isResendingVerification
+            {memoizedIsResendingVerification
               ? "Sending..."
               : "Resend Verification Email"}
           </button>

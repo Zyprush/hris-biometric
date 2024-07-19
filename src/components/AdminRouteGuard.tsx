@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
@@ -22,30 +22,30 @@ export function AdminRouteGuard({ children }: AdminRouteGuardProps) {
   const [userDataLoading, setUserDataLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (user) {
-        try {
-          const userDocRef = doc(db, "users", user.uid);
-          const userDocSnap = await getDoc(userDocRef);
-          if (userDocSnap.exists()) {
-            setUserData(userDocSnap.data() as UserData);
-          } else {
-            console.log("No such document!");
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
+  const fetchUserData = useMemo(() => async () => {
+    if (user) {
+      try {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+          setUserData(userDocSnap.data() as UserData);
+        } else {
+          console.log("No such document!");
         }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
       }
-      setUserDataLoading(false);
-    };
+    }
+    setUserDataLoading(false);
+  }, [user]);
 
+  useEffect(() => {
     if (user) {
       fetchUserData();
     } else if (!loading) {
       setUserDataLoading(false);
     }
-  }, [user, loading]);
+  }, [user, loading, fetchUserData]);
 
   useEffect(() => {
     if (!loading && !userDataLoading) {
