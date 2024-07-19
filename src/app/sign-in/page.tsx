@@ -33,7 +33,7 @@ const SignInPage = () => {
       if (userDocSnap.exists()) {
         const { role } = userDocSnap.data();
         console.log('role:', role);
-        router.push(role === "admin" ? "/admin/dashboard" : "/user/dashboard");
+        await router.push(role === "admin" ? "/admin/dashboard" : "/user/dashboard");
       } else {
         warnToast("User data not found. Please contact support.");
       }
