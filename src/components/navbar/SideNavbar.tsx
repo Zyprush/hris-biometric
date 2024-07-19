@@ -4,13 +4,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
-import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
 import { auth, db } from "@/firebase";
 import profileMale from "../../../public/img/profile-male.jpg"
-import Image from "next/image";
 import { GrFingerPrint } from "react-icons/gr";
 import Account from "./Account";
-import { UserRouteGuard } from "../UserRouteGuard";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getDoc } from "firebase/firestore";
 

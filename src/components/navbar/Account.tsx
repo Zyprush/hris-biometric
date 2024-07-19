@@ -12,6 +12,8 @@ import { MdEmail, MdWork } from "react-icons/md";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
 import { useUserStore } from "@/state/user";
 import Link from "next/link";
+import profileMale from "../../../public/img/profile-male.jpg";
+import { IoChevronBackCircleOutline, IoSettingsOutline } from "react-icons/io5";
 
 interface UserData {
   name: string;
@@ -26,6 +28,7 @@ interface UserData {
   startDate: string;
   philHealthNumber: string;
   tinNumber: string;
+  profilePicUrl: string;
 }
 
 const Account = () => {
@@ -93,13 +96,23 @@ const Account = () => {
   return (
     <span
       tabIndex={0}
-      className="flex flex-col mt-2 dropdown-content menu bg-base-100 rounded-xl border border-zinc-300 z-[1] h-auto p-5  shadow-2xl w-[20rem] md:w-[22rem]"
+      className="flex flex-col mt-2 dropdown-content menu bg-base-100 rounded-2xl border border-zinc-300 z-[1] h-auto  shadow-2xl w-[16rem] p-0"
     >
-      <span className="w-full p-2">
-        <h2 className="font-bold mb-2 text-zinc-700">
-          Welcome, {memoizedUserData.name} 🎉
-        </h2>
-
+      <span className="w-full border-b-2 gap-4 p-3 flex justify-items-start items-center">
+        <div
+          tabIndex={0}
+          role="button"
+          className="h-14 w-14 flex items-center justify-center overflow-hidden border-2 border-zinc-500 bg-zinc-500 rounded-full"
+        >
+          <img
+            src={userData?.profilePicUrl || profileMale.src}
+            alt="profile"
+            className="h-full w-full object-cover"
+          />
+        </div>
+        <span className="flex flex-col gap-2"></span>
+      </span>
+      <span className="w-full border-b-2 p-3">
         <UserInfo
           label="Email"
           value={memoizedUserData?.email || ""}
@@ -111,11 +124,6 @@ const Account = () => {
           icon={FaBuildingUser}
         />
         <UserInfo
-          label="Position"
-          value={memoizedUserData?.position || ""}
-          icon={MdWork}
-        />
-        <UserInfo
           label="Employee ID"
           value={memoizedUserData?.employeeId || ""}
           icon={FaIdBadge}
@@ -125,7 +133,9 @@ const Account = () => {
           value={memoizedIsEmailVerified ? "Yes" : "No"}
           icon={RiVerifiedBadgeFill}
         />
-        {!memoizedIsEmailVerified && (
+      </span>
+      {!memoizedIsEmailVerified && (
+        <span className="w-full border-b-2 p-3 hover:bg-primary hover:text-white">
           <button
             onClick={handleResendVerification}
             disabled={memoizedIsResendingVerification}
@@ -139,24 +149,24 @@ const Account = () => {
               ? "Sending..."
               : "Resend Verification Email"}
           </button>
-        )}
-        <span className="flex w-full justify-between">
-          <button
-            className="btn-sm btn rounded-md mt-3 btn-error text-white"
-            onClick={handleSignOut}
-          >
-            sign out
-          </button>
-          {memoizedUserData.role == "user" && (
-            <Link
-              className="btn-sm btn rounded-md mt-3 btn-outline text-neutral"
-              href={"/account"}
-            >
-              edit
-            </Link>
-          )}
         </span>
-      </span>
+      )}
+      {memoizedUserData.role == "user" && (
+        <Link
+          href={"/user/account"}
+          className="flex gap-2 w-full border-b-2 p-3 hover:bg-primary hover:text-white"
+        >
+          <IoSettingsOutline className="text-lg" /> Account
+        </Link>
+      )}
+      <button
+        className="flex gap-2 w-full border-b-2 p-3 hover:bg-primary rounded-br-2xl rounded-bl-2xl hover:text-white"
+        onClick={handleSignOut}
+      >
+        <IoChevronBackCircleOutline className="text-lg" /> Logout
+      </button>
+
+      <span className="flex w-full justify-between"></span>
     </span>
   );
 };
