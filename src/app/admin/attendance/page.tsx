@@ -1,6 +1,6 @@
 "use client";
 
-import {AdminRouteGuard} from "@/components/AdminRouteGuard";
+import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import AdminLayout from "@/components/AdminLayout";
 import { SignedIn } from "@/components/signed-in";
 import { useState } from "react";
@@ -32,27 +32,28 @@ const AdminAttendance = () => {
         <AdminLayout>
           <div className="container h-full mx-auto p-4">
             <div className="grid grid-col-1 py-4">
-            <p className="text-lg font-bold">{currentTab}</p>
+              <p className="text-lg font-bold">{currentTab}</p>
               <div className="join rounded-md my-4">
-              <button
-                  className={`btn join-item border-2 border-zinc-400 ${currentTab === "Leave" ? "bg-primary text-white border-primary" : ""}`}
+                <button
+                  className={`btn join-item border-2 border-zinc-400 ${
+                    currentTab === "Leave"
+                      ? "bg-primary text-white border-primary"
+                      : ""
+                  }`}
                   onClick={() => setCurrentTab("Leave")}
                 >
                   <BsPersonBoundingBox className="text-base" /> Leave Request
                 </button>
                 <button
-                  className={`btn join-item border-2 border-zinc-400 ${currentTab === "Attendance" ? "bg-primary text-white border-primary" : ""}`}
+                  className={`btn join-item border-2 border-zinc-400 ${
+                    currentTab === "Attendance"
+                      ? "bg-primary text-white border-primary"
+                      : ""
+                  }`}
                   onClick={() => setCurrentTab("Attendance")}
                 >
                   <BsPersonCircle className="text-base" /> Attendance
                 </button>
-{/*         
-                <button
-                  className={`btn join-item border-2 border-zinc-400 ${currentTab === "Logs" ? "bg-primary text-white border-primary" : ""}`}
-                  onClick={() => setCurrentTab("Logs")}
-                >
-                  <MdViewTimeline className="text-base" /> Logs
-                </button> */}
               </div>
               {renderContent()}
             </div>

@@ -37,7 +37,6 @@ export function UserRouteGuard({ children }: UserRouteGuardProps) {
     setUserDataLoading(false);
   }, [user]);
 
-  console.log("ADMIN ROUTE GUARD RENDER COUNT:")
   useEffect(() => {
     if (user) {
       fetchUserData();

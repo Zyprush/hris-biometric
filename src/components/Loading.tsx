@@ -34,7 +34,7 @@ const FingerprintLoading = () => {
           ></div>
         </div>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-white text-xs md:text-sm p-1">
+          <span className="text-white text-sm font-bold p-1">
             {percentage}%
           </span>
         </div>

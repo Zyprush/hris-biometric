@@ -1,7 +1,6 @@
 "use client";
 
 import React, { ReactNode } from "react";
-import SideNavbar from "./navbar/SideNavbar";
 import AdminTopNavbar from "./navbar/AdminTopNavbar";
 import AdminSideNavbar from "./navbar/AdminSideNavbar";
 

@@ -1,34 +1,26 @@
-"use client"
-import React, { useState } from 'react'
+"use client";
+import UserLayout from "@/components/UserLayout";
+import { UserRouteGuard } from "@/components/UserRouteGuard";
+import React, { useEffect, useState } from "react";
 
-const UpdateAccount = () => {
-    const [isEditing, setIsEditing] = useState<boolean>(false);
+const UpdateUser = () => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return null; // Or some fallback UI
+  }
 
   return (
-    <div>UpdateAccount</div>
-  )
-}
-
-const DetailItem: React.FC<{
-    label: string;
-    value: string;
-    isEditing: boolean;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  }> = ({ label, value, isEditing, onChange }) => (
-    <div className="mb-2">
-      <span className="font-semibold text-gray-700 capitalize">{label.replace(/([A-Z])/g, ' $1').trim()}: </span>
-      {isEditing ? (
-        <input
-          type="text"
-          name={label}
-          value={value}
-          onChange={onChange}
-          className="border rounded px-2 py-1 w-full mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        />
-      ) : (
-        <span className="text-gray-600">{value}</span>
-      )}
-    </div>
+    <UserRouteGuard>
+      <UserLayout>
+        <div>page</div>
+      </UserLayout>
+    </UserRouteGuard>
   );
+};
 
-export default UpdateAccount;
+export default UpdateUser;

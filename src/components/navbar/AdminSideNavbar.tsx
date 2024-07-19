@@ -5,10 +5,7 @@ import { usePathname } from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
-import {
-  FaUserAlt,
-  FaBuilding,
-} from "react-icons/fa";
+import { FaUserAlt, FaBuilding } from "react-icons/fa";
 import profileMale from "../../../public/img/profile-male.jpg";
 import Image from "next/image";
 import { GrFingerPrint } from "react-icons/gr";
@@ -62,7 +59,9 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
             <GrFingerPrint className="text-3xl text-white" />
           </span>
           {!isMinimized && (
-            <p className="px-3 py-1 rounded-md text-neutral border-2 border-neutral font-bold text-xs">SMART HR</p>
+            <p className="px-3 py-1 rounded-md text-neutral border-2 border-neutral font-bold text-xs">
+              SMART HR
+            </p>
           )}
         </button>
         <div className="dropdown dropdown-end">
@@ -73,7 +72,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
           >
             <Image src={profileMale} alt="Logo.png" width={40} height={40} />
           </div>
-         <Account/>
+          <Account />
         </div>
       </span>
       <div className="w-full overflow-y-auto h-full flex">
@@ -127,9 +126,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
           />
         </nav>
         <div className="overflow-y-auto w-full h-full flex items-center justify-center">
-          <React.Suspense fallback={<div>Loading...</div>}>
-            {children}
-          </React.Suspense>
+          {children}
         </div>
       </div>
     </div>

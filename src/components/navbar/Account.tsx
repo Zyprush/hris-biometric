@@ -77,8 +77,14 @@ const Account = () => {
   };
 
   const memoizedUserData = useMemo(() => userData, [userData]);
-  const memoizedIsEmailVerified = useMemo(() => isEmailVerified, [isEmailVerified]);
-  const memoizedIsResendingVerification = useMemo(() => isResendingVerification, [isResendingVerification]);
+  const memoizedIsEmailVerified = useMemo(
+    () => isEmailVerified,
+    [isEmailVerified]
+  );
+  const memoizedIsResendingVerification = useMemo(
+    () => isResendingVerification,
+    [isResendingVerification]
+  );
 
   if (!memoizedUserData || loading) {
     return null;
@@ -94,7 +100,11 @@ const Account = () => {
           Welcome, {memoizedUserData.name} 🎉
         </h2>
 
-        <UserInfo label="Email" value={memoizedUserData?.email || ""} icon={MdEmail} />
+        <UserInfo
+          label="Email"
+          value={memoizedUserData?.email || ""}
+          icon={MdEmail}
+        />
         <UserInfo
           label="Department"
           value={memoizedUserData?.department || ""}
@@ -120,7 +130,9 @@ const Account = () => {
             onClick={handleResendVerification}
             disabled={memoizedIsResendingVerification}
             className={`mt-4 px-4 py-2 flex bg-blue-600 border-blue-600 text-white btn-sm btn rounded-md mr-2 hover:bg-blue-800 ${
-              memoizedIsResendingVerification ? "opacity-50 cursor-not-allowed" : ""
+              memoizedIsResendingVerification
+                ? "opacity-50 cursor-not-allowed"
+                : ""
             }`}
           >
             {memoizedIsResendingVerification
@@ -135,12 +147,14 @@ const Account = () => {
           >
             sign out
           </button>
-          <Link
-            className="btn-sm btn rounded-md mt-3 btn-outline text-neutral"
-            href={"/account"}
-          >
-            edit
-          </Link>
+          {memoizedUserData.role == "user" && (
+            <Link
+              className="btn-sm btn rounded-md mt-3 btn-outline text-neutral"
+              href={"/account"}
+            >
+              edit
+            </Link>
+          )}
         </span>
       </span>
     </span>
