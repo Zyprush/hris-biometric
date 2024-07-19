@@ -38,7 +38,7 @@ interface EmployeeDetails {
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onEdit: (employee: EmployeeDetails) => void;
+  onEdit: (employee: EmployeeDetails, newProfilePic: File | null) => void;
   onDelete: (employeeId: string, documentUrls: string[]) => void;
   employee: EmployeeDetails | null;
 }
@@ -49,15 +49,23 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
   const [activeTab, setActiveTab] = useState('personal');
   const { userData } = useUserStore();
   const { addHistory } = useHistoryStore();
+  const [newProfilePic, setNewProfilePic] = useState<File | null>(null);
+  const [tempProfilePicUrl, setTempProfilePicUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen && employee) {
       setEditedEmployee({ ...employee });
       setIsEditing(false);
+      setNewProfilePic(null);
+      setTempProfilePicUrl(null);
     }
     return () => {
       setIsEditing(false);
-      setEditedEmployee(null);
+      setNewProfilePic(null);
+      if (tempProfilePicUrl) {
+        URL.revokeObjectURL(tempProfilePicUrl);
+        setTempProfilePicUrl(null);
+      }
     };
   }, [isOpen, employee]);
 
@@ -65,16 +73,30 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
 
   const handleEdit = () => setIsEditing(true);
 
-  const handleSave = async() => {
-    onEdit(editedEmployee);
-    const currentDate = new Date().toISOString();
-    await addHistory({
-      adminId: userData?.id,
-      text: `${userData?.name} edited ${employee.name} account`,
-      time: currentDate,
-      userId: employee?.id
-    });
-    setIsEditing(false);
+  const handleSave = async () => {
+    if (editedEmployee) {
+      await onEdit(editedEmployee, newProfilePic);
+      const currentDate = new Date().toISOString();
+      await addHistory({
+        adminId: userData?.id,
+        text: `${userData?.name} edited ${editedEmployee.name} account`,
+        time: currentDate,
+        userId: editedEmployee?.id
+      });
+      setIsEditing(false);
+      
+      // Update the local state to reflect changes
+      setEditedEmployee(prevState => ({
+        ...prevState!,
+        profilePicUrl: newProfilePic ? URL.createObjectURL(newProfilePic) : prevState!.profilePicUrl
+      }));
+      
+      setNewProfilePic(null);
+      if (tempProfilePicUrl) {
+        URL.revokeObjectURL(tempProfilePicUrl);
+        setTempProfilePicUrl(null);
+      }
+    }
   };
 
   const handleDelete = () => {
@@ -91,7 +113,21 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
 
   const handleCloseModal = () => {
     setIsEditing(false);
+    setNewProfilePic(null);
+    if (tempProfilePicUrl) {
+      URL.revokeObjectURL(tempProfilePicUrl);
+      setTempProfilePicUrl(null);
+    }
     onClose();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setNewProfilePic(file);
+      const tempUrl = URL.createObjectURL(file);
+      setTempProfilePicUrl(tempUrl);
+    }
   };
 
   const tabs = [
@@ -179,14 +215,28 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
             <div className="flex flex-col md:flex-row">
               {/* Profile Picture */}
               <div className="w-full md:w-1/3 mb-4 md:mb-0 md:mr-6">
-                <div className="rounded-lg p-4 flex items-center justify-center">
-                  <div className="relative w-48 h-48 mx-auto">
-                    <img
-                      src={editedEmployee.profilePicUrl || "/img/profile-admin.jpg"}
-                      alt={editedEmployee.name}
-                      className="rounded-full"
+                <div className="rounded-lg p-4 flex flex-col items-center justify-center">
+                  <div className="relative w-48 h-48 mx-auto mb-4">
+                  <img
+                      src={tempProfilePicUrl || editedEmployee?.profilePicUrl || "/img/profile-admin.jpg"}
+                      alt={editedEmployee?.name}
+                      className="rounded-full object-cover w-full h-full"
                     />
                   </div>
+                  {isEditing && (
+                    <div className="mt-2">
+                      <label htmlFor="profile-pic-upload" className="cursor-pointer bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors duration-200">
+                        Choose New Picture
+                      </label>
+                      <input
+                        id="profile-pic-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="mt-4 text-center">
                   <h4 className="text-xl font-semibold">{editedEmployee.name}</h4>

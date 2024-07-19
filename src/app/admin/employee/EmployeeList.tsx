@@ -10,13 +10,14 @@ import {
   getDoc,
   setDoc,
 } from "firebase/firestore";
-import { db } from "@/firebase";
+import { db, storage } from "@/firebase";
 import Modal from "./components/employeeModal";
 import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import { toast } from "react-toastify";
 import { EmployeeDetails } from "./components/employeeModal";
 import { useHistoryStore } from "@/state/history";
 import { useUserStore } from "@/state/user";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 const EmployeeList = () => {
   const { userData } = useUserStore();
@@ -105,19 +106,42 @@ const EmployeeList = () => {
     setIsModalOpen(false);
     setSelectedEmployee(null);
   };
-
-  const handleEdit = async (updatedEmployee: any) => {
+  const handleProfilePicUpload = async (file: File, employeeId: string) => {
     try {
+      const profilePicRef = ref(storage, `profile_pictures/${employeeId}/${file.name}`);
+      const profilePicSnapshot = await uploadBytes(profilePicRef, file);
+      const downloadURL = await getDownloadURL(profilePicSnapshot.ref);
+      return downloadURL;
+    } catch (error) {
+      console.error("Error uploading profile picture: ", error);
+      toast.error("Failed to upload profile picture");
+      return null;
+    }
+  };
+  const handleEdit = async (updatedEmployee: any, newProfilePic: File | null) => {
+    try {
+      let profilePicUrl = updatedEmployee.profilePicUrl;
+
+      if (newProfilePic) {
+        const uploadedUrl = await handleProfilePicUpload(newProfilePic, updatedEmployee.id);
+        if (uploadedUrl) {
+          profilePicUrl = uploadedUrl;
+        }
+      }
+
       const employeeRef = doc(db, "users", updatedEmployee.id);
-      await updateDoc(employeeRef, updatedEmployee);
+      await updateDoc(employeeRef, { ...updatedEmployee, profilePicUrl });
+
+      const updatedEmployeeWithPic = { ...updatedEmployee, profilePicUrl };
+
       setEmployees(
         employees.map((emp) =>
-          emp.id === updatedEmployee.id ? updatedEmployee : emp
+          emp.id === updatedEmployee.id ? updatedEmployeeWithPic : emp
         )
       );
       setFilteredEmployees(
         filteredEmployees.map((emp) =>
-          emp.id === updatedEmployee.id ? updatedEmployee : emp
+          emp.id === updatedEmployee.id ? updatedEmployeeWithPic : emp
         )
       );
       toast.success("Employee updated successfully");
@@ -184,9 +208,8 @@ const EmployeeList = () => {
             </div>
             <button
               onClick={handleViewDetails}
-              className={`btn btn-sm rounded-md text-white ml-2 ${
-                selectedEmployee ? "btn-primary" : "btn-disabled"
-              }`}
+              className={`btn btn-sm rounded-md text-white ml-2 ${selectedEmployee ? "btn-primary" : "btn-disabled"
+                }`}
               disabled={!selectedEmployee}
             >
               View Details
@@ -212,11 +235,10 @@ const EmployeeList = () => {
                   <tr
                     key={employee.id}
                     onClick={() => handleRowClick(employee)}
-                    className={`cursor-pointer ${
-                      selectedEmployee?.id === employee.id
-                        ? "bg-blue-100 hover:bg-blue-200"
-                        : "hover:bg-gray-100"
-                    }`}
+                    className={`cursor-pointer ${selectedEmployee?.id === employee.id
+                      ? "bg-blue-100 hover:bg-blue-200"
+                      : "hover:bg-gray-100"
+                      }`}
                   >
                     <td className="px-4 py-2 text-xs">{employee.employeeId}</td>
                     <td className="px-4 py-2 text-xs text-gray-600">
@@ -241,6 +263,7 @@ const EmployeeList = () => {
           }
           employee={selectedEmployee}
         />
+
       </div>
     </AdminRouteGuard>
   );
