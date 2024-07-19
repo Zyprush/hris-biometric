@@ -1,10 +1,9 @@
 "use client";
-import { auth } from "@/firebase";
+import { auth, db } from "@/firebase";
 import { AnimatePresence, motion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { BsBarChartFill } from "react-icons/bs";
 import {
   FaBuilding,
@@ -16,8 +15,10 @@ import { IoClose } from "react-icons/io5";
 import { MdPayments, MdTry } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
 import { TiThMenu } from "react-icons/ti";
-import profileMale from "../../../public/img/profile-male.jpg";
 import Account from "./Account";
+import Loading from "../Loading";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { doc, getDoc } from "firebase/firestore";
 
 interface NavbarProps {
   children: ReactNode;
@@ -38,9 +39,8 @@ const NavLink: React.FC<NavLinkProps> = ({
 }) => (
   <Link
     href={href}
-    className={`navlink ${
-      isActive ? "bg-neutral text-white" : "text-zinc-700"
-    }`}
+    className={`navlink ${isActive ? "bg-neutral text-white" : "text-zinc-700"
+      }`}
   >
     <Icon className="text-xl" /> {label}
   </Link>
@@ -50,6 +50,33 @@ const AdminTopNavbar: React.FC<NavbarProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+
+  const [user, loading] = useAuthState(auth);
+  const [userData, setUserData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user) {
+        try {
+          const userDocRef = doc(db, "users", user.uid);
+          const userDocSnap = await getDoc(userDocRef);
+          if (userDocSnap.exists()) {
+            setUserData(userDocSnap.data());
+          } else {
+            console.log("No such document!");
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+
+    if (user) {
+      fetchUserData();
+    }
+  }, [user]);
+
+  if (loading) return <Loading/>;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -65,7 +92,12 @@ const AdminTopNavbar: React.FC<NavbarProps> = ({ children }) => {
             role="button"
             className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-zinc-500 bg-zinc-500 rounded-full"
           >
-            <Image src={profileMale} alt="Logo.png" width={40} height={40} />
+            <img
+              src={userData?.profilePicUrl || "/img/profile-admin.jpg"}
+              alt="profile"
+              width={40} height={40}
+              className="h-full w-full object-cover"
+            />
           </div>
           <Account />
         </div>
@@ -119,7 +151,7 @@ const AdminTopNavbar: React.FC<NavbarProps> = ({ children }) => {
               label="History"
               isActive={pathname === "/admin/history"}
             />
-           
+
           </motion.nav>
         )}
       </AnimatePresence>

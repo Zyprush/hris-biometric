@@ -102,7 +102,7 @@ const Account = () => {
         <div
           tabIndex={0}
           role="button"
-          className="h-14 w-14 flex items-center justify-center overflow-hidden border-2 border-zinc-500 bg-zinc-500 rounded-full"
+          className="h-14 w-14 flex items-center justify-center overflow-hidden border-2 border-primary bg-primary rounded-full"
         >
           <img
             src={userData?.profilePicUrl || profileMale.src}
@@ -110,7 +110,7 @@ const Account = () => {
             className="h-full w-full object-cover"
           />
         </div>
-      <h1>Hello, {memoizedUserData?.name}!</h1>
+        <h1>Hello, {memoizedUserData?.name}!</h1>
         <span className="flex flex-col gap-2"></span>
       </span>
       {/**
@@ -137,7 +137,7 @@ const Account = () => {
         />
       </span>
        */}
-       {/*
+      {/*
       {!memoizedIsEmailVerified && (
         <span className="w-full border-b-2 p-3 hover:bg-primary hover:text-white">
           <button
@@ -156,14 +156,22 @@ const Account = () => {
         </span>
       )}
        */}
-      {memoizedUserData.role == "user" && (
+      {memoizedUserData.role == "user" ? (
         <Link
-          href={"/user/account"}
+          href="/user/account"
           className="flex gap-2 w-full border-b-2 p-3 hover:bg-primary hover:text-white"
         >
           <IoSettingsOutline className="text-lg" /> Account
         </Link>
-      )}
+      ) : memoizedUserData.role == "admin" ? (
+        <Link
+          href="/admin/account"
+          className="flex gap-2 w-full border-b-2 p-3 hover:bg-primary hover:text-white"
+        >
+          <IoSettingsOutline className="text-lg" /> Account
+        </Link>
+      ) : null}
+
       <button
         className="flex gap-2 w-full border-b-2 p-3 hover:bg-primary rounded-br-2xl rounded-bl-2xl hover:text-white"
         onClick={handleSignOut}

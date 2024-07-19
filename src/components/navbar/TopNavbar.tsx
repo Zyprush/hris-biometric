@@ -84,7 +84,7 @@ const TopNavbar: React.FC<NavbarProps> = ({ children }) => {
             className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-zinc-500 bg-zinc-500 rounded-full"
           >
             <img
-              src={userData?.profilePicUrl || profileMale.src}
+              src={userData?.profilePicUrl || "/img/profile-male.jpg"}
               alt="profile"
               width={40} height={40}
               className="h-full w-full object-cover"

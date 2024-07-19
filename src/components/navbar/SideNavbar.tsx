@@ -10,6 +10,7 @@ import { GrFingerPrint } from "react-icons/gr";
 import Account from "./Account";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getDoc } from "firebase/firestore";
+import Loading from "../Loading";
 
 
 interface NavbarProps {
@@ -73,7 +74,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
     setIsMinimized(!isMinimized);
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading/>;
 
   return (
     <div className="h-screen w-full flex flex-col">
@@ -97,7 +98,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
             className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-zinc-500 bg-zinc-500 rounded-full"
           >
             <img
-              src={userData?.profilePicUrl || profileMale.src}
+              src={userData?.profilePicUrl || "/img/profile-male.jpg"}
               alt="profile"
               width={40} height={40} 
               className="h-full w-full object-cover"
