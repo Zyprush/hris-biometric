@@ -36,39 +36,42 @@ const Page = () => {
             <div className="grid grid-col-1 py-4">
               <p className="text-lg font-bold">{currentTable}</p>
    
-              <div className="md:join rounded-md my-4">
-                <button
-                  className={`btn join-item border-2 border-zinc-400 ${
-                    currentTable === "Employee"
-                      ? "bg-primary text-white border-primary"
-                      : ""
-                  }`}
-                  onClick={() => setCurrentTable("Employee")}
-                >
-                  <BsPersonBoundingBox className="text-base" /> Employee
-                </button>
-                <button
-                  className={`btn join-item border-2 border-zinc-400 ${
-                    currentTable === "Add Employee"
-                      ? "bg-primary text-white border-primary"
-                      : ""
-                  }`}
-                  onClick={() => setCurrentTable("Add Employee")}
-                >
-                  <BsPersonPlus className="text-base" />
-                  Add Employee
-                </button>
-                <button
-                  className={`btn join-item border-2 border-zinc-400 ${
-                    currentTable === "Former Employee"
-                      ? "bg-primary text-white border-primary"
-                      : ""
-                  }`}
-                  onClick={() => setCurrentTable("Former Employee")}
-                >
-                  <BsPersonDash className="text-base" />
-                  Former Employee
-                </button>
+              <div className="flex justify-center md:justify-start space-x-2 md:space-x-0 my-4">
+                <div className="join join-horizontal md:join-horizontal">
+                  <button
+                    className={`btn btn-md md:btn-md join-item border-2 border-zinc-400 ${
+                      currentTable === "Employee"
+                        ? "bg-primary text-white border-primary"
+                        : ""
+                    }`}
+                    onClick={() => setCurrentTable("Employee")}
+                  >
+                    <BsPersonBoundingBox className="text-base md:mr-2" />
+                    <span className="hidden md:inline">Employee</span>
+                  </button>
+                  <button
+                    className={`btn btn-md md:btn-md join-item border-2 border-zinc-400 ${
+                      currentTable === "Add Employee"
+                        ? "bg-primary text-white border-primary"
+                        : ""
+                    }`}
+                    onClick={() => setCurrentTable("Add Employee")}
+                  >
+                    <BsPersonPlus className="text-base md:mr-2" />
+                    <span className="hidden md:inline">Add Employee</span>
+                  </button>
+                  <button
+                    className={`btn btn-md md:btn-md join-item border-2 border-zinc-400 ${
+                      currentTable === "Former Employee"
+                        ? "bg-primary text-white border-primary"
+                        : ""
+                    }`}
+                    onClick={() => setCurrentTable("Former Employee")}
+                  >
+                    <BsPersonDash className="text-base md:mr-2" />
+                    <span className="hidden md:inline">Former Employee</span>
+                  </button>
+                </div>
               </div>
               {renderTable()}
             </div>

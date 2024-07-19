@@ -1,18 +1,21 @@
 "use client";
 import Link from "next/link";
-import React, { useState, ReactNode } from "react";
+import React, { useState, ReactNode, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
 import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
-import { auth } from "@/firebase";
+import { auth, db } from "@/firebase";
 import { TiThMenu } from "react-icons/ti";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoClose } from "react-icons/io5";
 import Image from "next/image";
 import profileMale from "../../../public/img/profile-male.jpg";
 import Account from "./Account";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { doc, getDoc } from "firebase/firestore";
+import Loading from "../Loading";
 
 interface NavbarProps {
   children: ReactNode;
@@ -39,6 +42,33 @@ const TopNavbar: React.FC<NavbarProps> = ({ children }) => {
   const router = useRouter();
   const pathname = usePathname();
 
+  const [user, loading] = useAuthState(auth);
+  const [userData, setUserData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user) {
+        try {
+          const userDocRef = doc(db, "users", user.uid);
+          const userDocSnap = await getDoc(userDocRef);
+          if (userDocSnap.exists()) {
+            setUserData(userDocSnap.data());
+          } else {
+            console.log("No such document!");
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+
+    if (user) {
+      fetchUserData();
+    }
+  }, [user]);
+
+  if (loading) return <Loading/>;
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -47,13 +77,18 @@ const TopNavbar: React.FC<NavbarProps> = ({ children }) => {
     <div className="h-screen w-screen flex flex-col">
       {/* topbar */}
       <span className="w-full h-14 z-50 bg-zinc-200 justify-between px-3 items-center border-b-2 border-zinc-300 flex fixed top-0">
-      <div className="dropdown dropdown-start">
+        <div className="dropdown dropdown-start">
           <div
             tabIndex={0}
             role="button"
             className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-zinc-500 bg-zinc-500 rounded-full"
           >
-            <Image src={profileMale} alt="Logo.png" width={40} height={40} />
+            <img
+              src={userData?.profilePicUrl || "/img/profile-male.jpg"}
+              alt="profile"
+              width={40} height={40}
+              className="h-full w-full object-cover"
+            />
           </div>
           <Account />
         </div>
