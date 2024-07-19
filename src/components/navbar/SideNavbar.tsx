@@ -90,7 +90,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
             <GrFingerPrint className="text-3xl text-white" />
           </span>
           {!isMinimized && (
-            <p className="px-3 py-1 rounded-md text-neutral border-2 border-neutral font-bold text-xs">HRIS</p>
+            <p className="px-3 py-1 rounded-md text-neutral border-2 border-neutral font-bold text-xs">SMART HR</p>
           )}
         </button>
         <div className="dropdown dropdown-end">
@@ -99,7 +99,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
             role="button"
             className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-zinc-500 bg-zinc-500 rounded-full"
           >
-            <img
+            <Image
               src={userData?.profilePicUrl || profileMale.src}
               alt="profile"
               className="h-full w-full object-cover"

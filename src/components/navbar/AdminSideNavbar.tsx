@@ -62,7 +62,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
             <GrFingerPrint className="text-3xl text-white" />
           </span>
           {!isMinimized && (
-            <p className="px-3 py-1 rounded-md text-neutral border-2 border-neutral font-bold text-xs">HRIS</p>
+            <p className="px-3 py-1 rounded-md text-neutral border-2 border-neutral font-bold text-xs">SMART HR</p>
           )}
         </button>
         <div className="dropdown dropdown-end">

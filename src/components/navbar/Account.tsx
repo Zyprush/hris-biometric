@@ -7,12 +7,11 @@ import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { sendEmailVerification } from "firebase/auth";
 import { warnToast } from "@/components/toast";
-import { FaIdBadge, FaPhone, FaBuildingUser } from "react-icons/fa6";
+import { FaIdBadge, FaBuildingUser } from "react-icons/fa6";
 import { MdEmail, MdWork } from "react-icons/md";
-import { BsFillCalendar2DateFill } from "react-icons/bs";
-import { format } from "date-fns/format";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
 import { useUserStore } from "@/state/user";
+import Link from "next/link";
 
 interface UserData {
   name: string;
@@ -89,7 +88,7 @@ const Account = () => {
   return (
     <span
       tabIndex={0}
-      className="flex flex-col mt-2 dropdown-content menu bg-base-100 rounded-xl border border-zinc-300 z-[1] h-auto p-5  shadow-2xl w-[20rem] md:w-[23rem]"
+      className="flex flex-col mt-2 dropdown-content menu bg-base-100 rounded-xl border border-zinc-300 z-[1] h-auto p-5  shadow-2xl w-[20rem] md:w-[22rem]"
     >
       <span className="w-full p-2">
         <h2 className="font-bold mb-2 text-zinc-700">
@@ -112,28 +111,6 @@ const Account = () => {
           value={userData?.employeeId || ""}
           icon={FaIdBadge}
         />
-        <UserInfo label="Phone" value={userData?.phone || ""} icon={FaPhone} />
-        <UserInfo label="SSS" value={userData?.sss || ""} icon={FaIdBadge} />
-        <UserInfo
-          label="Philhealth"
-          value={userData?.philHealthNumber || ""}
-          icon={FaIdBadge}
-        />
-        <UserInfo
-          label="TIN"
-          value={userData?.tinNumber || ""}
-          icon={FaIdBadge}
-        />
-
-        <UserInfo
-          label="Start Date"
-          value={
-            userData?.startDate
-              ? format(new Date(userData.startDate), "MMM dd, yyyy")
-              : ""
-          }
-          icon={BsFillCalendar2DateFill}
-        />
         <UserInfo
           label="Verified"
           value={isEmailVerified ? "Yes" : "No"}
@@ -152,12 +129,20 @@ const Account = () => {
               : "Resend Verification Email"}
           </button>
         )}
-        <button
-          className="btn-sm btn rounded-md mt-3 btn-error text-white"
-          onClick={handleSignOut}
-        >
-          sign out
-        </button>
+        <span className="flex w-full justify-between">
+          <button
+            className="btn-sm btn rounded-md mt-3 btn-error text-white"
+            onClick={handleSignOut}
+          >
+            sign out
+          </button>
+          <Link
+            className="btn-sm btn rounded-md mt-3 btn-outline text-neutral"
+            href={"/account"}
+          >
+            edit
+          </Link>
+        </span>
       </span>
     </span>
   );
@@ -172,9 +157,9 @@ const UserInfo = ({ label, value, icon: Icon }: UserInfoProps) => {
   return (
     <>
       {value ? (
-        <span className="text-gray-600 text-xs flex gap-2 items-center">
+        <span className="text-gray-600 text-xs flex gap-2 items-center truncate">
           <Icon className="" /> <p className="font-semibold">{label}:</p>
-          {value}
+          <p className="truncate">{value}</p>
         </span>
       ) : null}
     </>
