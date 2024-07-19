@@ -96,7 +96,7 @@ const Account = () => {
   return (
     <span
       tabIndex={0}
-      className="flex flex-col mt-2 dropdown-content menu bg-base-100 rounded-2xl border border-zinc-300 z-[1] h-auto  shadow-2xl w-[16rem] p-0"
+      className="flex flex-col mt-2 dropdown-content menu bg-base-100 rounded-bl-2xl rounded-br-2xl border border-zinc-300 z-[1] h-auto  shadow-2xl w-[16rem] p-0"
     >
       <span className="w-full border-b-2 gap-4 p-3 flex justify-items-start items-center">
         <div
@@ -110,8 +110,10 @@ const Account = () => {
             className="h-full w-full object-cover"
           />
         </div>
+      <h1>Hello, {memoizedUserData?.name}!</h1>
         <span className="flex flex-col gap-2"></span>
       </span>
+      {/**
       <span className="w-full border-b-2 p-3">
         <UserInfo
           label="Email"
@@ -134,6 +136,8 @@ const Account = () => {
           icon={RiVerifiedBadgeFill}
         />
       </span>
+       */}
+       {/*
       {!memoizedIsEmailVerified && (
         <span className="w-full border-b-2 p-3 hover:bg-primary hover:text-white">
           <button
@@ -151,6 +155,7 @@ const Account = () => {
           </button>
         </span>
       )}
+       */}
       {memoizedUserData.role == "user" && (
         <Link
           href={"/user/account"}
@@ -163,7 +168,7 @@ const Account = () => {
         className="flex gap-2 w-full border-b-2 p-3 hover:bg-primary rounded-br-2xl rounded-bl-2xl hover:text-white"
         onClick={handleSignOut}
       >
-        <IoChevronBackCircleOutline className="text-lg" /> Logout
+        <IoChevronBackCircleOutline className="text-lg text-red-700" /> <h1 className="text-red-700">Sign Out</h1>
       </button>
 
       <span className="flex w-full justify-between"></span>
