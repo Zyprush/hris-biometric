@@ -131,7 +131,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
   };
 
   const tabs = [
-    { id: 'personal', label: 'Personal', icon: FaUser },
+    { id: 'personal', label: 'Personal', icon: FaUser},
     { id: 'contact', label: 'Contact', icon: FaAddressCard },
     { id: 'employment', label: 'Employment', icon: FaBriefcase },
     { id: 'documents', label: 'Documents', icon: FaFileAlt },

@@ -99,7 +99,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
             role="button"
             className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-zinc-500 bg-zinc-500 rounded-full"
           >
-            <Image
+            <img
               src={userData?.profilePicUrl || profileMale.src}
               alt="profile"
               width={40} height={40} 
