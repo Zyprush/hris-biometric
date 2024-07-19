@@ -4,13 +4,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
-import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
 import { auth, db } from "@/firebase";
 import profileMale from "../../../public/img/profile-male.jpg"
-import Image from "next/image";
 import { GrFingerPrint } from "react-icons/gr";
 import Account from "./Account";
-import { UserRouteGuard } from "../UserRouteGuard";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getDoc } from "firebase/firestore";
 
@@ -99,7 +96,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
             role="button"
             className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-zinc-500 bg-zinc-500 rounded-full"
           >
-            <Image
+            <img
               src={userData?.profilePicUrl || profileMale.src}
               alt="profile"
               width={40} height={40} 
