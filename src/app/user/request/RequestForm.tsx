@@ -89,8 +89,8 @@ const RequestForm = ({ setShowRequestForm, requests}: { setShowRequestForm: Reac
               <div className="absolute inset-0 bg-gradient-to-r from-[#135D66] to-[#77B0AA] shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 rounded-3xl"></div>
               <div className="relative px-4 py-10 bg-white shadow-lg rounded-3xl sm:p-5 sm:py-10 md:w-[24rem]">
                 <div className="max-w-md mx-auto">
-                  <div>
-                    <h1 className="text-lg font-semibold">Request Leave</h1>
+                  <div className="flex justify-start">
+                    <h1 className="text-white rounded bg-neutral font-bold p-4 py-1">Request Leave</h1>
                   </div>
                   <div className="divide-y divide-gray-200">
                     <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:leading-7">
@@ -125,7 +125,7 @@ const RequestForm = ({ setShowRequestForm, requests}: { setShowRequestForm: Reac
                         <button
                           onClick={createRequest}
                           disabled={loading}
-                          className={`bg-blue-600 text-xs hover:bg-secondary text-white font-semibold px-4 py-2 rounded-md ${
+                          className={`bg-primary text-xs hover:bg-secondary text-white font-semibold px-4 py-2 rounded-md ${
                             loading ? "opacity-50 cursor-not-allowed" : ""
                           }`}
                         >
