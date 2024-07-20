@@ -15,6 +15,7 @@ interface HistoryStore {
   loadingHistory: boolean;
   fetchHistory: () => Promise<void>;
   fetchHistoryByUser: (userId: string) => Promise<void>;
+  fetchHistoryLogin: () => Promise<void>;
   addHistory: (data: object) => Promise<void>;
 }
 
@@ -76,11 +77,39 @@ export const useHistoryStore = create<HistoryStore>((set) => ({
     set({ loadingHistory: false });
   },
 
+  fetchHistoryLogin: async () => {
+    set({ loadingHistory: true });
+    try {
+      const historyQuery = query(
+        collection(db, "history"),
+        where("login", "==", true),
+        limit(50),
+        orderBy("time", "desc")
+      );
+      const historyDocSnap = await getDocs(historyQuery);
+      console.log('historyDocSnap', historyDocSnap)
+      if (historyDocSnap) {
+        set({
+          history: historyDocSnap.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          })),
+          loadingHistory: false,
+        });
+      } else {
+        set({ loadingHistory: false });
+      }
+    } catch (error: any) {
+      console.log("error", error);
+    }
+    set({ loadingHistory: false });
+  },
 
   addHistory: async (data: object) => {
     set({ loadingHistory: true });
     try {
       const submittedDoc = await addDoc(collection(db, "history"), data);
+      console.log('Upload successful');
       set((state) => ({
         history: state.history
           ? [...state.history, submittedDoc]

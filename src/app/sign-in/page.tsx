@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
 import { AuroraBackground } from "@/components/ui/aurora-background";
 import { warnToast, errorToast } from "@/components/toast";
-import { FirebaseError } from 'firebase/app';
+import { FirebaseError } from "firebase/app";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { ToastContainer } from "react-toastify";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useHistoryStore } from "@/state/history";
 
 const SignInPage = () => {
   const router = useRouter();
@@ -16,24 +17,39 @@ const SignInPage = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { addHistory } = useHistoryStore();
 
   const togglePasswordVisibility = useCallback(() => {
-    setShowPassword(prevShowPassword => !prevShowPassword);
+    setShowPassword((prevShowPassword) => !prevShowPassword);
   }, []);
 
   const handleSignIn = useCallback(async () => {
     setLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
 
       const userDocRef = doc(db, "users", user.uid);
       const userDocSnap = await getDoc(userDocRef);
 
       if (userDocSnap.exists()) {
-        const { role } = userDocSnap.data();
-        console.log('role:', role);
-        await router.push(role === "admin" ? "/admin/dashboard" : "/user/dashboard");
+        const { role, name } = userDocSnap.data();
+        console.log("role:", role);
+        if (role == "user") {
+          const currentDate = new Date().toISOString();
+          await addHistory({
+            text: `${name} sign-in using ${user.email}`,
+            userId: user.uid,
+            time: currentDate,
+            login: true
+          });
+          console.log("ADD HISTORY");
+        }
+        router.push(role === "admin" ? "/admin/dashboard" : "/user/dashboard");
       } else {
         warnToast("User data not found. Please contact support.");
       }
@@ -42,23 +58,32 @@ const SignInPage = () => {
 
       if (error instanceof FirebaseError) {
         const errorMessages: { [key: string]: string } = {
-          "auth/invalid-credential": "Invalid email or password. Please try again.",
-          "auth/user-disabled": "This account has been disabled. Please contact support.",
-          "auth/too-many-requests": "Too many failed login attempts. Please try again later."
+          "auth/invalid-credential":
+            "Invalid email or password. Please try again.",
+          "auth/user-disabled":
+            "This account has been disabled. Please contact support.",
+          "auth/too-many-requests":
+            "Too many failed login attempts. Please try again later.",
         };
-        errorToast(errorMessages[error.code as string] || "An unexpected error occurred. Please try again.");
+        errorToast(
+          errorMessages[error.code as string] ||
+            "An unexpected error occurred. Please try again."
+        );
       } else {
         errorToast("An unexpected error occurred. Please try again.");
       }
     }
     setLoading(false);
-  }, [email, password, router]);
+  }, [email, password, router, addHistory]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSignIn();
-    }
-  }, [handleSignIn]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter") {
+        handleSignIn();
+      }
+    },
+    [handleSignIn]
+  );
 
   return (
     <AuroraBackground>

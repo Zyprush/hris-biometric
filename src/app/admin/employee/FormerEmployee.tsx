@@ -8,7 +8,6 @@ import {AdminRouteGuard} from "@/components/AdminRouteGuard";
 import { toast } from 'react-toastify';
 import { EmployeeDetails } from "./components/employeeModal";
 import { deleteObject, ref } from "firebase/storage";
-import { deleteUser, getAuth } from "firebase/auth";
 
 const FormerEmployee = () => {
   const [employees, setEmployees] = useState<EmployeeDetails[]>([]);
