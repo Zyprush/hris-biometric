@@ -8,6 +8,11 @@ import { FirebaseError } from 'firebase/app';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { ToastContainer } from "react-toastify";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useHistoryStore } from "@/state/history";
+import { doc, getDoc } from "firebase/firestore";
+import { SignedOut } from "@/components/signed-out";
+import { SignedIn } from "@/components/signed-in";
+import { RoleBasedRedirect } from "@/components/RoleBasedRedirect";
 
 const SignInPage = () => {
   const router = useRouter();
