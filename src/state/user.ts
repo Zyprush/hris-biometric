@@ -13,23 +13,31 @@ interface User {
   position: string;
   startDate: string;
   sss: string;
-  nickname:  string,
-  isEmailVerified: boolean
+  nickname: string;
+  isEmailVerified: boolean;
+  profilePicUrl: string;
 }
 
 interface UserStore {
   userData: User | null;
+  user: object | null;
   loading: boolean;
   error: string | null;
   fetchUserData: (uid: string) => Promise<void>;
   setUserData: (data: Partial<User>) => void;
+  setUser: (data: object) => void;
   signOut: () => Promise<void>;
 }
 
 export const useUserStore = create<UserStore>((set) => ({
   userData: null,
+  user: null,
   loading: false,
   error: null,
+
+  setUser: (data: object) => {
+    set((state) => ({ user: data }));
+  },
 
   fetchUserData: async (uid: string) => {
     set({ loading: true, error: null });
