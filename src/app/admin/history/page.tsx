@@ -8,6 +8,7 @@ import { useEffect } from "react";
 
 const AdminHistory = () => {
   const { history, loadingHistory, fetchHistory } = useHistoryStore();
+
   useEffect(() => {
     fetchHistory();
   }, [fetchHistory]);
@@ -16,21 +17,25 @@ const AdminHistory = () => {
     <SignedIn>
       <AdminLayout>
         <div className="flex h-full w-full p-5">
-          <div className="flex flex-col mx-auto border border-zinc-300 mt-5">
-            <table className="table table-pin-rows table-zebra max-w-[72rem]">
-              <thead>
-                <tr className="text-sm text-zinc-500 font-semibold">
-                  <th className="">Date</th>
-                  <th className="">Time</th>
-                  <th className="">Action</th>
+          <div className="flex flex-col mx-auto mb-8">
+            <table className="mb-5 text-sm rounded-lg border max-w-[72rem] min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr className="text-sm text-gray-700 font-semibold">
+                  <th className="px-6 py-3 text-left">Date</th>
+                  <th className="px-6 py-3 text-left">Time</th>
+                  <th className="px-6 py-3 text-left">Action</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="bg-white divide-y divide-gray-200">
                 {history?.map((h) => (
-                  <tr key={h.id} className="hover">
-                    <td>{h?.time ? format(new Date(h?.time), "MMM dd, yyyy") : ""}</td>
-                    <td>{h?.time ? format(new Date(h?.time), "hh:mm aaa") : ""}</td>
-                    <td>{h.text}</td>
+                  <tr key={h.id} className="hover:bg-gray-100">
+                    <td className="px-6 py-4 whitespace-nowrap font-semibold text-zinc-600">
+                      {h?.time ? format(new Date(h?.time), "MMM dd, yyyy") : ""}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {h?.time ? format(new Date(h?.time), "hh:mm aaa") : ""}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">{h.text}</td>
                   </tr>
                 ))}
               </tbody>

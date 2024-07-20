@@ -1,19 +1,29 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import { UserRouteGuard } from "@/components/UserRouteGuard";
-import UserLayout from "@/components/UserLayout";
 import { SignedIn } from "@/components/signed-in";
 import React, { useEffect, useState } from "react";
 import { MdEmail, MdModeEdit } from "react-icons/md";
-import { FaBuilding, FaIdBadge } from "react-icons/fa6";
-import { RiVerifiedBadgeFill } from "react-icons/ri";
+import {
+  FaAddressCard,
+  FaBuilding,
+  FaFlag,
+  FaIdBadge,
+  FaIdCardClip,
+  FaUserTag,
+} from "react-icons/fa6";
+import { RiUserSmileFill, RiVerifiedBadgeFill } from "react-icons/ri";
 import { warnToast } from "@/components/toast";
 import { auth, db } from "@/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { sendEmailVerification } from "firebase/auth";
-import Password from "./Password";
 import { ToastContainer } from "react-toastify";
+import { AdminRouteGuard } from "@/components/AdminRouteGuard";
+import AdminLayout from "@/components/AdminLayout";
+import Password from "@/app/user/account/Password";
+import { FaUserAlt, FaUserEdit } from "react-icons/fa";
+import { UserRouteGuard } from "@/components/UserRouteGuard";
+import UserLayout from "@/components/UserLayout";
 
 interface UserData {
   name: string;
@@ -29,10 +39,13 @@ interface UserData {
   philHealthNumber: string;
   tinNumber: string;
   profilePicUrl: string;
+  gender: string;
+  nationality: string;
+  status: string;
+  supervisor: string;
 }
-const UserAccount = () => {
+const AdminAccount = () => {
   const [user, loading] = useAuthState(auth);
-  const [editedData, setEditedData] = useState<UserData>();
   const [edit, setEdit] = useState<boolean>(false);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isEmailVerified, setIsEmailVerified] = useState(true);
@@ -44,7 +57,6 @@ const UserAccount = () => {
         const userDocSnap = await getDoc(userDocRef);
         if (userDocSnap.exists()) {
           setUserData(userDocSnap.data() as UserData);
-          setEditedData(userDocSnap.data() as UserData);
           if (!user.emailVerified) {
             setIsEmailVerified(false);
             warnToast(
@@ -74,43 +86,67 @@ const UserAccount = () => {
     <UserRouteGuard>
       <SignedIn>
         <UserLayout>
-          <div className="w-full h-full flex flex-col items-center justify-start p-5">
+          <div className="w-full h-full flex flex-col items-center justify-start p-6">
             <ToastContainer />
-            <span className="flex md:flex-row gap-5 gap-x-20 flex-col p-4">
-              <span>
-                <div className="relative w-36 h-36 mx-auto mb-4">
-                  <img
-                    src={userData?.profilePicUrl || "/img/profile-admin.jpg"}
-                    alt={userData?.name}
-                    className="border-2  drop-shadow-sm rounded-full object-cover w-full h-full border border-primary"
-                  />
+            <div className="w-full md:w-auto flex flex-col items-center">
+              <div className="relative w-36 h-36 mb-4">
+                <img
+                  src={userData?.profilePicUrl || "/img/profile-admin.jpg"}
+                  alt={userData?.name}
+                  className="border-2 drop-shadow-sm mx-auto rounded-full object-cover w-full h-full border-primary"
+                />
+              </div>
+              {!isEmailVerified && (
+                <div className="w-full md:w-auto border-b-2 p-3 mt-6 md:mt-0">
+                  <button
+                    onClick={handleResendVerification}
+                    disabled={isResendingVerification}
+                    className={`mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-800 ${
+                      isResendingVerification
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }`}
+                  >
+                    {isResendingVerification
+                      ? "Sending..."
+                      : "Resend Verification Email"}
+                  </button>
                 </div>
-              </span>
-              <span className="grid gap-4 md:gap-x-8 md:grid-cols-2 content-start">
+              )}
+              {!edit && (
+                <button
+                  className="btn btn-neutral mb-4"
+                  onClick={() => setEdit(true)}
+                >
+                  <MdModeEdit className="" /> Change Password
+                </button>
+              )}
+              {edit && <Password setEdit={setEdit} />}
+              <div className="grid gap-6 md:grid-cols-2 content-start w-full p-5 rounded-lg shadow-md border mb-5">
                 <UserInfo
                   label="Name"
-                  value={userData?.name || ""}
-                  icon={FaIdBadge}
+                  value={userData?.name || "N/A"}
+                  icon={FaUserAlt}
                 />
                 <UserInfo
                   label="Email"
-                  value={userData?.email || ""}
+                  value={userData?.email || "N/A"}
                   icon={MdEmail}
                 />
                 <UserInfo
                   label="Department"
-                  value={userData?.department || ""}
+                  value={userData?.department || "N/A"}
                   icon={FaBuilding}
                 />
                 <UserInfo
                   label="Employee ID"
-                  value={userData?.employeeId || ""}
-                  icon={FaIdBadge}
+                  value={userData?.employeeId || "N/A"}
+                  icon={FaIdCardClip}
                 />
                 <UserInfo
                   label="SSS"
                   value={userData?.sss || "N/A"}
-                  icon={FaIdBadge}
+                  icon={FaAddressCard}
                 />
                 <UserInfo
                   label="Phone"
@@ -120,42 +156,35 @@ const UserAccount = () => {
                 <UserInfo
                   label="TIN"
                   value={userData?.tinNumber || "N/A"}
-                  icon={FaIdBadge}
+                  icon={FaAddressCard}
                 />
                 <UserInfo
                   label="Verified"
                   value={isEmailVerified ? "Yes" : "No"}
                   icon={RiVerifiedBadgeFill}
                 />
-              </span>
-            </span>
-
-            {!isEmailVerified && (
-              <span className="w-full border-b-2 p-3 hover:bg-primary hover:text-white">
-                <button
-                  onClick={handleResendVerification}
-                  disabled={isResendingVerification}
-                  className={`mt-4 px-4 py-2 flex bg-blue-600 border-blue-600 text-white btn-sm btn rounded-md mr-2 hover:bg-blue-800 ${
-                    isResendingVerification
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
-                >
-                  {isResendingVerification
-                    ? "Sending..."
-                    : "Resend Verification Email"}
-                </button>
-              </span>
-            )}
-            {!edit && (
-              <button
-                className="btn btn-primary pr-6"
-                onClick={() => setEdit(true)}
-              >
-                <MdModeEdit /> change password
-              </button>
-            )}
-            {edit && <Password setEdit={setEdit} />}
+                <UserInfo
+                  label="Gender"
+                  value={userData?.gender || "Unknown"}
+                  icon={RiUserSmileFill}
+                />
+                <UserInfo
+                  label="Nationality"
+                  value={userData?.nationality || "Unknown"}
+                  icon={FaFlag}
+                />
+                <UserInfo
+                  label="Status"
+                  value={userData?.status || "Unknown"}
+                  icon={FaUserTag}
+                />
+                <UserInfo
+                  label="Supervisor"
+                  value={userData?.status || "Unknown"}
+                  icon={FaUserEdit}
+                />
+              </div>
+            </div>
           </div>
         </UserLayout>
       </SignedIn>
@@ -171,15 +200,15 @@ const UserInfo = ({ label, value, icon: Icon }: UserInfoProps) => {
   return (
     <>
       {value ? (
-        <div className="text-gray-600 text-sm flex flex-col justify-start truncate">
-          <div className="flex gap-1 items-center">
-            <Icon className="" />
-            <p className="font-semibold text-sm">{label}</p>
+        <div className="text-gray-600 text-sm flex gap-2 justify-start truncate">
+          <Icon className="bg-zinc-700 rounded-md p-2 text-[2rem] text-white" />
+          <div className="flex flex-col justify-center items-start">
+            <p className="font-bold text-sm">{label}</p>
+            <p className="truncate text-xs text-zinc-500">{value}</p>
           </div>
-          <p className="truncate text-xs text-zinc-500">{value}</p>
         </div>
       ) : null}
     </>
   );
 };
-export default UserAccount;
+export default AdminAccount;

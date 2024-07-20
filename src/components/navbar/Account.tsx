@@ -33,7 +33,7 @@ const Account = () => {
   const [user, loading] = useAuthState(auth);
   const [isEmailVerified, setIsEmailVerified] = useState(true);
   const router = useRouter();
-  const { setUserData, setUser, userData} = useUserStore();
+  const { setUserData, setUser, userData } = useUserStore();
   const [isResendingVerification, setIsResendingVerification] = useState(false);
 
   useEffect(() => {
@@ -53,9 +53,8 @@ const Account = () => {
         }
       }
     };
-    console.log("ACC RENDER")
     fetchUserData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setUser]);
 
   const handleSignOut = async () => {
@@ -97,11 +96,11 @@ const Account = () => {
       tabIndex={0}
       className="flex flex-col mt-2 dropdown-content menu bg-base-100 rounded-2xl border border-zinc-300 z-[1] h-auto  shadow-2xl w-[13rem] p-0"
     >
-      <span className="w-full border-b-2 gap-4 p-3 flex justify-items-start items-center">
+      <span className="w-full h-auto border-b-2 gap-3 p-3 flex justify-start items-center">
         <div
           tabIndex={0}
           role="button"
-          className="h-14 w-14 flex items-center justify-center overflow-hidden border-2 border-primary bg-primary rounded-full drop-shadow-md"
+          className="h-14 min-w-14 max-w-14 flex items-center justify-center overflow-hidden border-2 border-primary bg-primary rounded-full drop-shadow-md"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -110,11 +109,12 @@ const Account = () => {
             className="h-full w-full object-cover"
           />
         </div>
-        <h1 className="font-bold text-primary drop-shadow-md">Hello, {memoizedUserData?.nickname}!</h1>
-        <span className="flex flex-col gap-2"></span>
+        <span className="w-auto">
+          <h1 className="font-bold text-primary drop-shadow-md">
+            Hello, {memoizedUserData?.nickname}!
+          </h1>
+        </span>
       </span>
-  
-
 
       {memoizedUserData.role == "user" ? (
         <Link
