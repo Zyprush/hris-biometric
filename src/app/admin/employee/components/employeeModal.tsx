@@ -201,10 +201,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
       <div className="relative w-full max-w-4xl mx-auto my-6">
         <div className="relative flex flex-col w-full bg-white border-0 rounded-lg shadow-lg outline-none focus:outline-none">
           {/* Header */}
-          <div className="flex items-center justify-between p-5 border-b border-solid border-gray-200 rounded-t bg-gray-100">
-            <h3 className="text-3xl font-semibold text-gray-900">{editedEmployee.name}</h3>
+          <div className="flex items-center justify-between p-5 border-b border-solid border-gray-200 rounded-t bg-primary">
+            <h3 className="text-3xl font-semibold text-white">{editedEmployee.name}</h3>
             <button
-              className="p-1 ml-auto bg-transparent border-0 text-gray-600 float-right text-3xl leading-none font-semibold outline-none focus:outline-none hover:text-gray-900 transition-colors duration-200"
+              className="p-1 ml-auto bg-transparent border-0 text-white float-right text-3xl leading-none font-semibold outline-none focus:outline-none hover:text-gray-900 transition-colors duration-200"
               onClick={handleCloseModal}
             >
               <FaTimes />
@@ -268,7 +268,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
             </div>
           </div>
           {/* Footer */}
-          <div className="flex items-center justify-end p-6 border-t border-solid border-gray-200 rounded-b bg-gray-50">
+          <div className="flex items-center justify-end p-2 border-t border-solid border-gray-200 rounded-b ">
             {isEditing ? (
               <button
                 className="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-4 mb-1 ease-linear transition-all duration-150 flex items-center"
@@ -279,7 +279,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onEdit, onDelete, employ
               </button>
             ) : (
               <button
-                className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-4 mb-1 ease-linear transition-all duration-150 flex items-center"
+                className="bg-primary text-white active:bg-primary font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-4 mb-1 ease-linear transition-all duration-150 flex items-center"
                 type="button"
                 onClick={handleEdit}
               >
