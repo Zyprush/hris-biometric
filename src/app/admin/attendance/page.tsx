@@ -4,7 +4,7 @@ import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import AdminLayout from "@/components/AdminLayout";
 import { SignedIn } from "@/components/signed-in";
 import { useState } from "react";
-import { BsPersonBoundingBox, BsPersonCircle } from "react-icons/bs";
+import { BsCalendar, BsCalendarCheck, BsChatLeft, BsPersonBoundingBox, BsPersonCircle } from "react-icons/bs";
 import { MdViewTimeline } from "react-icons/md";
 import Attendance from "./Attendance";
 import Leave from "./Leave";
@@ -42,7 +42,7 @@ const AdminAttendance = () => {
                   }`}
                   onClick={() => setCurrentTab("Leave")}
                 >
-                  <BsPersonBoundingBox className="text-base" /> Leave Request
+                  <BsChatLeft className="text-base" /> Leave Request
                 </button>
                 <button
                   className={`btn join-item border-2 border-zinc-400 ${
@@ -52,7 +52,7 @@ const AdminAttendance = () => {
                   }`}
                   onClick={() => setCurrentTab("Attendance")}
                 >
-                  <BsPersonCircle className="text-base" /> Attendance
+                  <BsCalendarCheck className="text-base" /> Attendance
                 </button>
               </div>
               {renderContent()}
