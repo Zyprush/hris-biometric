@@ -1,14 +1,16 @@
 "use client";
-import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase";
 import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
 import { AuroraBackground } from "@/components/ui/aurora-background";
-import { warnToast, errorToast } from "@/components/toast";
+import { errorToast } from "@/components/toast";
 import { FirebaseError } from 'firebase/app';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { ToastContainer } from "react-toastify";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { SignedIn } from "@/components/signed-in";
+import { SignedOut } from "@/components/signed-out";
+import { RoleBasedRedirect } from "@/components/RoleBasedRedirect";
 
 const SignInPage = () => {
   const router = useRouter();
@@ -24,19 +26,7 @@ const SignInPage = () => {
   const handleSignIn = useCallback(async () => {
     setLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      const userDocRef = doc(db, "users", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
-
-      if (userDocSnap.exists()) {
-        const { role } = userDocSnap.data();
-        console.log('role:', role);
-        await router.push(role === "admin" ? "/admin/dashboard" : "/user/dashboard");
-      } else {
-        warnToast("User data not found. Please contact support.");
-      }
+      await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
       console.error("Error during sign in:", error);
 
@@ -52,7 +42,7 @@ const SignInPage = () => {
       }
     }
     setLoading(false);
-  }, [email, password, router]);
+  }, [email, password]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -62,44 +52,86 @@ const SignInPage = () => {
 
   return (
     <AuroraBackground>
-      <ToastContainer />
-      <div className="flex flex-col items-center justify-center h-screen dark w-full px-4">
-        <div className="w-full max-w-lg bg-gray-800 bg-opacity-30 backdrop-blur-sm rounded-lg shadow-md p-6 z-10 relative">
-          <h1 className="text-2xl text-white font-bold mb-6">Sign in page</h1>
-          <div className="flex flex-col" onKeyDown={handleKeyDown}>
-            <input
-              type="text"
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
-              placeholder="Email"
-              className="bg-gray-700 bg-opacity-50 text-gray-200 border-0 rounded-md p-2 mb-4 focus:bg-gray-600 focus:bg-opacity-70 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150 text-sm"
-            />
-            <div className="relative mb-4">
+      <SignedOut>
+        <ToastContainer />
+        <div className="flex flex-col items-center justify-center h-screen dark w-full px-4">
+          <div className="w-full max-w-lg bg-gray-800 bg-opacity-30 backdrop-blur-sm rounded-lg shadow-md p-6 z-10 relative">
+            <h1 className="text-2xl text-white font-bold mb-6">Sign in page</h1>
+            <div className="flex flex-col" onKeyDown={handleKeyDown}>
               <input
-                type={showPassword ? "text" : "password"}
-                onChange={(e) => setPassword(e.target.value)}
-                value={password}
-                placeholder="Password"
-                className="bg-gray-700 bg-opacity-50 text-gray-200 border-0 rounded-md p-2 w-full focus:bg-gray-600 focus:bg-opacity-70 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150 text-sm"
+                type="text"
+                onChange={(e) => setEmail(e.target.value)}
+                value={email}
+                placeholder="Email"
+                className="bg-gray-700 bg-opacity-50 text-gray-200 border-0 rounded-md p-2 mb-4 focus:bg-gray-600 focus:bg-opacity-70 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150 text-sm"
               />
+              <div className="relative mb-4">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  onChange={(e) => setPassword(e.target.value)}
+                  value={password}
+                  placeholder="Password"
+                  className="bg-gray-700 bg-opacity-50 text-gray-200 border-0 rounded-md p-2 w-full focus:bg-gray-600 focus:bg-opacity-70 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150 text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
               <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
+                className="bg-gradient-to-r from-indigo-500 to-blue-500 bg-opacity-80 hover:bg-opacity-100 text-white font-bold py-2 px-4 rounded-md mt-4 transition ease-in-out duration-150"
+                onClick={handleSignIn}
+                disabled={loading}
               >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                {loading ? "LOADING..." : "SIGN IN"}
               </button>
             </div>
-            <button
-              className="bg-gradient-to-r from-indigo-500 to-blue-500 bg-opacity-80 hover:bg-opacity-100 text-white font-bold py-2 px-4 rounded-md mt-4 transition ease-in-out duration-150"
-              onClick={handleSignIn}
-              disabled={loading}
-            >
-              {loading ? "LOADING..." : "SIGN IN"}
-            </button>
           </div>
         </div>
-      </div>
+      </SignedOut>
+      <SignedIn>
+        <RoleBasedRedirect/>
+        <div className="flex flex-col items-center justify-center h-screen dark w-full px-4">
+          <div className="w-full max-w-lg bg-gray-800 bg-opacity-30 backdrop-blur-sm rounded-lg shadow-md p-6 z-10 relative">
+            <h1 className="text-2xl text-white font-bold mb-6">Sign in page</h1>
+            <div className="flex flex-col" onKeyDown={handleKeyDown}>
+              <input
+                type="text"
+                onChange={(e) => setEmail(e.target.value)}
+                value={email}
+                placeholder="Email"
+                className="bg-gray-700 bg-opacity-50 text-gray-200 border-0 rounded-md p-2 mb-4 focus:bg-gray-600 focus:bg-opacity-70 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150 text-sm"
+              />
+              <div className="relative mb-4">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  onChange={(e) => setPassword(e.target.value)}
+                  value={password}
+                  placeholder="Password"
+                  className="bg-gray-700 bg-opacity-50 text-gray-200 border-0 rounded-md p-2 w-full focus:bg-gray-600 focus:bg-opacity-70 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150 text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+              <button
+                className="bg-gradient-to-r from-indigo-500 to-blue-500 bg-opacity-80 hover:bg-opacity-100 text-white font-bold py-2 px-4 rounded-md mt-4 transition ease-in-out duration-150"
+                onClick={handleSignIn}
+                disabled={loading}
+              >
+                Signing in...
+              </button>
+            </div>
+          </div>
+        </div>
+      </SignedIn>
     </AuroraBackground>
   );
 };
