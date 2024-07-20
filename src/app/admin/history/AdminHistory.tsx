@@ -1,6 +1,4 @@
 "use client";
-
-
 import AdminLayout from '@/components/AdminLayout';
 import { SignedIn } from '@/components/signed-in';
 import React, { useEffect } from 'react'

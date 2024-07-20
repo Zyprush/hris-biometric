@@ -28,10 +28,17 @@ interface NavLinkProps {
   isActive: boolean;
 }
 
-const NavLink: React.FC<NavLinkProps> = ({ href, icon: Icon, label, isActive }) => (
+const NavLink: React.FC<NavLinkProps> = ({
+  href,
+  icon: Icon,
+  label,
+  isActive,
+}) => (
   <Link
     href={href}
-    className={`navlink ${isActive ? "bg-neutral text-white" : "text-zinc-700"}`}
+    className={`navlink ${
+      isActive ? "bg-neutral text-white" : "text-zinc-700"
+    }`}
   >
     <Icon className="text-xl" /> {label}
   </Link>
@@ -67,7 +74,7 @@ const TopNavbar: React.FC<NavbarProps> = ({ children }) => {
     }
   }, [user]);
 
-  if (loading) return <Loading/>;
+  if (loading) return <Loading />;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -86,7 +93,8 @@ const TopNavbar: React.FC<NavbarProps> = ({ children }) => {
             <img
               src={userData?.profilePicUrl || "/img/profile-male.jpg"}
               alt="profile"
-              width={40} height={40}
+              width={40}
+              height={40}
               className="h-full w-full object-cover"
             />
           </div>
@@ -125,10 +133,10 @@ const TopNavbar: React.FC<NavbarProps> = ({ children }) => {
               isActive={pathname === "/user/payroll"}
             />
             <NavLink
-              href="/user/request"
-              icon={MdTry}
-              label="Reaquest Leave"
-              isActive={pathname === "/user/request"}
+              href="/user/history"
+              icon={RiFolderHistoryFill}
+              label="History"
+              isActive={pathname === "/user/history"}
             />
           </motion.nav>
         )}

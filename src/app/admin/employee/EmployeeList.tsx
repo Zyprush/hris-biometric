@@ -171,6 +171,7 @@ const EmployeeList = () => {
           text: `${userData?.name} deleted ${employeeData?.name} account`,
           userId: employeeData?.id,
           time: currentDate,
+          addedBy: "admin"
         });
         setEmployees(employees.filter((emp) => emp.id !== employeeId));
         setFilteredEmployees(

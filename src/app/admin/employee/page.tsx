@@ -11,6 +11,8 @@ import {
   BsPersonDash,
   BsPersonPlus,
 } from "react-icons/bs";
+import PasswordManagement from "./PasswordManagement";
+import { PiPasswordFill } from "react-icons/pi";
 
 const Page = () => {
   const [currentTable, setCurrentTable] = useState("Employee");
@@ -23,6 +25,8 @@ const Page = () => {
         return <AddEmployee />;
       case "Former Employee":
         return <FormerEmployee />;
+        case "Password Management":
+          return <PasswordManagement />;
       default:
         return <EmployeeList />;
     }
@@ -70,6 +74,17 @@ const Page = () => {
                   >
                     <BsPersonDash className="text-base md:mr-2" />
                     <span className="hidden md:inline">Former Employee</span>
+                  </button>
+                  <button
+                    className={`btn btn-md md:btn-md join-item border-2 border-zinc-400 ${
+                      currentTable === "Password Management"
+                        ? "bg-primary text-white border-primary"
+                        : ""
+                    }`}
+                    onClick={() => setCurrentTable("Password Management")}
+                  >
+                    <PiPasswordFill className="text-base md:mr-2" />
+                    <span className="hidden md:inline">Password Management</span>
                   </button>
                 </div>
               </div>

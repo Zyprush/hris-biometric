@@ -161,10 +161,6 @@ const AdminAccount = () => {
                   value={isEmailVerified ? "Yes" : "No"}
                   icon={RiVerifiedBadgeFill}
                 />
-                {/* gender: string; 
-                nationality: string; 
-                status: string; 
-                supervisor: string; */}
                 <UserInfo
                   label="Gender"
                   value={userData?.gender || "Unknown"}
