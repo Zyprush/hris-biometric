@@ -16,8 +16,8 @@ const AdminHistory = () => {
     <SignedIn>
       <AdminLayout>
         <div className="flex h-full w-full p-5">
-          <div className="flex flex-col mx-auto border border-zinc-300 rounded-lg mt-5 overflow-x-auto scroll-container max-h-[32rem]">
-            <table className="table table-zebra max-w-[72rem]">
+          <div className="flex flex-col mx-auto border border-zinc-300 mt-5">
+            <table className="table table-pin-rows table-zebra max-w-[72rem]">
               <thead>
                 <tr className="text-sm text-zinc-500 font-semibold">
                   <th className="">Date</th>

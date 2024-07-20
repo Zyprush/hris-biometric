@@ -5,14 +5,16 @@ import UserLayout from "@/components/UserLayout";
 import { SignedIn } from "@/components/signed-in";
 import React, { useEffect, useState } from "react";
 import { MdEmail, MdModeEdit } from "react-icons/md";
-import { IoMdSave } from "react-icons/io";
-import { FaBuildingUser, FaIdBadge } from "react-icons/fa6";
+import { FaBuilding, FaIdBadge } from "react-icons/fa6";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
 import { warnToast } from "@/components/toast";
 import { auth, db } from "@/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { sendEmailVerification } from "firebase/auth";
+import Password from "./Password";
+import { ToastContainer } from "react-toastify";
+
 interface UserData {
   name: string;
   nickname: string;
@@ -72,36 +74,52 @@ const UserAccount = () => {
     <UserRouteGuard>
       <SignedIn>
         <UserLayout>
-          <div className="w-full h-full flex justify-center ">
-            <span className="flex md:flex-row gap-5 flex-col p-4">
+          <div className="w-full h-full flex flex-col items-center justify-start p-5">
+            <ToastContainer />
+            <span className="flex md:flex-row gap-5 gap-x-20 flex-col p-4">
               <span>
                 <div className="relative w-36 h-36 mx-auto mb-4">
                   <img
-                    src={editedData?.profilePicUrl || "/img/profile-admin.jpg"}
-                    alt={editedData?.name}
+                    src={userData?.profilePicUrl || "/img/profile-admin.jpg"}
+                    alt={userData?.name}
                     className="border-2  drop-shadow-sm rounded-full object-cover w-full h-full border border-primary"
                   />
                 </div>
               </span>
-              <span className="grid gap-4 md:mt-5 md:gap-x-8 md:grid-cols-2 content-start">
+              <span className="grid gap-4 md:gap-x-8 md:grid-cols-2 content-start">
                 <UserInfo
                   label="Name"
-                  value={editedData?.name || ""}
+                  value={userData?.name || ""}
                   icon={FaIdBadge}
                 />
                 <UserInfo
                   label="Email"
-                  value={editedData?.email || ""}
+                  value={userData?.email || ""}
                   icon={MdEmail}
                 />
                 <UserInfo
                   label="Department"
-                  value={editedData?.department || ""}
-                  icon={FaBuildingUser}
+                  value={userData?.department || ""}
+                  icon={FaBuilding}
                 />
                 <UserInfo
                   label="Employee ID"
-                  value={editedData?.employeeId || ""}
+                  value={userData?.employeeId || ""}
+                  icon={FaIdBadge}
+                />
+                <UserInfo
+                  label="SSS"
+                  value={userData?.sss || "N/A"}
+                  icon={FaIdBadge}
+                />
+                <UserInfo
+                  label="Phone"
+                  value={userData?.phone || "N/A"}
+                  icon={FaIdBadge}
+                />
+                <UserInfo
+                  label="TIN"
+                  value={userData?.tinNumber || "N/A"}
                   icon={FaIdBadge}
                 />
                 <UserInfo
@@ -129,33 +147,15 @@ const UserAccount = () => {
                 </button>
               </span>
             )}
-
-            <span className="fixed bottom-5 right-4 md:right-10 flex gap-5">
-              {edit && (
-                <button
-                  className="btn btn-success pr-6"
-                  onClick={() => setEdit(false)}
-                >
-                  <IoMdSave /> save
-                </button>
-              )}
-              {!edit && (
-                <button
-                  className="btn btn-primary pr-6"
-                  onClick={() => setEdit(true)}
-                >
-                  <MdModeEdit /> edit
-                </button>
-              )}
-              {edit && (
-                <button
-                  className="btn btn-neutral"
-                  onClick={() => setEdit(false)}
-                >
-                  cancel
-                </button>
-              )}
-            </span>
+            {!edit && (
+              <button
+                className="btn btn-primary pr-6"
+                onClick={() => setEdit(true)}
+              >
+                <MdModeEdit /> change password
+              </button>
+            )}
+            {edit && <Password setEdit={setEdit} />}
           </div>
         </UserLayout>
       </SignedIn>
@@ -172,11 +172,11 @@ const UserInfo = ({ label, value, icon: Icon }: UserInfoProps) => {
     <>
       {value ? (
         <div className="text-gray-600 text-sm flex flex-col justify-start truncate">
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-1 items-center">
             <Icon className="" />
-            <p className="font-semibold text-xs">{label}:</p>
+            <p className="font-semibold text-sm">{label}</p>
           </div>
-          <p className="truncate">{value}</p>
+          <p className="truncate text-xs text-zinc-500">{value}</p>
         </div>
       ) : null}
     </>
