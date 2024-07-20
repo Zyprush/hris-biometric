@@ -4,10 +4,11 @@ import React, { useState, useEffect } from "react";
 import { collection, getDocs, doc, deleteDoc, updateDoc, getDoc, setDoc } from "firebase/firestore";
 import { db, storage } from "@/firebase";
 import Modal from "./components/employeeModal";
-import {AdminRouteGuard} from "@/components/AdminRouteGuard";
+import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import { toast } from 'react-toastify';
 import { EmployeeDetails } from "./components/employeeModal";
 import { deleteObject, ref } from "firebase/storage";
+import { BsSearch } from "react-icons/bs";
 
 const FormerEmployee = () => {
   const [employees, setEmployees] = useState<EmployeeDetails[]>([]);
@@ -100,7 +101,7 @@ const FormerEmployee = () => {
       toast.error("Failed to update employee");
     }
   };
-  
+
   const handleDelete = async (employeeId: string, documentUrls: string[]) => {
     try {
       // Delete employee document from Firestore
@@ -124,26 +125,30 @@ const FormerEmployee = () => {
     <AdminRouteGuard>
       <div className="container mx-auto p-4 h-full">
         <div className="grid grid-cols-1 gap-4">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center space-x-2 w-full max-w-sm">
-              <input
-                type="text"
-                placeholder="Search by name or ID"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="input input-sm input-bordered rounded-sm flex-grow"
-              />
-              <button onClick={handleSearch} className="btn rounded-md btn-sm btn-primary text-white">
-                Search
+          <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+            <input
+              type="text"
+              placeholder="Search by name or ID"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="input input-sm input-bordered rounded-sm w-full sm:w-64"
+            />
+            <div className="flex w-full sm:flex-1 space-x-2">
+              <button
+                onClick={handleSearch}
+                className="btn rounded-md btn-sm btn-primary text-white flex-1 sm:flex-none"
+              >
+                <BsSearch className="text-xs sm:text-sm" />
+              </button>
+              <button
+                onClick={handleViewDetails}
+                className={`btn btn-sm rounded-md text-white flex-1 sm:flex-none ${selectedEmployee ? "btn-primary" : "btn-disabled"
+                  }`}
+                disabled={!selectedEmployee}
+              >
+                <span className="text-xs sm:text-sm">View Details</span>
               </button>
             </div>
-            <button
-              onClick={handleViewDetails}
-              className={`btn btn-sm rounded-md text-white ml-2 ${selectedEmployee ? 'btn-primary' : 'btn-disabled'}`}
-              disabled={!selectedEmployee}
-            >
-              View Details
-            </button>
           </div>
           <table className="table border rounded border-zinc-200">
             <thead>
