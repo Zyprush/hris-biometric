@@ -104,10 +104,14 @@ const Account = () => {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={userData?.profilePicUrl || profileMale.src}
+            src={
+              userData?.profilePicUrl ||
+              (userData?.role === "admin" ? "/img/profile-admin.jpg" : "/img/profile-male.jpg")
+            }
             alt="profile"
             className="h-full w-full object-cover"
           />
+
         </div>
         <span className="w-auto">
           <h1 className="font-bold text-primary drop-shadow-md">
