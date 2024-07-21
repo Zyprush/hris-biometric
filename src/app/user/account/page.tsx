@@ -122,7 +122,7 @@ const AdminAccount = () => {
                 </button>
               )}
               {edit && <Password setEdit={setEdit} />}
-              <div className="grid gap-6 md:grid-cols-2 content-start w-full p-5 rounded-lg shadow-md border mb-5">
+              <div className="grid gap-6 md:grid-cols-2 content-start w-full p-5 rounded-xl shadow-md border mb-5">
                 <UserInfo
                   label="Name"
                   value={userData?.name || "N/A"}
@@ -180,7 +180,7 @@ const AdminAccount = () => {
                 />
                 <UserInfo
                   label="Supervisor"
-                  value={userData?.status || "Unknown"}
+                  value={userData?.supervisor || "Unknown"}
                   icon={FaUserEdit}
                 />
               </div>
@@ -201,9 +201,9 @@ const UserInfo = ({ label, value, icon: Icon }: UserInfoProps) => {
     <>
       {value ? (
         <div className="text-gray-600 text-sm flex gap-2 justify-start truncate">
-          <Icon className="bg-zinc-700 rounded-md p-2 text-[2rem] text-white" />
+          <Icon className="bg-neutral rounded-md p-2 text-[2rem] text-white" />
           <div className="flex flex-col justify-center items-start">
-            <p className="font-bold text-sm">{label}</p>
+            <p className="font-bold text-neutral text-sm">{label}</p>
             <p className="truncate text-xs text-zinc-500">{value}</p>
           </div>
         </div>

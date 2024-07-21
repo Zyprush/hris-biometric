@@ -1,37 +1,38 @@
 "use client";
 import { auth, db } from "@/firebase";
-import { format } from "date-fns";
 import { collection, getDocs, limit, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { BsPersonCircle } from "react-icons/bs";
-import { SlOptions } from "react-icons/sl";
 import LeaveModal from "./LeaveModal";
-import { FaCommentAlt, FaQuestion } from "react-icons/fa";
 import LeaveRequests from "./LeaveRequests";
+import LeaveInfo from "./LeaveInfo";
 
 const Leave = () => {
   const [user] = useAuthState(auth);
   const [requests, setRequests] = useState<any[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [showInfo, setShowInfo] = useState<boolean>(false);
   const [status, setStatus] = useState<string>("pending");
   const [curRequest, setCurRequest] = useState<object>({});
+
   useEffect(() => {
     const fetchRequests = async () => {
-      if (user) {
-        const querySnapshot = await getDocs(
-          query(
-            collection(db, "requests"),
-            where("status", "==", status),
-            limit(20)
-          )
-        );
-        const userRequests = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setRequests(userRequests);
-      }
+      if (!user) return;
+
+      const querySnapshot = await getDocs(
+        query(
+          collection(db, "requests"),
+          where("status", "==", status),
+          limit(20)
+        )
+      );
+
+      const userRequests = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setRequests(userRequests);
     };
 
     fetchRequests();
@@ -42,70 +43,45 @@ const Leave = () => {
     setCurRequest(request);
   };
 
+  const openInfo = (request: any) => {
+    setShowInfo(true);
+    setCurRequest(request);
+  };
+
   return (
     <div className="flex w-full h-full">
       <div className="flex flex-col w-full gap-4">
         {showModal && (
           <LeaveModal setShowModal={setShowModal} curRequest={curRequest} />
         )}
+        {showInfo && (
+          <LeaveInfo setShowInfo={setShowInfo} curRequest={curRequest} />
+        )}
         <div role="tablist" className="tabs tabs-lifted">
-          <input
-            type="radio"
-            name="my_tabs_2"
-            role="tab"
-            className="tab text-sm font-bold text-neutral"
-            aria-label="Pending"
-            value={status}
-            onClick={(e) => setStatus("pending")}
-          />
-          <div
-            role="tabpanel"
-            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
-          >
-            <LeaveRequests
-              requests={requests}
-              openModal={openModal}
-              status={status}
-            />
-          </div>
-          <input
-            type="radio"
-            name="my_tabs_2"
-            role="tab"
-            className="tab text-sm font-bold text-neutral"
-            aria-label="Approved"
-            defaultChecked
-            onClick={(e) => setStatus("approved")}
-          />
-          <div
-            role="tabpanel"
-            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
-          >
-            <LeaveRequests
-              requests={requests}
-              openModal={openModal}
-              status={status}
-            />
-          </div>
-
-          <input
-            type="radio"
-            name="my_tabs_2"
-            role="tab"
-            className="tab text-sm font-bold text-neutral"
-            aria-label="Rejected"
-            onClick={(e) => setStatus("rejected")}
-          />
-          <div
-            role="tabpanel"
-            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
-          >
-            <LeaveRequests
-              requests={requests}
-              openModal={openModal}
-              status={status}
-            />
-          </div>
+          {["Pending", "Approved", "Rejected"].map((tabStatus) => (
+            <React.Fragment key={tabStatus}>
+              <input
+                type="radio"
+                name="my_tabs_2"
+                role="tab"
+                className="tab text-sm font-bold text-neutral"
+                aria-label={tabStatus}
+                defaultChecked={tabStatus === "Approved"}
+                onClick={() => setStatus(tabStatus.toLowerCase())}
+              />
+              <div
+                role="tabpanel"
+                className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+              >
+                <LeaveRequests
+                  requests={requests}
+                  openModal={openModal}
+                  openInfo={openInfo}
+                  status={status}
+                />
+              </div>
+            </React.Fragment>
+          ))}
         </div>
       </div>
     </div>

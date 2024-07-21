@@ -72,7 +72,7 @@ const LeaveModal = ({
     }
   };
   return (
-    <div className="fixed top-0 bottom-0 right-0 left-0 w-full h-full bg-zinc-800 bg-opacity-50 py-6 flex p-4 flex-col justify-center sm:py-12 gap-4 z-[1]">
+    <div className="fixed top-0 bottom-0 right-0 left-0 w-full h-full bg-zinc-800 bg-opacity-50 py-6 flex p-4 flex-col justify-center sm:py-12 gap-4 z-50">
       <ToastContainer />
       <div className="w-full md:w-[24rem] gap-1 shadow-lg bg-white h-auto mx-auto border rounded-lg p-3 text-sm">
         <Info
@@ -95,7 +95,7 @@ const LeaveModal = ({
             <FaClipboardQuestion className="" />
             Reason
           </p>
-          <span className="text-xs ml-1">{curRequest?.reason}</span>
+          <span className="text-sm ml-1">{curRequest?.reason}</span>
         </p>
         <span className="flex justify-start mt-2 gap-4">
           <button
@@ -158,9 +158,9 @@ interface UserInfoProps {
   icon: React.ComponentType<{ className?: string }>;
 }
 const Info = ({ label, value, icon: Icon }: UserInfoProps) => (
-  <p className="text-gray-600 flex gap-1 items-center">
-    <Icon className="" /> <p className="font-semibold">{label}:</p> {value}
-  </p>
+  <span className="text-gray-600 flex gap-1 items-center font-semibold">
+    <Icon className="text-neutral" /> <p className="font-bold text-neutral">{label}:</p> {value}
+  </span>
 );
 
 export default LeaveModal;

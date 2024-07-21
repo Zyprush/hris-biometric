@@ -19,12 +19,14 @@ interface LeaveRequestsProps {
   requests: Request[];
   status: string;
   openModal: (request: Request) => void;
+  openInfo: (request: Request) => void;
 }
 
 const LeaveRequests: React.FC<LeaveRequestsProps> = ({
   requests,
   status,
   openModal,
+  openInfo,
 }) => {
   return (
     <div className="flex flex-wrap rounded-md gap-4">
@@ -41,15 +43,13 @@ const LeaveRequests: React.FC<LeaveRequestsProps> = ({
               <th className="px-6 py-3 text-left">Employee</th>
               <th className="px-6 py-3 text-left">Department</th>
               <th className="px-6 py-3 text-left">Date Submitted</th>
-              {status === "pending" && (
-                <th className="px-6 py-3 text-left">Action</th>
-              )}
+              <th className="px-6 py-3 text-left">Action</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {requests.map((request) => (
-              <tr key={request.id} className="hover:bg-gray-100">
-                <td className="px-6 py-4 flex flex-col whitespace-nowrap font-semibold text-sm text-zinc-600">
+              <tr key={request.id} className="hover:bg-gray-100 cursor-pointer">
+                <td className="px-6 py-4 whitespace-nowrap font-semibold text-sm text-zinc-600">
                   {format(new Date(request?.leaveDate), "MMM dd yyyy")}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -61,13 +61,22 @@ const LeaveRequests: React.FC<LeaveRequestsProps> = ({
                 <td className="px-6 py-4 whitespace-nowrap">
                   {format(new Date(request?.creationDate), "MMM dd yyyy")}
                 </td>
-                {status === "pending" && (
+                {status === "pending" ? (
                   <td className="px-6 py-4 whitespace-nowrap">
                     <button
-                      className="mr-2 m-auto"
+                      className="btn-sm btn btn-primary"
                       onClick={() => openModal(request)}
                     >
-                      <SlOptions />
+                      respond
+                    </button>
+                  </td>
+                ) : (
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <button
+                      className="btn-sm btn btn-primary"
+                      onClick={() => openInfo(request)}
+                    >
+                      view
                     </button>
                   </td>
                 )}

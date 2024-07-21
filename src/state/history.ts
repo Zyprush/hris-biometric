@@ -87,7 +87,6 @@ export const useHistoryStore = create<HistoryStore>((set) => ({
         orderBy("time", "desc")
       );
       const historyDocSnap = await getDocs(historyQuery);
-      console.log('historyDocSnap', historyDocSnap)
       if (historyDocSnap) {
         set({
           history: historyDocSnap.docs.map((doc) => ({
