@@ -8,13 +8,13 @@ import { BsPersonCircle } from "react-icons/bs";
 import { SlOptions } from "react-icons/sl";
 import LeaveModal from "./LeaveModal";
 import { FaCommentAlt, FaQuestion } from "react-icons/fa";
+import LeaveRequests from "./LeaveRequests";
 
 const Leave = () => {
   const [user] = useAuthState(auth);
   const [requests, setRequests] = useState<any[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [status, setStatus] = useState<string>("pending");
-  // const [loading, setLoading] = useState<boolean>(false);
   const [curRequest, setCurRequest] = useState<object>({});
   useEffect(() => {
     const fetchRequests = async () => {
@@ -44,64 +44,68 @@ const Leave = () => {
 
   return (
     <div className="flex w-full h-full">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col w-full gap-4">
         {showModal && (
           <LeaveModal setShowModal={setShowModal} curRequest={curRequest} />
         )}
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className="flex gap-2 mx-auto text-xs rounded-md mr-auto ml-0 p-2 font-bold border-2 btn-outline text-zinc-700"
-        >
-          <option value="pending">Pending</option>
-          <option value="approved">Approved</option>
-          <option value="rejected">Rejected</option>
-        </select>
-        <div className="flex flex-wrap rounded-md gap-4">
-          {requests.length == 0 && <span className="text-xs font-semibold text-zinc-700 p-2 border rounded-lg flex gap-2 items-center"> <FaCommentAlt/> No {status} leave request!</span>}
-          {requests.map((request) => (
-            <div
-              className={`p-4 border-2 rounded-lg mb-4 flex justify-between bg-base w-[20rem]  md:w-[25rem]`}
-              key={request.id}
-            >
-              <div className="flex flex-col gap-2 items-start justify-start">
-                <div className="text-zinc-700 mb-2 flex gap-2 items-center w-full">
-                  <span className="bg-zinc-700 rounded text-sm font-semibold p-2 py-1 text-white">
-                    {format(new Date(request.leaveDate), "MMM dd yyyy")}{" "}
-                  </span>
-                  <p className="font-normal text-sm text-zinc-500">
-                    {request.totalDays} days
-                  </p>
-                  <span className="flex gap-2">
-                    <span className="flex gap-2 text-xs p-1 px-2 border rounded-lg">
-                      <BsPersonCircle className="text-lg" />
-                      {request?.submittedBy}
-                    </span>
-                  </span>
-                  {status === "pending" && (
-                    <button
-                      className="mr-2 m-auto"
-                      onClick={() => openModal(request)}
-                    >
-                      <SlOptions />
-                    </button>
-                  )}
-                </div>
+        <div role="tablist" className="tabs tabs-lifted">
+          <input
+            type="radio"
+            name="my_tabs_2"
+            role="tab"
+            className="tab text-sm font-bold text-neutral"
+            aria-label="Pending"
+            value={status}
+            onClick={(e) => setStatus("pending")}
+          />
+          <div
+            role="tabpanel"
+            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+          >
+            <LeaveRequests
+              requests={requests}
+              openModal={openModal}
+              status={status}
+            />
+          </div>
+          <input
+            type="radio"
+            name="my_tabs_2"
+            role="tab"
+            className="tab text-sm font-bold text-neutral"
+            aria-label="Approved"
+            defaultChecked
+            onClick={(e) => setStatus("approved")}
+          />
+          <div
+            role="tabpanel"
+            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+          >
+            <LeaveRequests
+              requests={requests}
+              openModal={openModal}
+              status={status}
+            />
+          </div>
 
-                <div className="text-sm text-zinc-500 font-thin leading-5 ml-1">
-                  {request.reason}
-                </div>
-                {request.remarks && (
-                  <div className="text-sm font-thin text-zinc-500 leading-5 ml-1 items-start flex flex-col">
-                    <span className="font-semibold text-zinc-700 flex items-center">
-                      Rejected <FaQuestion className="text-sm" />{" "}
-                    </span>
-                    {request?.remarks}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
+          <input
+            type="radio"
+            name="my_tabs_2"
+            role="tab"
+            className="tab text-sm font-bold text-neutral"
+            aria-label="Rejected"
+            onClick={(e) => setStatus("rejected")}
+          />
+          <div
+            role="tabpanel"
+            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+          >
+            <LeaveRequests
+              requests={requests}
+              openModal={openModal}
+              status={status}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -4,11 +4,10 @@ import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import AdminLayout from "@/components/AdminLayout";
 import { SignedIn } from "@/components/signed-in";
 import { useState } from "react";
-import { BsCalendar, BsCalendarCheck, BsChatLeft, BsPersonBoundingBox, BsPersonCircle } from "react-icons/bs";
-import { MdViewTimeline } from "react-icons/md";
 import Attendance from "./Attendance";
 import Leave from "./Leave";
 import Logs from "./Logs";
+import { FaFileCircleQuestion, FaClipboardUser } from "react-icons/fa6";
 
 const AdminAttendance = () => {
   const [currentTab, setCurrentTab] = useState("Leave");
@@ -42,7 +41,7 @@ const AdminAttendance = () => {
                   }`}
                   onClick={() => setCurrentTab("Leave")}
                 >
-                  <BsChatLeft className="text-base" /> Leave Request
+                  <FaFileCircleQuestion className="text-base" /> Leave Request
                 </button>
                 <button
                   className={`btn join-item border-2 border-zinc-400 ${
@@ -52,7 +51,7 @@ const AdminAttendance = () => {
                   }`}
                   onClick={() => setCurrentTab("Attendance")}
                 >
-                  <BsCalendarCheck className="text-base" /> Attendance
+                  <FaClipboardUser className="text-base" /> Attendance
                 </button>
               </div>
               {renderContent()}

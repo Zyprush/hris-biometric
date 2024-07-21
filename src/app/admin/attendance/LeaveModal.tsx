@@ -72,7 +72,7 @@ const LeaveModal = ({
     }
   };
   return (
-    <div className="fixed top-0 bottom-0 right-0 left-0 w-full h-full bg-zinc-800 bg-opacity-50 py-6 flex p-4 flex-col justify-center sm:py-12 gap-4">
+    <div className="fixed top-0 bottom-0 right-0 left-0 w-full h-full bg-zinc-800 bg-opacity-50 py-6 flex p-4 flex-col justify-center sm:py-12 gap-4 z-[1]">
       <ToastContainer />
       <div className="w-full md:w-[24rem] gap-1 shadow-lg bg-white h-auto mx-auto border rounded-lg p-3 text-sm">
         <Info
