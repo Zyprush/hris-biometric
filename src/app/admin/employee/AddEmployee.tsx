@@ -138,7 +138,7 @@ const AddEmployee = () => {
         <ToastContainer />
         <div className="w-full max-w-6xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
           <div className="p-8">
-            <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold mb-4">
+            <div className="uppercase tracking-wide text-sm text-primary font-semibold mb-4">
               Add Employee - Step {step} of 4
             </div>
             <form onSubmit={onSubmit}>

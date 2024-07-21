@@ -199,7 +199,7 @@ const EmployeeList = () => {
               placeholder="Search by name or ID"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="input input-sm input-bordered rounded-sm w-full sm:w-64"
+              className="input input-sm input-bordered rounded-sm w-full sm:w-64 border-black rounded"
             />
             <div className="flex w-full sm:flex-1 space-x-2">
               <button
@@ -222,7 +222,7 @@ const EmployeeList = () => {
 
           <table className="table border rounded">
             <thead>
-              <tr className="text-xs text-white bg-primary py-4">
+              <tr className="text-md text-white bg-primary py-4 text-center px-2">
                 <th className="px-4 py-2">Employee ID</th>
                 <th className="px-4 py-2">Name</th>
                 <th className="px-4 py-2">Remarks</th>
@@ -240,7 +240,7 @@ const EmployeeList = () => {
                   <tr
                     key={employee.id}
                     onClick={() => handleRowClick(employee)}
-                    className={`cursor-pointer ${selectedEmployee?.id === employee.id
+                    className={`text-center cursor-pointer ${selectedEmployee?.id === employee.id
                       ? "bg-blue-100 hover:bg-blue-200"
                       : "hover:bg-gray-100"
                       }`}

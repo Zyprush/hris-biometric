@@ -88,26 +88,26 @@ const Payroll: React.FC = () => {
               <BsSearch className="text-xs sm:text-sm" />
             </button>
           </div>
-          <div className="overflow-x-auto">
-            <table className="table-auto w-full border-collapse border border-gray-300">
+          <div className="overflow-x-auto bg-white rounded ">
+            <table className="table-auto w-full rounded border border-primary">
               <thead>
-                <tr className="bg-gray-100">
-                  <th className="border border-gray-300 px-2 py-1 text-xs" rowSpan={2}>NAME OF EMPLOYEE</th>
-                  <th className="border border-gray-300 px-2 py-1 text-xs" rowSpan={2}>RATE</th>
-                  <th className="border border-gray-300 px-2 py-1 text-xs" rowSpan={2}>DAYS OF WORK</th>
-                  <th className="border border-gray-300 px-2 py-1 text-xs" rowSpan={2}>TOTAL REGULAR WAGE</th>
-                  <th className="border border-gray-300 px-2 py-1 text-xs" rowSpan={2}>OVERTIME</th>
-                  <th className="border border-gray-300 px-2 py-1 text-xs" rowSpan={2}>HOLIDAY</th>
-                  <th className="border border-gray-300 px-2 py-1 text-xs" rowSpan={2}>TOTAL AMOUNT</th>
-                  <th className="border border-gray-300 px-2 py-1 text-xs" colSpan={4}>DEDUCTIONS</th>
-                  <th className="border border-gray-300 px-2 py-1 text-xs" rowSpan={2}>TOTAL DEDUCTIONS</th>
-                  <th className="border border-gray-300 px-2 py-1 text-xs" rowSpan={2}>TOTAL NET AMOUNT</th>
+                <tr className="bg-primary text-white border border-primary">
+                  <th className="border border-black px-2 py-1 text-xs" rowSpan={2}>NAME OF EMPLOYEE</th>
+                  <th className="border border-black px-2 py-1 text-xs" rowSpan={2}>RATE</th>
+                  <th className="border border-black px-2 py-1 text-xs" rowSpan={2}>DAYS OF WORK</th>
+                  <th className="border border-black px-2 py-1 text-xs" rowSpan={2}>TOTAL REGULAR WAGE</th>
+                  <th className="border border-black px-2 py-1 text-xs" rowSpan={2}>OVERTIME</th>
+                  <th className="border border-black px-2 py-1 text-xs" rowSpan={2}>HOLIDAY</th>
+                  <th className="border border-black px-2 py-1 text-xs" rowSpan={2}>TOTAL AMOUNT</th>
+                  <th className="border border-black px-2 py-1 text-xs" colSpan={4}>DEDUCTIONS</th>
+                  <th className="border border-black px-2 py-1 text-xs" rowSpan={2}>TOTAL DEDUCTIONS</th>
+                  <th className="border border-black px-2 py-1 text-xs" rowSpan={2}>TOTAL NET AMOUNT</th>
                 </tr>
-                <tr className="bg-gray-100">
-                  <th className="border border-gray-300 px-2 py-1 text-xs">SSS</th>
-                  <th className="border border-gray-300 px-2 py-1 text-xs">PHILHEALTH</th>
-                  <th className="border border-gray-300 px-2 py-1 text-xs">PAGIBIG</th>
-                  <th className="border border-gray-300 px-2 py-1 text-xs">CASH ADVANCE</th>
+                <tr className="bg-primary text-white">
+                  <th className="border border-black px-2 py-1 text-xs">SSS</th>
+                  <th className="border border-black px-2 py-1 text-xs">PHILHEALTH</th>
+                  <th className="border border-black px-2 py-1 text-xs">PAGIBIG</th>
+                  <th className="border border-black px-2 py-1 text-xs">CASH ADVANCE</th>
                 </tr>
               </thead>
               <tbody>
@@ -120,19 +120,19 @@ const Payroll: React.FC = () => {
                 ) : (
                   filteredEmployees.map((employee: Employee) => (
                     <tr key={employee.id} className="hover:bg-gray-100">
-                      <td className="border border-gray-300 px-2 py-1 text-xs">{employee.name}</td>
-                      <td className="border border-gray-300 px-2 py-1 text-xs">{employee.rate.toFixed(2)}</td>
-                      <td className="border border-gray-300 px-2 py-1 text-xs">0</td>
-                      <td className="border border-gray-300 px-2 py-1 text-xs">0</td>
-                      <td className="border border-gray-300 px-2 py-1 text-xs">0</td>
-                      <td className="border border-gray-300 px-2 py-1 text-xs">0</td>
-                      <td className="border border-gray-300 px-2 py-1 text-xs">0</td>
-                      <td className="border border-gray-300 px-2 py-1 text-xs">0</td>
-                      <td className="border border-gray-300 px-2 py-1 text-xs">0</td>
-                      <td className="border border-gray-300 px-2 py-1 text-xs">0</td>
-                      <td className="border border-gray-300 px-2 py-1 text-xs">0</td>
-                      <td className="border border-gray-300 px-2 py-1 text-xs">0</td>
-                      <td className="border border-gray-300 px-2 py-1 text-xs">0</td>
+                      <td className="border border-black px-2 py-1 text-xs">{employee.name}</td>
+                      <td className="border border-black px-2 py-1 text-xs">{employee.rate.toFixed(2)}</td>
+                      <td className="border border-black px-2 py-1 text-xs">0</td>
+                      <td className="border border-black px-2 py-1 text-xs">0</td>
+                      <td className="border border-black px-2 py-1 text-xs">0</td>
+                      <td className="border border-black px-2 py-1 text-xs">0</td>
+                      <td className="border border-black px-2 py-1 text-xs">0</td>
+                      <td className="border border-black px-2 py-1 text-xs">0</td>
+                      <td className="border border-black px-2 py-1 text-xs">0</td>
+                      <td className="border border-black px-2 py-1 text-xs">0</td>
+                      <td className="border border-black px-2 py-1 text-xs">0</td>
+                      <td className="border border-black px-2 py-1 text-xs">0</td>
+                      <td className="border border-black px-2 py-1 text-xs">0</td>
                     </tr>
                   ))
                 )}
