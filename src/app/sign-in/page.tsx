@@ -110,7 +110,7 @@ const SignInPage = () => {
                 onClick={handleSignIn}
                 disabled={loading}
               >
-                {loading ? "LOADING..." : "SIGN IN"}
+                {loading ? "SIGNING IN..." : "SIGN IN"}
               </button>
             </div>
           </div>
@@ -150,7 +150,7 @@ const SignInPage = () => {
                 onClick={handleSignIn}
                 disabled={loading}
               >
-                Signing in...
+                SIGNING IN...
               </button>
             </div>
           </div>
