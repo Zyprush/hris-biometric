@@ -78,7 +78,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
 
   return (
     <div className="h-screen w-full flex flex-col">
-      <span className="w-full h-14 bg-zinc-200 justify-between px-5 items-center border-b-2 border-zinc-300 hidden md:flex">
+      <span className="w-full h-14 bg-white custom-shadow justify-between px-5 items-center border-b border-zinc-300 hidden md:flex">
         <button
           onClick={toggleNavbar}
           data-tip="toggle width"
@@ -113,7 +113,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
         <nav
           className={`flex ${
             isMinimized ? "w-20" : "w-56"
-          } bg-zinc-200 h-auto transition-width duration-300 flex-col items-start justify-start p-5 gap-2`}
+          } bg-white custom-shadow h-auto transition-width duration-300 flex-col items-start justify-start p-5 gap-2`}
         >
           <NavLink
             href="/admin/dashboard"
