@@ -71,10 +71,10 @@ const PasswordManagement = () => {
             </button>
           </div>
         </div>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto card bg-white rounded shadow">
           <table className="table border rounded border-zinc-200 w-full">
             <thead>
-              <tr className="text-xs text-gray-500 bg-gray-100">
+              <tr className="text-xs text-white bg-primary">
                 <th className="px-4 py-2">Employee Name</th>
                 <th className="px-4 py-2">Email</th>
                 <th className="px-4 py-2">Actions</th>

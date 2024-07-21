@@ -150,36 +150,38 @@ const FormerEmployee = () => {
               </button>
             </div>
           </div>
-          <table className="table border rounded border-zinc-200">
-            <thead>
-              <tr className="text-xs text-gray-500 bg-gray-100">
-                <th className="px-4 py-2">Employee ID</th>
-                <th className="px-4 py-2">Name</th>
-                <th className="px-4 py-2">Remarks</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredEmployees.length < 1 ? (
-                <tr>
-                  <td colSpan={3} className="text-red-500 text-xs">
-                    No results
-                  </td>
+          <div className="card bg-white rounded shadow">
+            <table className="table border rounded border-zinc-200">
+              <thead>
+                <tr className="text-xs text-white bg-primary">
+                  <th className="px-4 py-2">Employee ID</th>
+                  <th className="px-4 py-2">Name</th>
+                  <th className="px-4 py-2">Remarks</th>
                 </tr>
-              ) : (
-                filteredEmployees.map((employee) => (
-                  <tr
-                    key={employee.id}
-                    onClick={() => handleRowClick(employee)}
-                    className={`cursor-pointer ${selectedEmployee?.id === employee.id ? 'bg-blue-100 hover:bg-blue-200' : 'hover:bg-gray-100'}`}
-                  >
-                    <td className="px-4 py-2 text-xs">{employee.employeeId}</td>
-                    <td className="px-4 py-2 text-xs text-gray-600">{employee.name}</td>
-                    <td className="px-4 py-2 text-xs text-gray-600">{employee.status}</td>
+              </thead>
+              <tbody>
+                {filteredEmployees.length < 1 ? (
+                  <tr>
+                    <td colSpan={3} className="text-red-500 text-xs">
+                      No results
+                    </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  filteredEmployees.map((employee) => (
+                    <tr
+                      key={employee.id}
+                      onClick={() => handleRowClick(employee)}
+                      className={`cursor-pointer ${selectedEmployee?.id === employee.id ? 'bg-blue-100 hover:bg-blue-200' : 'hover:bg-gray-100'}`}
+                    >
+                      <td className="px-4 py-2 text-xs">{employee.employeeId}</td>
+                      <td className="px-4 py-2 text-xs text-gray-600">{employee.name}</td>
+                      <td className="px-4 py-2 text-xs text-gray-600">{employee.status}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <Modal

@@ -10,7 +10,7 @@ import PersonalInfo from "./components/PersonalInfo";
 import EmploymentInfo from "./components/EmployeeInfo";
 import Credentials from "./components/CredentialInfo";
 import { auth } from "@/firebase";
-import {AdminRouteGuard} from "@/components/AdminRouteGuard";
+import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import LegalDocuments from "./components/LegalInfo";
 import { useUserStore } from "@/state/user";
 import { useHistoryStore } from "@/state/history";
@@ -57,7 +57,7 @@ const AddEmployee = () => {
   const [password, setPassword] = useState<string>("");
   const [rePassword, setRePassword] = useState<string>("");
   const [role, setRole] = useState<"user" | "admin">("user");
-  
+
   const { userData } = useUserStore();
   const { addHistory } = useHistoryStore();
 
@@ -136,7 +136,7 @@ const AddEmployee = () => {
     <AdminRouteGuard>
       <div className="container mx-auto p-4">
         <ToastContainer />
-        <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
+        <div className="w-full max-w-6xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
           <div className="p-8">
             <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold mb-4">
               Add Employee - Step {step} of 4
@@ -148,7 +148,7 @@ const AddEmployee = () => {
                   <button
                     type="button"
                     onClick={prevStep}
-                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+                    className="bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded"
                   >
                     Previous
                   </button>
@@ -157,7 +157,7 @@ const AddEmployee = () => {
                   <button
                     type="button"
                     onClick={nextStep}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    className="bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded"
                   >
                     Next
                   </button>
@@ -174,6 +174,7 @@ const AddEmployee = () => {
           </div>
         </div>
       </div>
+
     </AdminRouteGuard>
   );
 };

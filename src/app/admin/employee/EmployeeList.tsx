@@ -218,10 +218,11 @@ const EmployeeList = () => {
               </button>
             </div>
           </div>
+          <div className="card shadow bg-white rounded">
 
-          <table className="table border rounded border-zinc-200">
+          <table className="table border rounded">
             <thead>
-              <tr className="text-xs text-gray-500 bg-gray-100">
+              <tr className="text-xs text-white bg-primary py-4">
                 <th className="px-4 py-2">Employee ID</th>
                 <th className="px-4 py-2">Name</th>
                 <th className="px-4 py-2">Remarks</th>
@@ -256,6 +257,7 @@ const EmployeeList = () => {
               )}
             </tbody>
           </table>
+          </div>
         </div>
 
         <Modal

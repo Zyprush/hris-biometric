@@ -43,10 +43,10 @@ const Page = () => {
               <div className="flex justify-center md:justify-start space-x-2 md:space-x-0 my-4">
                 <div className="join join-horizontal md:join-horizontal">
                   <button
-                    className={`btn btn-md md:btn-md join-item border-2 border-zinc-400 ${
+                    className={`btn btn-md md:btn-md join-item border border-primary ${
                       currentTable === "Employee"
-                        ? "bg-primary text-white border-primary"
-                        : ""
+                        ? "bg-primary text-white border-primary hover:bg-secondary hover:text-white hover:border-primary"
+                        : "hover:bg-secondary hover:text-white hover:border-primary bg-white "
                     }`}
                     onClick={() => setCurrentTable("Employee")}
                   >
@@ -54,10 +54,10 @@ const Page = () => {
                     <span className="hidden md:inline">Employee</span>
                   </button>
                   <button
-                    className={`btn btn-md md:btn-md join-item border-2 border-zinc-400 ${
+                    className={`btn btn-md md:btn-md join-item border border-primary ${
                       currentTable === "Add Employee"
-                        ? "bg-primary text-white border-primary"
-                        : ""
+                        ? "bg-primary text-white border-primary hover:bg-secondary hover:text-white hover:border-primary"
+                        : "hover:bg-secondary hover:text-white hover:border-primary bg-white "
                     }`}
                     onClick={() => setCurrentTable("Add Employee")}
                   >
@@ -65,10 +65,10 @@ const Page = () => {
                     <span className="hidden md:inline">Add Employee</span>
                   </button>
                   <button
-                    className={`btn btn-md md:btn-md join-item border-2 border-zinc-400 ${
+                    className={`btn btn-md md:btn-md join-item border border-primary ${
                       currentTable === "Former Employee"
-                        ? "bg-primary text-white border-primary"
-                        : ""
+                        ? "bg-primary text-white border-primary hover:bg-secondary hover:text-white hover:border-primary"
+                        : "hover:bg-secondary hover:text-white hover:border-primary bg-white "
                     }`}
                     onClick={() => setCurrentTable("Former Employee")}
                   >
@@ -76,10 +76,10 @@ const Page = () => {
                     <span className="hidden md:inline">Former Employee</span>
                   </button>
                   <button
-                    className={`btn btn-md md:btn-md join-item border-2 border-zinc-400 ${
+                    className={`btn btn-md md:btn-md join-item border border-primary ${
                       currentTable === "Password Management"
-                        ? "bg-primary text-white border-primary"
-                        : ""
+                        ? "bg-primary text-white border-primary hover:bg-secondary hover:text-white hover:border-primary"
+                        : "hover:bg-secondary hover:text-white hover:border-primary bg-white "
                     }`}
                     onClick={() => setCurrentTable("Password Management")}
                   >
