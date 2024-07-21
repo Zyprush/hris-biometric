@@ -14,7 +14,7 @@ import {
   Title,
 } from "chart.js";
 import { FaUsers, FaUserCheck, FaUserTimes, FaUserAltSlash, FaCalendarAlt, FaUserMinus, FaBuilding, FaUserPlus, FaBirthdayCake } from 'react-icons/fa';
-import {AdminRouteGuard} from "@/components/AdminRouteGuard";
+import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import { ToastContainer } from "react-toastify";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
@@ -130,8 +130,8 @@ const AdminDashboard = () => {
     datasets: [
       {
         data: [50, 10, 5, 20],
-        backgroundColor: ["#34D399", "#F87171", "#FBBF24", "#60A5FA"],
-        hoverBackgroundColor: ["#10B981", "#EF4444", "#F59E0B", "#3B82F6"],
+        backgroundColor: ["#135D66", "#1A7680", "#238F99", "#104A55"],
+        hoverBackgroundColor: ["#104A55", "#238F99", "#1A7680", "#135D66"],
       },
     ],
   };
@@ -142,12 +142,12 @@ const AdminDashboard = () => {
       {
         label: "Understaff",
         data: [30, 20, 10, 15, 25, 35],
-        backgroundColor: "#EF4444",
+        backgroundColor: "#1A7680",
       },
       {
         label: "Stable",
         data: [70, 80, 90, 85, 75, 65],
-        backgroundColor: "#34D399",
+        backgroundColor: "#238F99",
       },
     ],
   };
@@ -158,23 +158,24 @@ const AdminDashboard = () => {
       {
         label: "Understaff",
         data: [30, 20, 10, 15, 25, 35],
-        backgroundColor: "#EF4444",
+        backgroundColor: "#135D66",
       },
       {
         label: "Stable",
         data: [70, 80, 90, 85, 75, 65],
-        backgroundColor: "#34D399",
+        backgroundColor: "#104A55",
       },
     ],
   };
 
   const cardData = [
-    { title: "Total Employees", icon: FaUsers, color: "text-blue-500", value: totalEmployees - 1 },
-    { title: "Total Branches", icon: FaBuilding, color: "text-green-500", value: 2 },
-    { title: "Recent Hires", icon: FaUserPlus, color: "text-yellow-500", value: recentHires },
-    { title: "Former Employees", icon: FaUserMinus, color: "text-red-500", value: formerEmployees },
-    { title: "Upcoming Birthdays", icon: FaBirthdayCake, color: "text-purple-500", value: upcomingBirthdays },
+    { title: "Total Employees", icon: FaUsers, color: "text-[#135D66]", value: totalEmployees - 1 },
+    { title: "Total Branches", icon: FaBuilding, color: "text-[#1A7680]", value: 2 },
+    { title: "Recent Hires", icon: FaUserPlus, color: "text-[#238F99]", value: recentHires },
+    { title: "Former Employees", icon: FaUserMinus, color: "text-[#104A55]", value: formerEmployees },
+    { title: "Upcoming Birthdays", icon: FaBirthdayCake, color: "text-[#0B3944]", value: upcomingBirthdays },
   ];
+
 
   return (
     <AdminRouteGuard>
