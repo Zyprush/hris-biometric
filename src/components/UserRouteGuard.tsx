@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase";
 import { warnToast } from "@/components/toast";
+import Loading from "./Loading";
 
 interface UserRouteGuardProps {
   children: ReactNode;
@@ -57,6 +58,14 @@ export function UserRouteGuard({ children }: UserRouteGuardProps) {
       }
     }
   }, [user, userData, loading, userDataLoading, router]);
+
+  if (loading || userDataLoading) {
+    return <Loading />;
+  }
+
+  if (!user || (userData && userData.role !== "user")) {
+    return null;
+  }
 
   return <>{children}</>;
 }
