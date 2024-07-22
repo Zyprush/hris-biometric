@@ -192,7 +192,6 @@ const EmployeeList = () => {
     <AdminRouteGuard>
       <div className="container mx-auto p-4 h-full">
         <div className="grid grid-cols-1 gap-4">
-
           <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
             <input
               type="text"
@@ -218,45 +217,45 @@ const EmployeeList = () => {
               </button>
             </div>
           </div>
-          <div className="card shadow bg-white rounded">
+          <div className="overflow-x-auto card shadow bg-white rounded">
 
-          <table className="table border rounded">
-            <thead>
-              <tr className="text-md text-white bg-primary py-4 text-center px-2">
-                <th className="px-4 py-2">Employee ID</th>
-                <th className="px-4 py-2">Name</th>
-                <th className="px-4 py-2">Remarks</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredEmployees.length < 1 ? (
-                <tr>
-                  <td colSpan={3} className="text-red-500 text-xs">
-                    No results
-                  </td>
+            <table className="table border rounded">
+              <thead>
+                <tr className="text-md text-white bg-primary py-4 text-center px-2">
+                  <th className="px-4 py-2">Employee ID</th>
+                  <th className="px-4 py-2">Name</th>
+                  <th className="px-4 py-2">Remarks</th>
                 </tr>
-              ) : (
-                filteredEmployees.map((employee) => (
-                  <tr
-                    key={employee.id}
-                    onClick={() => handleRowClick(employee)}
-                    className={`text-center cursor-pointer ${selectedEmployee?.id === employee.id
-                      ? "bg-blue-100 hover:bg-blue-200"
-                      : "hover:bg-gray-100"
-                      }`}
-                  >
-                    <td className="px-4 py-2 text-xs">{employee.employeeId}</td>
-                    <td className="px-4 py-2 text-xs text-gray-600">
-                      {employee.name}
-                    </td>
-                    <td className="px-4 py-2 text-xs text-gray-600">
-                      {employee.status}
+              </thead>
+              <tbody>
+                {filteredEmployees.length < 1 ? (
+                  <tr>
+                    <td colSpan={3} className="text-red-500 text-xs">
+                      No results
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  filteredEmployees.map((employee) => (
+                    <tr
+                      key={employee.id}
+                      onClick={() => handleRowClick(employee)}
+                      className={`text-center cursor-pointer ${selectedEmployee?.id === employee.id
+                        ? "bg-blue-100 hover:bg-blue-200"
+                        : "hover:bg-gray-100"
+                        }`}
+                    >
+                      <td className="px-4 py-2 text-xs">{employee.employeeId}</td>
+                      <td className="px-4 py-2 text-xs text-gray-600">
+                        {employee.name}
+                      </td>
+                      <td className="px-4 py-2 text-xs text-gray-600">
+                        {employee.status}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
 

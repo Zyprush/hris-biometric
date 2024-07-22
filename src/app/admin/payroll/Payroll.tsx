@@ -15,9 +15,9 @@ interface Employee {
   overtime: number;
   holiday: number;
   totalAmount: number;
-  sss: number;
-  philhealth: number;
-  pagibig: number;
+  sssDeduction: number;
+  philhealthDeduction: number;
+  pagibigDeduction: number;
   cashAdvance: number;
   totalDeductions: number;
   totalNetAmount: number;
@@ -36,22 +36,40 @@ const Payroll: React.FC = () => {
     try {
       const querySnapshot = await getDocs(collection(db, "users"));
       const fetchedEmployees: Employee[] = querySnapshot.docs
-        .map((doc: QueryDocumentSnapshot<DocumentData>) => ({
-          id: doc.id,
-          name: doc.data().name || "",
-          rate: doc.data().rate || 0,
-          daysOfWork: doc.data().daysOfWork || 0,
-          totalRegularWage: doc.data().totalRegularWage || 0,
-          overtime: doc.data().overtime || 0,
-          holiday: doc.data().holiday || 0,
-          totalAmount: doc.data().totalAmount || 0,
-          sss: doc.data().sss || 0,
-          philhealth: doc.data().philhealth || 0,
-          pagibig: doc.data().pagibig || 0,
-          cashAdvance: doc.data().cashAdvance || 0,
-          totalDeductions: doc.data().totalDeductions || 0,
-          totalNetAmount: doc.data().totalNetAmount || 0,
-        }))
+        .map((doc: QueryDocumentSnapshot<DocumentData>) => {
+          const data = doc.data();
+          const rate = 520; // Fixed rate
+          const daysOfWork = data.daysOfWork || 0;
+          const overtime = data.overtime || 0;
+          const holiday = data.holiday || 0;
+  
+          const totalRegularWage = rate * daysOfWork;
+          const totalAmount = totalRegularWage + overtime + holiday;
+  
+          const sssDeduction = data.sssDeduction || 0;
+          const philhealthDeduction = data.philhealthDeduction || 0;
+          const pagibigDeduction = data.pagibigDeduction || 0;
+          const cashAdvance = data.cashAdvance || 0;
+          
+          const totalDeductions = sssDeduction + philhealthDeduction + pagibigDeduction + cashAdvance;
+          
+          return {
+            id: doc.id,
+            name: data.name || "",
+            rate,
+            daysOfWork,
+            totalRegularWage,
+            overtime,
+            holiday,
+            totalAmount,
+            sssDeduction,
+            philhealthDeduction,
+            pagibigDeduction,
+            cashAdvance,
+            totalDeductions,
+            totalNetAmount: totalAmount - totalDeductions,
+          };
+        })
         .filter((employee: Employee) => employee.name !== "Admin");
       setEmployees(fetchedEmployees);
       setFilteredEmployees(fetchedEmployees);
@@ -73,7 +91,7 @@ const Payroll: React.FC = () => {
     <AdminRouteGuard>
       <div className="container mx-auto p-4 h-full">
         <div className="grid grid-cols-1 gap-4">
-          <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+          <div className="flex flex-col-1 space-x-2 sm:flex-row items-center sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
             <input
               type="text"
               placeholder="Search by name"
@@ -88,26 +106,26 @@ const Payroll: React.FC = () => {
               <BsSearch className="text-xs sm:text-sm" />
             </button>
           </div>
-          <div className="overflow-x-auto bg-white rounded ">
-            <table className="table-auto w-full rounded border border-primary">
+          <div className="overflow-x-auto card shadow bg-white rounded">
+            <table className="table-auto rounded border">
               <thead>
-                <tr className="bg-primary text-white border border-primary">
-                  <th className="border border-black px-2 py-1 text-xs" rowSpan={2}>NAME OF EMPLOYEE</th>
-                  <th className="border border-black px-2 py-1 text-xs" rowSpan={2}>RATE</th>
-                  <th className="border border-black px-2 py-1 text-xs" rowSpan={2}>DAYS OF WORK</th>
-                  <th className="border border-black px-2 py-1 text-xs" rowSpan={2}>TOTAL REGULAR WAGE</th>
-                  <th className="border border-black px-2 py-1 text-xs" rowSpan={2}>OVERTIME</th>
-                  <th className="border border-black px-2 py-1 text-xs" rowSpan={2}>HOLIDAY</th>
-                  <th className="border border-black px-2 py-1 text-xs" rowSpan={2}>TOTAL AMOUNT</th>
-                  <th className="border border-black px-2 py-1 text-xs" colSpan={4}>DEDUCTIONS</th>
-                  <th className="border border-black px-2 py-1 text-xs" rowSpan={2}>TOTAL DEDUCTIONS</th>
-                  <th className="border border-black px-2 py-1 text-xs" rowSpan={2}>TOTAL NET AMOUNT</th>
+                <tr className="text-md bg-primary text-white">
+                  <th className="border border-gray-500 px-2 py-1 text-xs" rowSpan={2}>Name of Employee</th>
+                  <th className="border border-gray-500 px-2 py-1 text-xs" rowSpan={2}>Rate</th>
+                  <th className="border border-gray-500 px-2 py-1 text-xs" rowSpan={2}>Days of Works</th>
+                  <th className="border border-gray-500 px-2 py-1 text-xs" rowSpan={2}>Total Regular Wage</th>
+                  <th className="border border-gray-500 px-2 py-1 text-xs" rowSpan={2}>Overtime</th>
+                  <th className="border border-gray-500 px-2 py-1 text-xs" rowSpan={2}>Holiday</th>
+                  <th className="border border-gray-500 px-2 py-1 text-xs" rowSpan={2}>Total Amount</th>
+                  <th className="border border-gray-500 px-2 py-1 text-xs" colSpan={4}>Deduction</th>
+                  <th className="border border-gray-500 px-2 py-1 text-xs" rowSpan={2}>Total Deductions</th>
+                  <th className="border border-gray-500 px-2 py-1 text-xs" rowSpan={2}>Total Net Amount</th>
                 </tr>
                 <tr className="bg-primary text-white">
-                  <th className="border border-black px-2 py-1 text-xs">SSS</th>
-                  <th className="border border-black px-2 py-1 text-xs">PHILHEALTH</th>
-                  <th className="border border-black px-2 py-1 text-xs">PAGIBIG</th>
-                  <th className="border border-black px-2 py-1 text-xs">CASH ADVANCE</th>
+                  <th className="border border-gray-500 px-2 py-1 text-xs">SSS</th>
+                  <th className="border border-gray-500 px-2 py-1 text-xs">PHILHEALTH</th>
+                  <th className="border border-gray-500 px-2 py-1 text-xs">PAGIBIG</th>
+                  <th className="border border-gray-500 px-2 py-1 text-xs">Cash Advance</th>
                 </tr>
               </thead>
               <tbody>
@@ -120,19 +138,19 @@ const Payroll: React.FC = () => {
                 ) : (
                   filteredEmployees.map((employee: Employee) => (
                     <tr key={employee.id} className="hover:bg-gray-100">
-                      <td className="border border-black px-2 py-1 text-xs">{employee.name}</td>
-                      <td className="border border-black px-2 py-1 text-xs">{employee.rate.toFixed(2)}</td>
-                      <td className="border border-black px-2 py-1 text-xs">0</td>
-                      <td className="border border-black px-2 py-1 text-xs">0</td>
-                      <td className="border border-black px-2 py-1 text-xs">0</td>
-                      <td className="border border-black px-2 py-1 text-xs">0</td>
-                      <td className="border border-black px-2 py-1 text-xs">0</td>
-                      <td className="border border-black px-2 py-1 text-xs">0</td>
-                      <td className="border border-black px-2 py-1 text-xs">0</td>
-                      <td className="border border-black px-2 py-1 text-xs">0</td>
-                      <td className="border border-black px-2 py-1 text-xs">0</td>
-                      <td className="border border-black px-2 py-1 text-xs">0</td>
-                      <td className="border border-black px-2 py-1 text-xs">0</td>
+                      <td className=" px-2 py-1 text-xs border border-b">{employee.name}</td>
+                      <td className=" px-2 py-1 text-xs border border-b">{employee.rate.toFixed(2)}</td>
+                      <td className=" px-2 py-1 text-xs border border-b">{employee.daysOfWork.toFixed(2)}</td>
+                      <td className=" px-2 py-1 text-xs border border-b">{employee.totalRegularWage.toFixed(2)}</td>
+                      <td className=" px-2 py-1 text-xs border border-b">{employee.overtime.toFixed(2)}</td>
+                      <td className=" px-2 py-1 text-xs border border-b">{employee.holiday.toFixed(2)}</td>
+                      <td className=" px-2 py-1 text-xs border border-b">{employee.totalAmount.toFixed(2)}</td>
+                      <td className=" px-2 py-1 text-xs border border-b">{employee.sssDeduction.toFixed(2)}</td>
+                      <td className=" px-2 py-1 text-xs border border-b">{employee.philhealthDeduction.toFixed(2)}</td>
+                      <td className=" px-2 py-1 text-xs border border-b">{employee.pagibigDeduction.toFixed(2)}</td>
+                      <td className=" px-2 py-1 text-xs border border-b">{employee.cashAdvance.toFixed(2)}</td>
+                      <td className=" px-2 py-1 text-xs border border-b">{employee.totalDeductions.toFixed(2)}</td>
+                      <td className=" px-2 py-1 text-xs border border-b">{employee.totalNetAmount.toFixed(2)}</td>
                     </tr>
                   ))
                 )}
