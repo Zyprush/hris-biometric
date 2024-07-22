@@ -4,7 +4,6 @@ import { SignedIn } from "@/components/signed-in";
 import React, { useEffect, useState } from "react";
 import { MdEmail, MdModeEdit } from "react-icons/md";
 import {
-  FaAddressCard,
   FaBuilding,
   FaFlag,
   FaIdBadge,
@@ -18,12 +17,10 @@ import { doc, getDoc } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { sendEmailVerification } from "firebase/auth";
 import { ToastContainer } from "react-toastify";
-import { AdminRouteGuard } from "@/components/AdminRouteGuard";
-import AdminLayout from "@/components/AdminLayout";
 import Password from "@/app/user/account/Password";
-import { FaUserAlt, FaUserEdit } from "react-icons/fa";
 import { UserRouteGuard } from "@/components/UserRouteGuard";
 import UserLayout from "@/components/UserLayout";
+import { format } from "date-fns";
 
 interface UserData {
   name: string;
@@ -43,8 +40,10 @@ interface UserData {
   nationality: string;
   status: string;
   supervisor: string;
+  birthday: string;
+  id: string;
 }
-const AdminAccount = () => {
+const UserAccount = () => {
   const [user, loading] = useAuthState(auth);
   const [edit, setEdit] = useState<boolean>(false);
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -86,103 +85,66 @@ const AdminAccount = () => {
     <UserRouteGuard>
       <SignedIn>
         <UserLayout>
-          <div className="w-full h-full flex flex-col items-center justify-start p-6">
+          <div className="bg-gray-100 min-h-screen w-full ">
             <ToastContainer />
-            <div className="w-full md:w-auto flex flex-col items-center">
-              <div className="relative w-36 h-36 mb-4">
-                <img
-                  src={userData?.profilePicUrl || "/img/profile-admin.jpg"}
-                  alt={userData?.name}
-                  className="border-2 drop-shadow-sm mx-auto rounded-full object-cover w-full h-full border-primary"
-                />
-              </div>
-              {!isEmailVerified && (
-                <div className="w-full md:w-auto border-b-2 p-3 mt-6 md:mt-0">
-                  <button
-                    onClick={handleResendVerification}
-                    disabled={isResendingVerification}
-                    className={`mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-800 ${
-                      isResendingVerification
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
-                  >
-                    {isResendingVerification
-                      ? "Sending..."
-                      : "Resend Verification Email"}
-                  </button>
+            <div className="max-w-full px-4 sm:px-6 sm:py-6 lg:py-8 my-8">
+              <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+                <div className="relative">
+                  <div className="h-48 bg-primary"></div>
+                  <div className="absolute bottom-0 left-0 w-full h-24 bg-black opacity-30"></div>
+                  <img
+                    src={userData?.profilePicUrl || "/img/profile-admin.jpg"}
+                    alt={userData?.name}
+                    className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-32 h-32 rounded-full border-4 border-white shadow-lg"
+                  />
                 </div>
-              )}
-              {!edit && (
-                <button
-                  className="btn btn-neutral mb-4"
-                  onClick={() => setEdit(true)}
-                >
-                  <MdModeEdit className="" /> Change Password
-                </button>
-              )}
-              {edit && <Password setEdit={setEdit} />}
-              <div className="grid gap-6 md:grid-cols-2 content-start w-full p-5 rounded-xl shadow-md border mb-5">
-                <UserInfo
-                  label="Name"
-                  value={userData?.name || "N/A"}
-                  icon={FaUserAlt}
-                />
-                <UserInfo
-                  label="Email"
-                  value={userData?.email || "N/A"}
-                  icon={MdEmail}
-                />
-                <UserInfo
-                  label="Department"
-                  value={userData?.department || "N/A"}
-                  icon={FaBuilding}
-                />
-                <UserInfo
-                  label="Employee ID"
-                  value={userData?.employeeId || "N/A"}
-                  icon={FaIdCardClip}
-                />
-                <UserInfo
-                  label="SSS"
-                  value={userData?.sss || "N/A"}
-                  icon={FaAddressCard}
-                />
-                <UserInfo
-                  label="Phone"
-                  value={userData?.phone || "N/A"}
-                  icon={FaIdBadge}
-                />
-                <UserInfo
-                  label="TIN"
-                  value={userData?.tinNumber || "N/A"}
-                  icon={FaAddressCard}
-                />
-                <UserInfo
-                  label="Verified"
-                  value={isEmailVerified ? "Yes" : "No"}
-                  icon={RiVerifiedBadgeFill}
-                />
-                <UserInfo
-                  label="Gender"
-                  value={userData?.gender || "Unknown"}
-                  icon={RiUserSmileFill}
-                />
-                <UserInfo
-                  label="Nationality"
-                  value={userData?.nationality || "Unknown"}
-                  icon={FaFlag}
-                />
-                <UserInfo
-                  label="Status"
-                  value={userData?.status || "Unknown"}
-                  icon={FaUserTag}
-                />
-                <UserInfo
-                  label="Supervisor"
-                  value={userData?.supervisor || "Unknown"}
-                  icon={FaUserEdit}
-                />
+                <div className="pt-16 pb-8 px-4 text-center">
+                  <h1 className="text-3xl font-bold text-gray-800">
+                    {userData?.name || "Admin User"}
+                  </h1>
+                  <p className="text-sm text-gray-600 mt-2">
+                    {userData?.position || "Administrator"}
+                  </p>
+                  {!isEmailVerified && (
+                    <div className="mt-4">
+                      <button
+                        onClick={handleResendVerification}
+                        disabled={isResendingVerification}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 ease-in-out"
+                      >
+                        {isResendingVerification
+                          ? "Sending..."
+                          : "Resend Verification Email"}
+                      </button>
+                    </div>
+                  )}
+                  {!edit && (
+                    <button
+                      className="mt-4 px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary transition duration-300 ease-in-out flex items-center justify-center mx-auto"
+                      onClick={() => setEdit(true)}
+                    >
+                      <MdModeEdit className="mr-2" /> Change Password
+                    </button>
+                  )}
+                  {edit && <Password setEdit={setEdit} />}
+                </div>
+                <div className="bg-gray-50 px-4 py-8">
+                  <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <UserInfo label="Email" value={userData?.email} icon={MdEmail} />
+                    <UserInfo label="Department" value={userData?.department} icon={FaBuilding} />
+                    <UserInfo label="Employee ID" value={userData?.employeeId} icon={FaIdCardClip} />
+                    <UserInfo label="Phone" value={userData?.phone} icon={FaIdBadge} />
+                    <UserInfo label="Birthday" value={userData?.birthday ? format(userData?.birthday, 'MMM dd, yyyy'):""} icon={FaIdBadge} />
+                    <UserInfo label="Verified" value={isEmailVerified ? "Yes" : "No"} icon={RiVerifiedBadgeFill} />
+                    <UserInfo label="Gender" value={userData?.gender} icon={RiUserSmileFill} />
+                    <UserInfo label="Nationality" value={userData?.nationality} icon={FaFlag} />
+                    <UserInfo label="Status" value={userData?.status} icon={FaUserTag} />
+                    <UserInfo label="Supervisor" value={userData?.supervisor} icon={FaUserTag} />
+                    <UserInfo label="PhilHealth" value={userData?.philHealthNumber} icon={FaUserTag} />
+                    <UserInfo label="TIN" value={userData?.tinNumber} icon={FaUserTag} />
+                    <UserInfo label="SSS" value={userData?.sss} icon={FaUserTag} />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -193,22 +155,26 @@ const AdminAccount = () => {
 };
 interface UserInfoProps {
   label: string;
-  value: string;
+  value: any;
   icon: React.ComponentType<{ className?: string }>;
 }
 const UserInfo = ({ label, value, icon: Icon }: UserInfoProps) => {
   return (
-    <>
-      {value ? (
-        <div className="text-gray-600 text-sm flex gap-2 justify-start truncate">
-          <Icon className="bg-neutral rounded-md p-2 text-[2rem] text-white" />
-          <div className="flex flex-col justify-center items-start">
-            <p className="font-bold text-neutral text-sm">{label}</p>
-            <p className="truncate text-xs text-zinc-500">{value}</p>
-          </div>
-        </div>
-      ) : null}
-    </>
+    value ? 
+<div className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300 ease-in-out">
+  <div className="flex items-center">
+    <div className="flex">
+      <Icon className="text-2xl text-primary mr-3" />
+    </div>
+    <div className=" truncate">
+      <p className="text-sm font-medium text-gray-600">{label}</p>
+      <p className="text-base font-semibold text-gray-800">
+        {value}
+      </p>
+    </div>
+  </div>
+</div> : null
+
   );
 };
-export default AdminAccount;
+export default UserAccount;

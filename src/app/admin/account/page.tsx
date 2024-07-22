@@ -149,7 +149,7 @@ const UserInfo = ({ label, value, icon: Icon }: UserInfoProps) => {
     <div className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300 ease-in-out">
       <div className="flex items-center">
         <Icon className="text-2xl text-primary mr-3" />
-        <div>
+        <div className=" truncate">
           <p className="text-sm font-medium text-gray-600">{label}</p>
           <p className="text-base font-semibold text-gray-800">{value}</p>
         </div>
