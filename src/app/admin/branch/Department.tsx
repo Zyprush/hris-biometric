@@ -60,11 +60,11 @@ const DepartmentComponent = () => {
     const fetchTotalEmployees = async (departmentName: string): Promise<number> => {
         const usersCollection = collection(db, 'users');
         let q = query(usersCollection, where('department', '==', departmentName));
-        
+
         if (selectedBranch !== "Filter") {
             q = query(q, where('branch', '==', selectedBranch));
         }
-        
+
         const usersSnapshot = await getDocs(q);
         return usersSnapshot.size;
     };
@@ -107,22 +107,29 @@ const DepartmentComponent = () => {
                 {
                     data: [present, absent, restDay, leave],
                     backgroundColor: [
-                        'rgba(75, 192, 92, 0.6)',  // Green for Present
-                        'rgba(255, 99, 132, 0.6)', // Red for Absent
-                        'rgba(255, 206, 86, 0.6)', // Yellow for Rest Day
-                        'rgba(54, 162, 235, 0.6)', // Blue for Leave
+                        '#40ae75',  // Present
+                        '#1A7680',  // Absent
+                        '#238F99',  // Rest Day
+                        '#104A55',  // Leave
+                    ],
+                    hoverBackgroundColor: [
+                        '#238F99',  // Present hover
+                        '#238F99',  // Absent hover
+                        '#1A7680',  // Rest Day hover
+                        '#135D66',  // Leave hover
                     ],
                     borderColor: [
-                        'rgba(75, 192, 92, 1)',
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(54, 162, 235, 1)',
+                        '#40ae75',
+                        '#1A7680',
+                        '#238F99',
+                        '#104A55',
                     ],
                     borderWidth: 1,
                 },
             ],
         };
     };
+
 
     const chartOptions = {
         plugins: {
@@ -139,8 +146,8 @@ const DepartmentComponent = () => {
         <AdminRouteGuard>
             <div className="p-4 relative">
                 <div className="absolute top-4 right-4 flex space-x-4">
-                    <select 
-                        value={selectedBranch} 
+                    <select
+                        value={selectedBranch}
                         onChange={handleBranchChange}
                         className="bg-white border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
@@ -172,19 +179,19 @@ const DepartmentComponent = () => {
                                             <span className="font-medium">Total: {dept.totalEmployees}</span>
                                         </p>
                                         <p className="text-gray-700 flex items-center">
-                                            <span className="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
+                                            <span className="w-3 h-3 rounded-full bg-[#40ae75] mr-2"></span>
                                             <span className="font-medium">Present:</span> {chartData.datasets[0].data[0]}
                                         </p>
                                         <p className="text-gray-700 flex items-center">
-                                            <span className="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
+                                            <span className="w-3 h-3 rounded-full bg-[#1A7680] mr-2"></span>
                                             <span className="font-medium">Absent:</span> {chartData.datasets[0].data[1]}
                                         </p>
                                         <p className="text-gray-700 flex items-center">
-                                            <span className="w-3 h-3 rounded-full bg-yellow-400 mr-2"></span>
+                                            <span className="w-3 h-3 rounded-full bg-[#238F99] mr-2"></span>
                                             <span className="font-medium">Rest Day:</span> {chartData.datasets[0].data[2]}
                                         </p>
                                         <p className="text-gray-700 flex items-center">
-                                            <span className="w-3 h-3 rounded-full bg-blue-400 mr-2"></span>
+                                            <span className="w-3 h-3 rounded-full bg-[#104A55] mr-2"></span>
                                             <span className="font-medium">Leave:</span> {chartData.datasets[0].data[3]}
                                         </p>
                                     </div>
