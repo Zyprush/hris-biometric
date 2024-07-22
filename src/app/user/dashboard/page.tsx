@@ -28,7 +28,7 @@ export default function UserDashboard() {
   }) => (
     <Link
       href={href}
-      className="bg-white text-zinc-700 rounded-lg p-8 gap-3 flex flex-col border max-w-[23rem] hover:bg-neutral hover:text-white group"
+      className="bg-white text-neutral rounded-lg p-8 gap-3 flex flex-col border max-w-[23rem] hover:bg-neutral hover:text-white group"
     >
       <span className="flex gap-3">
         <Icon className="text-3xl" />

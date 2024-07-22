@@ -151,7 +151,7 @@ const Request = () => {
               </Link>
             </div>
 
-            <div className="flex flex-col rounded-md bg-white p-3 w-full md:max-w-[25rem]">
+            <div className="flex flex-col rounded-md p-3 w-full md:max-w-[25rem]">
               {requests.length === 0 ? (
                 <span className="flex mx-auto text-xs font-semibold text-zinc-700 p-2 border rounded-lg gap-2 items-center">
                   <FaCommentAlt /> No {status} leave request!

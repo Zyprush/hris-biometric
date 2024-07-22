@@ -49,8 +49,8 @@ const Leave = () => {
   };
 
   return (
-    <div className="flex w-full h-full">
-      <div className="flex flex-col w-full gap-4">
+    <div className="flex w-full h-full justify-start items-start">
+      <div className="flex flex-col justify-start items-start gap-4">
         {showModal && (
           <LeaveModal setShowModal={setShowModal} curRequest={curRequest} />
         )}

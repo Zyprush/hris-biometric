@@ -11,6 +11,7 @@ import Account from "./Account";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getDoc } from "firebase/firestore";
 import Loading from "../Loading";
+import Image from "next/image";
 
 
 interface NavbarProps {
@@ -84,9 +85,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
           data-tip="toggle width"
           className=" flex items-center text-white tooltip tooltip-right font-semibold rounded-md gap-2"
         >
-          <span className="bg-zinc-800 rounded-full p-2">
-            <GrFingerPrint className="text-3xl text-white" />
-          </span>
+          <Image width={50} height={50}  src={"/img/smarthr-logo.png"} alt="logo" className="w-14 drop-shadow-lg" />
           {!isMinimized && (
             <p className="px-3 py-1 rounded-md text-neutral border-2 border-neutral font-bold text-xs">SMART HR</p>
           )}

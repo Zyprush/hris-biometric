@@ -11,7 +11,7 @@ const Payslip = () => {
           <div className="w-full h-full flex flex-col justify-start items-center">
             <div className="p-4 max-w-md mx-auto mt-10">
               <div className="bg-white border border-gray-300 shadow-md">
-                <h1 className="text-xl font-bold p-2 bg-gray-100 border-b border-gray-300">
+                <h1 className="text-xl font-bold p-2 bg-primary border-b border-gray-300 text-white">
                   PAYSLIP
                 </h1>
                 <table className="w-full text-sm border-collapse">
