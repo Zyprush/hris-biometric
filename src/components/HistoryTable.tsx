@@ -32,8 +32,8 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ loading, history }) => {
       <div className="grid grid-cols-1 gap-4">
         <div className="overflow-x-auto">
           <table className="mb-5 text-sm rounded-lg border max-w-[72rem] min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr className="text-sm text-gray-700 font-semibold">
+            <thead className="bg-primary">
+              <tr className="text-sm text-white font-semibold">
                 <th className="px-6 py-3 text-left">Date</th>
                 <th className="px-6 py-3 text-left">Time</th>
                 <th className="px-6 py-3 text-left">Action</th>

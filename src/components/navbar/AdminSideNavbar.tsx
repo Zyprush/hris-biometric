@@ -6,12 +6,12 @@ import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
 import { FaUserAlt, FaBuilding } from "react-icons/fa";
-import { GrFingerPrint } from "react-icons/gr";
 import Account from "./Account";
 import Loading from "../Loading";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase";
+import Image from "next/image";
 interface NavbarProps {
   children: ReactNode;
 }
@@ -70,7 +70,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
     }
   }, [user]);
 
-  if (loading) return <Loading/>;
+  if (loading) return <Loading />;
 
   const toggleNavbar = () => {
     setIsMinimized(!isMinimized);
@@ -84,9 +84,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
           data-tip="toggle width"
           className=" flex items-center text-white tooltip tooltip-right font-semibold rounded-md gap-2"
         >
-          <span className="bg-zinc-800 rounded-full p-2">
-            <GrFingerPrint className="text-3xl text-white" />
-          </span>
+          <Image width={50} height={50} src={"/img/smarthr-logo.png"} alt="logo" className="w-14 drop-shadow-lg" />
           {!isMinimized && (
             <p className="px-3 py-1 rounded-md text-neutral border-2 border-neutral font-bold text-xs">
               SMART HR
@@ -102,7 +100,8 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
             <img
               src={userData?.profilePicUrl || "/img/profile-admin.jpg"}
               alt="profile"
-              width={40} height={40} 
+              width={40}
+              height={40}
               className="h-full w-full object-cover"
             />
           </div>
