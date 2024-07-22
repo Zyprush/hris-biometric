@@ -49,15 +49,15 @@ const Leave = () => {
   };
 
   return (
-    <div className="flex w-full h-full justify-start items-start">
-      <div className="flex flex-col justify-start items-start gap-4">
+    <div className="flex w-full h-full">
+      <div className="flex flex-col w-full items-start gap-4 ">
         {showModal && (
           <LeaveModal setShowModal={setShowModal} curRequest={curRequest} />
         )}
         {showInfo && (
           <LeaveInfo setShowInfo={setShowInfo} curRequest={curRequest} />
         )}
-        <div role="tablist" className="tabs tabs-lifted">
+        <div role="tablist" className="tabs tabs-lifted w-full">
           {["Pending", "Approved", "Rejected"].map((tabStatus) => (
             <React.Fragment key={tabStatus}>
               <input
@@ -71,7 +71,7 @@ const Leave = () => {
               />
               <div
                 role="tabpanel"
-                className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+                className="tab-content bg-base-100 border-base-300 w-full rounded-box p-6"
               >
                 <LeaveRequests
                   requests={requests}

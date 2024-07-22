@@ -29,14 +29,14 @@ const LeaveRequests: React.FC<LeaveRequestsProps> = ({
   openInfo,
 }) => {
   return (
-    <div className="flex flex-wrap rounded-md gap-4">
+    <div className="flex w-full rounded-md gap-4">
       {requests.length === 0 && (
         <span className="text-xs font-semibold text-zinc-700 p-2 border rounded-lg flex gap-2 items-center">
           <FaCommentAlt /> No {status} leave request!
         </span>
       )}
-      <div className="overflow-x-auto">
-        <table className="mb-5 mx-auto text-sm rounded-lg border max-w-[72rem] min-w-full divide-y divide-gray-200">
+      <div className="overflow-x-auto flex w-full">
+        <table className="mb-5 mx-auto text-sm rounded-lg border min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr className="text-sm text-gray-700 font-semibold">
               <th className="px-6 py-3 text-left">Leave Date</th>
