@@ -7,8 +7,7 @@ import {
   EmailAuthProvider,
 } from "firebase/auth";
 import { errorToast, successToast } from "@/components/toast";
-import { IoMdEye } from "react-icons/io";
-import { BsEyeSlashFill } from "react-icons/bs";
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { FirebaseError } from "firebase/app";
 
 const Password = ({
@@ -55,15 +54,15 @@ const Password = ({
       } catch (error: any) {
         console.log("error", error);
         if (error instanceof FirebaseError) {
-            const errorMessages: { [key: string]: string } = {
-              "auth/invalid-credential": "Please enter the correct old password!",
-              "auth/user-disabled": "This account has been disabled. Please contact support.",
-              "auth/too-many-requests": "Too many failed login attempts. Please try again later."
-            };
-            errorToast(errorMessages[error.code as string] || "An unexpected error occurred. Please try again.");
-          } else {
-            errorToast("An unexpected error occurred. Please try again.");
-          }
+          const errorMessages: { [key: string]: string } = {
+            "auth/invalid-credential": "Please enter the correct old password!",
+            "auth/user-disabled": "This account has been disabled. Please contact support.",
+            "auth/too-many-requests": "Too many failed login attempts. Please try again later."
+          };
+          errorToast(errorMessages[error.code as string] || "An unexpected error occurred. Please try again.");
+        } else {
+          errorToast("An unexpected error occurred. Please try again.");
+        }
       }
     } else {
       errorToast("No user is currently signed in.");
@@ -89,52 +88,76 @@ const Password = ({
   };
 
   return (
-    <span className="fixed bg-zinc-800 p-20 bg-opacity-80 right-0 top-0 bottom-0 left-0 flex justify-center items-center gap-5">
-      <span className="flex flex-col gap-5 bg-white rounded-2xl p-20 py-10">
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Change Password</h2>
+        
+        <div className="space-y-4">
+          <div className="relative">
+            <input
+              type={showPasswords ? "text" : "password"}
+              value={oldPassword}
+              onChange={handleOldPasswordChange}
+              placeholder="Old password"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          
+          <div className="relative">
+            <input
+              type={showPasswords ? "text" : "password"}
+              value={newPassword}
+              onChange={handleNewPasswordChange}
+              placeholder="New password"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          
+          <div className="relative">
+            <input
+              type={showPasswords ? "text" : "password"}
+              value={confirmPassword}
+              onChange={handleConfirmPasswordChange}
+              placeholder="Confirm new password"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+        
+        <div className="mt-6 flex justify-between items-center">
+          <button
+            onClick={toggleShowPasswords}
+            className="text-sm text-gray-600 hover:text-gray-800 focus:outline-none"
+          >
+            {showPasswords ? (
+              <span className="flex items-center">
+                <IoMdEyeOff className="mr-1" /> Hide Passwords
+              </span>
+            ) : (
+              <span className="flex items-center">
+                <IoMdEye className="mr-1" /> Show Passwords
+              </span>
+            )}
+          </button>
+          
+        </div>
+          <button
+            onClick={handleChangePassword}
+            disabled={loading}
+            className="mt-4 w-full px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary hover:text-black focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+          >
+            {loading ? "Updating..." : "Update Password"}
+          </button>
+        
         <button
-          onClick={toggleShowPasswords}
-          className="btn btn-neutral w-20 mx-auto text-2xl"
-        >
-          {showPasswords ?  <IoMdEye/> : <BsEyeSlashFill/>} 
-        </button>
-        <input
-          type={showPasswords ? "text" : "password"}
-          value={oldPassword}
-          className="text-sm p-2 border rounded"
-          onChange={handleOldPasswordChange}
-          placeholder="Old password"
-        />
-        <input
-          type={showPasswords ? "text" : "password"}
-          value={newPassword}
-          className="text-sm p-2 border rounded"
-          onChange={handleNewPasswordChange}
-          placeholder="New password"
-        />
-        <input
-          type={showPasswords ? "text" : "password"}
-          value={confirmPassword}
-          className="text-sm p-2 border rounded"
-          onChange={handleConfirmPasswordChange}
-          placeholder="Re-enter password"
-        />
-
-        <button
-          onClick={handleChangePassword}
+          className="mt-4 w-full px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+          onClick={() => setEdit(false)}
           disabled={loading}
-          className="btn btn-neutral w-20 mx-auto"
         >
-          Submit
+          Cancel
         </button>
-      </span>
-      <button
-        className="fixed bottom-5 right-5 btn btn-neutral"
-        onClick={() => setEdit(false)}
-        disabled={loading}
-      >
-        Cancel
-      </button>
-    </span>
+      </div>
+    </div>
   );
 };
 
