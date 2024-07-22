@@ -63,40 +63,89 @@ const calculateProgress = (): number => {
 };
 
 export default function UserDashboard() {
+  const [showFinancials, setShowFinancials] = useState(true);
 
-  interface UserData {
-    name: string;
-    email: string;
-    employeeId: string;
-    role: string;
-  }
+  const today = new Date();
+  const workingDaysPassed = calculateWorkingDays(today.getFullYear(), today.getMonth(), today.getDate());
+  const userDataExample = {
+    expectedMonthlyEarning: 350 * workingDaysPassed.length,
+    payPeriodProgress: calculateProgress(),
+  };
 
+  const attendanceData = {
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+    datasets: [
+      {
+        label: 'Regular Hours',
+        data: [8, 8, 8, 8, 8, 0, 0, 8, 8, 8, 8, 8],
+        borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+        fill: true,
+      },
+      {
+        label: 'Overtime Hours',
+        data: [1, 0, 2, 1, 0, 4, 0, 0, 1, 2, 0, 1],
+        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        fill: true,
+      }
+    ],
+  };
 
-  const DashboardLink = ({
-    href,
-    icon: Icon,
-    title,
-    description,
-  }: {
-    href: string;
-    icon: any;
-    title: string;
-    description: string;
-  }) => (
-    <Link
-      href={href}
-      className="bg-white text-zinc-700 rounded-lg p-8 gap-3 flex flex-col border max-w-[23rem] hover:bg-neutral hover:text-white group"
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      title: {
+        display: true,
+        text: 'Attendance and Overtime',
+      },
+    },
+    scales: {
+      y: {
+        stacked: true,
+        title: {
+          display: true,
+          text: 'Hours'
+        }
+      }
+    }
+  };
+
+  const QuickActionButton = ({ icon: Icon, label, onClick }: { icon: React.ElementType; label: string; onClick?: () => void }) => (
+    <button
+      className="flex items-center justify-center gap-2 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
+      onClick={onClick}
     >
-      <span className="flex gap-3">
-        <Icon className="text-3xl" />
-        <p className="text-2xl font-bold ">{title}</p>
-      </span>
-      <p className="text-sm text-zinc-500 group-hover:text-zinc-200">
-        {description}
-      </p>
-    </Link>
+      <Icon />
+      {label}
+    </button>
   );
-console.log("RENDER")
+
+  const [user] = useAuthState(auth);
+  const [userData, setUserData] = useState<UserData | null>(null);
+
+  const fetchUserData = useMemo(() => async () => {
+    if (user) {
+      try {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+          setUserData(userDocSnap.data() as UserData);
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    }
+  }, [user]);
+
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
 
   return (
     <UserRouteGuard>
