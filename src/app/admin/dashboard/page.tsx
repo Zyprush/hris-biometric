@@ -130,8 +130,8 @@ const AdminDashboard = () => {
     datasets: [
       {
         data: [50, 10, 5, 20],
-        backgroundColor: ["#135D66", "#1A7680", "#238F99", "#104A55"],
-        hoverBackgroundColor: ["#104A55", "#238F99", "#1A7680", "#135D66"],
+        backgroundColor: ["#40ae75", "#1A7680", "#238F99", "#104A55"],
+        hoverBackgroundColor: ["#238F99", "#238F99", "#1A7680", "#135D66"],
       },
     ],
   };
@@ -147,7 +147,7 @@ const AdminDashboard = () => {
       {
         label: "Stable",
         data: [70, 80, 90, 85, 75, 65],
-        backgroundColor: "#238F99",
+        backgroundColor: "#40ae75",
       },
     ],
   };
@@ -163,7 +163,7 @@ const AdminDashboard = () => {
       {
         label: "Stable",
         data: [70, 80, 90, 85, 75, 65],
-        backgroundColor: "#238F99",
+        backgroundColor: "#40ae75",
       },
     ],
   };
