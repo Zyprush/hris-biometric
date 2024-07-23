@@ -61,7 +61,7 @@ const Payslip = () => {
                         NAME
                       </td>
                       <td className="p-2 border border-gray-300 align-middle">
-                      {userData?.name}
+                      {userData?.name  || "Name"}
                       </td>
                       <td
                         className="text-right font-bold p-2 border border-gray-300 align-middle"
@@ -108,7 +108,7 @@ const Payslip = () => {
                       <td className="font-semibold p-2 border border-gray-300 align-middle">
                         CASH ADVANCE
                       </td>
-                      <td className="p-2 border border-gray-300 align-middle">{userData?.cashAdvance}</td>
+                      <td className="p-2 border border-gray-300 align-middle">{userData?.cashAdvance || "0"}</td>
                       <td className="p-2 border border-gray-300 align-middle"></td>
                       <td className="p-2 border border-gray-300 align-middle"></td>
                     </tr>
@@ -125,7 +125,7 @@ const Payslip = () => {
                         SSS
                       </td>
                       <td className="p-2 border border-gray-300 align-middle">
-                        {userData?.sssDeduction}
+                        {userData?.sssDeduction || "0"}
                       </td>
                       <td className="p-2 border border-gray-300 align-middle"></td>
                       <td className="p-2 border border-gray-300 align-middle"></td>
@@ -144,7 +144,7 @@ const Payslip = () => {
                       <td className="font-semibold p-2 border border-gray-300 align-middle">
                         PAG IBIG
                       </td>
-                      <td className="p-2 border border-gray-300 align-middle">{userData?.philhealthDeduction}</td>
+                      <td className="p-2 border border-gray-300 align-middle">{userData?.philhealthDeduction  || "0"}</td>
                       <td className="text-right font-bold p-2 border border-gray-300 align-middle">
                         NET PAY
                       </td>
