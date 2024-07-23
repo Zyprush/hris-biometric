@@ -16,6 +16,9 @@ const FormerEmployee = () => {
   const [filteredEmployees, setFilteredEmployees] = useState<EmployeeDetails[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeDetails | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  //page number
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 10;
 
   const ADMIN_EMAIL = "hrisbiometric@gmail.com";
 
@@ -72,6 +75,7 @@ const FormerEmployee = () => {
         employee.employeeId.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredEmployees(filtered);
+    setCurrentPage(1);
   };
 
   const handleRowClick = (employee: any) => {
@@ -120,6 +124,47 @@ const FormerEmployee = () => {
       toast.error("Failed to delete employee and associated documents");
     }
   };
+//start of pagenation
+  const handlePageClick = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredEmployees.slice(indexOfFirstItem, indexOfLastItem);
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(
+        <button
+          key={i}
+          className={`btn bg-primary text-white btn-sm rounded-lg px-4 ${currentPage === i
+            ? "bg-primary text-white"
+            : "bg-gray-200 text-gray-700"
+            }`}
+          onClick={() => handlePageClick(i)}
+        >
+          {i}
+        </button>
+      );
+    }
+    return pageNumbers;
+  };
 
   return (
     <AdminRouteGuard>
@@ -150,37 +195,64 @@ const FormerEmployee = () => {
               </button>
             </div>
           </div>
-          <div className="card bg-white rounded shadow">
-            <table className="table border rounded border-zinc-200">
-              <thead>
-                <tr className="text-xs text-white bg-primary">
-                  <th className="px-4 py-2">Employee ID</th>
-                  <th className="px-4 py-2">Name</th>
-                  <th className="px-4 py-2">Remarks</th>
+          <div className="overflow-x-auto card">
+            <table className="table border rounded-lg mb-5 text-sm">
+              <thead className="bg-primary">
+                <tr className="text-md text-white font-semibold">
+                  <th className="px-6 py-3 text-left">Employee ID</th>
+                  <th className="px-6 py-3 text-left">Name</th>
+                  <th className="px-6 py-3 text-left">Remarks</th>
                 </tr>
               </thead>
-              <tbody>
-                {filteredEmployees.length < 1 ? (
+              <tbody className="bg-white">
+                {currentItems.length < 1 ? (
                   <tr>
                     <td colSpan={3} className="text-red-500 text-xs">
                       No results
                     </td>
                   </tr>
                 ) : (
-                  filteredEmployees.map((employee) => (
+                  currentItems.map((employee) => (
                     <tr
                       key={employee.id}
                       onClick={() => handleRowClick(employee)}
-                      className={`cursor-pointer ${selectedEmployee?.id === employee.id ? 'bg-blue-100 hover:bg-blue-200' : 'hover:bg-gray-100'}`}
+                      className={`cursor-pointer ${selectedEmployee?.id === employee.id
+                        ? "bg-blue-100 hover:bg-blue-200"
+                        : "hover:bg-gray-100"
+                        }`}
                     >
-                      <td className="px-4 py-2 text-xs">{employee.employeeId}</td>
-                      <td className="px-4 py-2 text-xs text-gray-600">{employee.name}</td>
-                      <td className="px-4 py-2 text-xs text-gray-600">{employee.status}</td>
+                      <td className="px-4 py-2 text-xs text-left">{employee.employeeId}</td>
+                      <td className="px-4 py-2 text-xs text-left">
+                        {employee.name}
+                      </td>
+                      <td className="px-4 py-2 text-xs text-left">
+                        {employee.status}
+                      </td>
                     </tr>
                   ))
                 )}
               </tbody>
             </table>
+            {filteredEmployees.length > itemsPerPage && (
+              <div className="flex justify-between items-center mt-4">
+                <button
+                  className={`px-4 bg-primary text-white rounded-lg btn-sm text-sm ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+                <div>{renderPageNumbers()}</div>
+                <button
+                  className={`px-4 bg-primary text-white rounded-lg btn-sm text-sm ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </div>
+            )}
+
           </div>
         </div>
 

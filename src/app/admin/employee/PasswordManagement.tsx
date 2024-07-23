@@ -14,6 +14,9 @@ const PasswordManagement = () => {
   const [change, setChange] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [filteredEmployees, setFilteredEmployees] = useState<EmployeeDetails[]>([]);
+  //page number
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchEmployees();
@@ -28,6 +31,7 @@ const PasswordManagement = () => {
         employee.employeeId.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredEmployees(filtered);
+    setCurrentPage(1);
   };
 
   const fetchEmployees = async () => {
@@ -49,6 +53,47 @@ const PasswordManagement = () => {
       console.error("Error fetching employees: ", error);
       toast.error("Failed to fetch employees");
     }
+  };
+
+  const handlePageClick = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredEmployees.slice(indexOfFirstItem, indexOfLastItem);
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(
+        <button
+          key={i}
+          className={`btn bg-primary text-white btn-sm rounded-lg px-4 ${currentPage === i
+            ? "bg-primary text-white"
+            : "bg-gray-200 text-gray-700"
+            }`}
+          onClick={() => handlePageClick(i)}
+        >
+          {i}
+        </button>
+      );
+    }
+    return pageNumbers;
   };
 
   return (
@@ -73,16 +118,16 @@ const PasswordManagement = () => {
               </button>
             </div>
           </div>
-          <div className="overflow-x-auto card bg-white rounded shadow">
-            <table className="table border rounded border-zinc-200 w-full">
-              <thead>
+          <div className="overflow-x-auto card">
+            <table className="table border rounded-lg">
+              <thead className="bg-primary">
                 <tr className="text-xs text-white bg-primary">
-                  <th className="px-4 py-2">Employee Name</th>
-                  <th className="px-4 py-2">Email</th>
-                  <th className="px-4 py-2">Actions</th>
+                  <th className="px-6 py-3">Employee Name</th>
+                  <th className="px-6 py-3">Email</th>
+                  <th className="px-6 py-3">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="bg-white">
                 {filteredEmployees.length < 1 ? (
                   <tr>
                     <td colSpan={3} className="text-red-500 text-xs text-center">
@@ -95,11 +140,11 @@ const PasswordManagement = () => {
                       key={employee.id}
                       className="cursor-pointer hover:bg-gray-100"
                     >
-                      <td className="px-4 py-2 text-xs text-gray-600 font-semibold">
+                      <td className="px-4 py-2 text-xs text-left">
                         {employee.name}
                       </td>
-                      <td className="px-4 py-2 text-xs">{employee.email}</td>
-                      <td className="px-4 py-2 text-xs text-gray-600">
+                      <td className="px-4 py-2 text-xs text-left">{employee.email}</td>
+                      <td className="px-4 py-2 text-xs text-left">
                         <button
                           className="btn btn-xs btn-primary text-white"
                           onClick={() => { setChange(true); setEmail(employee.email); }}
@@ -112,6 +157,25 @@ const PasswordManagement = () => {
                 )}
               </tbody>
             </table>
+            {filteredEmployees.length > itemsPerPage && (
+              <div className="flex justify-between items-center mt-4">
+                <button
+                  className={`px-4 bg-primary text-white rounded-lg btn-sm text-sm ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+                <div>{renderPageNumbers()}</div>
+                <button
+                  className={`px-4 bg-primary text-white rounded-lg btn-sm text-sm ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
