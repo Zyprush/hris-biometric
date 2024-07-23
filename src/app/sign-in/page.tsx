@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
 import { AuroraBackground } from "@/components/ui/aurora-background";
 import { warnToast, errorToast } from "@/components/toast";
-import { FirebaseError } from 'firebase/app';
+import { FirebaseError } from "firebase/app";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { ToastContainer } from "react-toastify";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -29,16 +29,28 @@ const SignInPage = () => {
   const handleSignIn = useCallback(async () => {
     setLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
 
       const userDocRef = doc(db, "users", user.uid);
       const userDocSnap = await getDoc(userDocRef);
 
       if (userDocSnap.exists()) {
-        const { role } = userDocSnap.data();
-        console.log('role:', role);
-        await router.push(role === "admin" ? "/admin/dashboard" : "/user/dashboard");
+        const { role, name, email } = userDocSnap.data();
+        console.log("role:", role);
+        await router.push(
+          role === "admin" ? "/admin/dashboard" : "/user/dashboard"
+        );
+        const currentDate = new Date().toISOString();
+        addHistory({
+          text: `${role}: ${name} signed in using ${email}`,
+          userId: user.uid,
+          time: currentDate,
+        });
       } else {
         warnToast("User data not found. Please contact support.");
       }
@@ -117,7 +129,7 @@ const SignInPage = () => {
         </div>
       </SignedOut>
       <SignedIn>
-        <RoleBasedRedirect/>
+        <RoleBasedRedirect />
         <div className="flex flex-col items-center justify-center h-screen dark w-full px-4">
           <div className="w-full max-w-lg bg-gray-800 bg-opacity-30 backdrop-blur-sm rounded-lg shadow-md p-6 z-10 relative">
             <h1 className="text-2xl text-white font-bold mb-6">Sign in page</h1>

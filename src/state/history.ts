@@ -28,7 +28,6 @@ export const useHistoryStore = create<HistoryStore>((set) => ({
     try {
       const historyQuery = query(
         collection(db, "history"),
-        limit(50),
         orderBy("time", "desc")
       );
       const historyDocSnap = await getDocs(historyQuery);
@@ -56,7 +55,6 @@ export const useHistoryStore = create<HistoryStore>((set) => ({
       const historyByUserQuery = query(
         collection(db, "history"),
         where("userId", "==", userId),
-        limit(50),
         orderBy("time", "desc")
       );
       const historyDocSnap = await getDocs(historyByUserQuery);
@@ -83,7 +81,6 @@ export const useHistoryStore = create<HistoryStore>((set) => ({
       const historyQuery = query(
         collection(db, "history"),
         where("login", "==", true),
-        limit(50),
         orderBy("time", "desc")
       );
       const historyDocSnap = await getDocs(historyQuery);

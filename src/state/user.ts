@@ -1,30 +1,16 @@
 import { create } from "zustand";
 import { auth, db } from "@/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import { UserDatainterface } from "./interface";
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  employeeId: string;
-  role: string;
-  phone: string;
-  department: string;
-  position: string;
-  startDate: string;
-  sss: string;
-  nickname: string;
-  isEmailVerified: boolean;
-  profilePicUrl: string;
-}
 
 interface UserStore {
-  userData: User | null;
+  userData: UserDatainterface | null;
   user: object | null;
   loading: boolean;
   error: string | null;
   fetchUserData: (uid: string) => Promise<void>;
-  setUserData: (data: Partial<User>) => void;
+  setUserData: (data: Partial<UserDatainterface>) => void;
   setUser: (data: object) => void;
   signOut: () => Promise<void>;
 }
@@ -45,7 +31,7 @@ export const useUserStore = create<UserStore>((set) => ({
       const userDocRef = doc(db, "users", uid);
       const userDocSnap = await getDoc(userDocRef);
       if (userDocSnap.exists()) {
-        set({ userData: userDocSnap.data() as User, loading: false });
+        set({ userData: userDocSnap.data() as UserDatainterface, loading: false });
       } else {
         set({ error: "User not found", loading: false });
       }
@@ -54,7 +40,7 @@ export const useUserStore = create<UserStore>((set) => ({
     }
   },
 
-  setUserData: (data: Partial<User>) => {
+  setUserData: (data: Partial<UserDatainterface>) => {
     set((state) => ({ userData: { ...state.userData!, ...data } }));
   },
 
