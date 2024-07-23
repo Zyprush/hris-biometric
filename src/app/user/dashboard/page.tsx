@@ -351,11 +351,11 @@ export default function UserDashboard() {
                       <img
                         src={member?.profilePicUrl || "/img/profile-male.jpg"}
                         alt={member?.name}
-                        className="rounded-full object-cover w-14 h-14 border border-primary"
+                        className="rounded-full object-cover w-14 h-14 border-2 border-primary"
                       />
                       <span className="font-semibold text-sm flex flex-col items-start">
                         <p >{member.name}</p> 
-                        <p className="bg-neutral p-1 px-2 rounded-md text-white w-auto">{member.attendanceStatus}</p>
+                        <p className={`p-1 px-2 rounded-md text-white w-auto ${member.attendanceStatus === "present" ? "bg-[#61a34a]" : "bg-neutral"}`}>{member.attendanceStatus}</p>
                       </span>
                     </li>
                   ))}

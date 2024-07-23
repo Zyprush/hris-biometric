@@ -79,7 +79,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
 
   return (
     <div className="h-screen w-full flex flex-col">
-      <span className="w-full h-14 bg-zinc-200 justify-between px-5 items-center border-b-2 border-zinc-300 hidden md:flex">
+      <span className="w-full h-14 bg-white justify-between px-5 custom-shadow items-center border-b border-zinc-300 hidden md:flex">
         <button
           onClick={toggleNavbar}
           data-tip="toggle width"
@@ -109,7 +109,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
       <div className="w-full overflow-y-auto h-full flex">
         <nav
           className={`flex ${isMinimized ? "w-20" : "w-56"
-            } bg-zinc-200 custom-shadow h-auto transition-width duration-300 flex-col items-start justify-start p-5 gap-2`}
+            } bg-white custom-shadow h-auto custom-shadow transition-width duration-300 flex-col items-start justify-start p-5 gap-2`}
         >
           <NavLink
             href="/user/dashboard"
