@@ -1,16 +1,24 @@
 "use client"
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/firebase";
+import React from "react";
 
 interface SignedInProps {
   children: ReactNode;
 }
 
-export function SignedIn({ children }: SignedInProps) {
+const SignedInComponent = ({ children }: SignedInProps) => {
+  const [isMounted, setIsMounted] = useState(false);
   const [user] = useAuthState(auth);
-  
-  if (!user) return null;
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted || !user) return null;
 
   return <>{children}</>;
-}
+};
+
+export const SignedIn = React.memo(SignedInComponent);
