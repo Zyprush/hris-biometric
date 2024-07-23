@@ -159,9 +159,6 @@ const BranchComponent = () => {
                                 <p className="text-gray-700">
                                     <span className="font-medium">Employees:</span> {branch.totalEmployees}
                                 </p>
-                                <p className="text-gray-700">
-                                    <span className="font-medium">Departments:</span> {branch.totalDepartments}
-                                </p>
                             </div>
                             <div className="mt-4 space-x-2">
                                 <button

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   collection,
   getDocs,
@@ -17,7 +17,7 @@ import { toast } from "react-toastify";
 import { EmployeeDetails } from "./components/employeeModal";
 import { useHistoryStore } from "@/state/history";
 import { useUserStore } from "@/state/user";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { BsSearch } from "react-icons/bs";
 
 const EmployeeList = () => {
@@ -25,12 +25,11 @@ const EmployeeList = () => {
   const { addHistory } = useHistoryStore();
   const [employees, setEmployees] = useState<EmployeeDetails[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filteredEmployees, setFilteredEmployees] = useState<EmployeeDetails[]>(
-    []
-  );
-  const [selectedEmployee, setSelectedEmployee] =
-    useState<EmployeeDetails | null>(null);
+  const [filteredEmployees, setFilteredEmployees] = useState<EmployeeDetails[]>([]);
+  const [selectedEmployee, setSelectedEmployee] = useState<EmployeeDetails | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 10;
 
   const ADMIN_EMAIL = "hrisbiometric@gmail.com";
 
@@ -38,7 +37,11 @@ const EmployeeList = () => {
     fetchEmployees();
   }, []);
 
-  const fetchEmployees = async () => {
+  useEffect(() => {
+    setFilteredEmployees(employees);
+  }, [employees]);
+
+  const fetchEmployees = useCallback(async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "users"));
       const fetchedEmployees = querySnapshot.docs
@@ -82,32 +85,34 @@ const EmployeeList = () => {
       console.error("Error fetching employees: ", error);
       toast.error("Failed to fetch employees");
     }
-  };
+  }, [ADMIN_EMAIL]);
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filtered = employees.filter(
       (employee) =>
         employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         employee.employeeId.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredEmployees(filtered);
-  };
+    setCurrentPage(1); // Reset to first page on search
+  }, [employees, searchTerm]);
 
-  const handleRowClick = (employee: any) => {
+  const handleRowClick = useCallback((employee: EmployeeDetails) => {
     setSelectedEmployee(employee);
-  };
+  }, []);
 
-  const handleViewDetails = () => {
+  const handleViewDetails = useCallback(() => {
     if (selectedEmployee) {
       setIsModalOpen(true);
     }
-  };
+  }, [selectedEmployee]);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
     setSelectedEmployee(null);
-  };
-  const handleProfilePicUpload = async (file: File, employeeId: string) => {
+  }, []);
+
+  const handleProfilePicUpload = useCallback(async (file: File, employeeId: string) => {
     try {
       const profilePicRef = ref(storage, `profile_pictures/${employeeId}/${file.name}`);
       const profilePicSnapshot = await uploadBytes(profilePicRef, file);
@@ -118,8 +123,9 @@ const EmployeeList = () => {
       toast.error("Failed to upload profile picture");
       return null;
     }
-  };
-  const handleEdit = async (updatedEmployee: any, newProfilePic: File | null) => {
+  }, []);
+
+  const handleEdit = useCallback(async (updatedEmployee: EmployeeDetails, newProfilePic: File | null) => {
     try {
       let profilePicUrl = updatedEmployee.profilePicUrl;
 
@@ -150,9 +156,9 @@ const EmployeeList = () => {
       console.error("Error updating employee: ", error);
       toast.error("Failed to update employee");
     }
-  };
+  }, [employees, filteredEmployees, handleProfilePicUpload]);
 
-  const handleDelete = async (employeeId: string, documentUrls: string[]) => {
+  const handleDelete = useCallback(async (employeeId: string, documentUrls: string[]) => {
     try {
       const employeeDoc = await getDoc(doc(db, "users", employeeId));
       if (employeeDoc.exists()) {
@@ -186,6 +192,47 @@ const EmployeeList = () => {
       console.error("Error moving employee to former employees: ", error);
       toast.error("Failed to move employee to former employees");
     }
+  }, [addHistory, employees, filteredEmployees, userData]);
+
+  const handlePageClick = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredEmployees.slice(indexOfFirstItem, indexOfLastItem);
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(
+        <button
+          key={i}
+          className={`btn bg-primary text-white btn-sm rounded-lg px-4 ${currentPage === i
+            ? "bg-primary text-white"
+            : "bg-gray-200 text-gray-700"
+            }`}
+          onClick={() => handlePageClick(i)}
+        >
+          {i}
+        </button>
+      );
+    }
+    return pageNumbers;
   };
 
   return (
@@ -198,7 +245,7 @@ const EmployeeList = () => {
               placeholder="Search by name or ID"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="input input-sm input-bordered rounded-sm w-full sm:w-64 border-black rounded"
+              className="input input-sm input-bordered rounded-sm w-full sm:w-64 border-black"
             />
             <div className="flex w-full sm:flex-1 space-x-2">
               <button
@@ -217,38 +264,37 @@ const EmployeeList = () => {
               </button>
             </div>
           </div>
-          <div className="overflow-x-auto card shadow bg-white rounded">
-
-            <table className="table border rounded">
-              <thead>
-                <tr className="text-md text-white bg-primary py-4 text-center px-2">
-                  <th className="px-4 py-2">Employee ID</th>
-                  <th className="px-4 py-2">Name</th>
-                  <th className="px-4 py-2">Remarks</th>
+          <div className="overflow-x-auto card">
+            <table className="table border rounded-lg mb-5 text-sm">
+              <thead className="bg-primary">
+                <tr className="text-md text-white font-semibold">
+                  <th className="px-6 py-3 text-left">Employee ID</th>
+                  <th className="px-6 py-3 text-left">Name</th>
+                  <th className="px-6 py-3 text-left">Remarks</th>
                 </tr>
               </thead>
-              <tbody>
-                {filteredEmployees.length < 1 ? (
+              <tbody className="bg-white">
+                {currentItems.length < 1 ? (
                   <tr>
                     <td colSpan={3} className="text-red-500 text-xs">
                       No results
                     </td>
                   </tr>
                 ) : (
-                  filteredEmployees.map((employee) => (
+                  currentItems.map((employee) => (
                     <tr
                       key={employee.id}
                       onClick={() => handleRowClick(employee)}
-                      className={`text-center cursor-pointer ${selectedEmployee?.id === employee.id
+                      className={`cursor-pointer ${selectedEmployee?.id === employee.id
                         ? "bg-blue-100 hover:bg-blue-200"
                         : "hover:bg-gray-100"
                         }`}
                     >
-                      <td className="px-4 py-2 text-xs">{employee.employeeId}</td>
-                      <td className="px-4 py-2 text-xs text-gray-600">
+                      <td className="px-4 py-2 text-xs text-left">{employee.employeeId}</td>
+                      <td className="px-4 py-2 text-xs text-left">
                         {employee.name}
                       </td>
-                      <td className="px-4 py-2 text-xs text-gray-600">
+                      <td className="px-4 py-2 text-xs text-left">
                         {employee.status}
                       </td>
                     </tr>
@@ -256,9 +302,29 @@ const EmployeeList = () => {
                 )}
               </tbody>
             </table>
+            {filteredEmployees.length > itemsPerPage && (
+              <div className="flex justify-between items-center">
+                <button
+                  className={`px-4 bg-primary text-white rounded-lg btn-sm text-sm text-center align-center ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+                <div>{renderPageNumbers()}</div>
+                <button
+                  className={`px-4 bg-primary text-white rounded-lg btn-sm text-sm ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
         </div>
-
         <Modal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
@@ -268,7 +334,6 @@ const EmployeeList = () => {
           }
           employee={selectedEmployee}
         />
-
       </div>
     </AdminRouteGuard>
   );

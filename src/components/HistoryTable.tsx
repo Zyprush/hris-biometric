@@ -16,7 +16,7 @@ interface HistoryTableProps {
 
 const HistoryTable: React.FC<HistoryTableProps> = ({ loading, history }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 10;
 
   if (loading) {
     return <Loading />;
@@ -72,7 +72,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ loading, history }) => {
     <div className="container mx-auto p-4 h-full">
       <div className="grid grid-cols-1 gap-4">
         <div className="overflow-x-auto card">
-          <table className="mb-5 text-sm rounded-lg border max-w-[72rem] min-w-full divide-y divide-gray-200">
+          <table className="table mb-5 text-sm rounded-lg border">
             <thead className="bg-primary">
               <tr className="text-md text-white font-semibold">
                 <th className="px-6 py-3 text-left">Date</th>
@@ -80,41 +80,44 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ loading, history }) => {
                 <th className="px-6 py-3 text-left">Action</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white">
               {currentItems.map((h) => (
                 <tr key={h.id} className="hover:bg-gray-100 text-sm">
-                  <td className="px-6 py-4 whitespace-nowrap text-zinc-600">
+                  <td className="px-4 py-2 text-left">
                     {h?.time ? format(new Date(h?.time), "MMM dd, yyyy") : ""}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-4 py-2 text-left">
                     {h?.time ? format(new Date(h?.time), "hh:mm aaa") : ""}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">{h.text}</td>
+                  <td className="px-4 py-2 text-left">{h.text}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <div className="flex justify-between items-center">
-            <button
-              className={`px-4 py-2 bg-primary text-white rounded-lg ${
-                currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              onClick={handlePrevPage}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-            <div>{renderPageNumbers()}</div>
-            <button
-              className={`px-4 py-2 bg-primary text-white rounded-lg ${
-                currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
+
+          {history.length > itemsPerPage && (
+            <div className="flex justify-between items-center">
+              <button
+                className={`px-4 py-2 bg-primary text-white rounded-lg ${
+                  currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+              <div>{renderPageNumbers()}</div>
+              <button
+                className={`px-4 py-2 bg-primary text-white rounded-lg ${
+                  currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
