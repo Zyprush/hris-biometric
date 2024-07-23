@@ -38,7 +38,7 @@ const DeductionModal: React.FC<DeductionModalProps> = ({ isOpen, onClose, employ
                 {field.label}
               </label>
               <input
-                type="text"
+                type="number"
                 id={field.id}
                 name={field.id}
                 value={employee[field.id as keyof typeof employee]}
