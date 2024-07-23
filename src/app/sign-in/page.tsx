@@ -47,9 +47,10 @@ const SignInPage = () => {
         );
         const currentDate = new Date().toISOString();
         addHistory({
-          text: `${role}: ${name} signed in using ${email}`,
+          text: `$${name} signed in using ${email}`,
           userId: user.uid,
           time: currentDate,
+          login: true
         });
       } else {
         warnToast("User data not found. Please contact support.");

@@ -61,7 +61,7 @@ const Payslip = () => {
                         NAME
                       </td>
                       <td className="p-2 border border-gray-300 align-middle">
-                      {userData?.cashAdvance}
+                      {userData?.name}
                       </td>
                       <td
                         className="text-right font-bold p-2 border border-gray-300 align-middle"
