@@ -23,6 +23,11 @@ const Deduction: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+
+  //page number
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 10;
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editedEmployee, setEditedEmployee] = useState<Employee | null>(null);
 
@@ -60,6 +65,7 @@ const Deduction: React.FC = () => {
         employee.employeeId.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredEmployees(filtered);
+    setCurrentPage(1);
   };
 
   const handleRowClick = (employee: Employee) => {
@@ -103,6 +109,47 @@ const Deduction: React.FC = () => {
     }
   };
 
+  const handlePageClick = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredEmployees.slice(indexOfFirstItem, indexOfLastItem);
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(
+        <button
+          key={i}
+          className={`btn bg-primary text-white btn-sm rounded-lg px-4 ${currentPage === i
+            ? "bg-primary text-white"
+            : "bg-gray-200 text-gray-700"
+            }`}
+          onClick={() => handlePageClick(i)}
+        >
+          {i}
+        </button>
+      );
+    }
+    return pageNumbers;
+  };
+
   return (
     <AdminRouteGuard>
       <div className="container mx-auto p-4 h-full">
@@ -125,29 +172,28 @@ const Deduction: React.FC = () => {
               </button>
               <button
                 onClick={handleViewDetails}
-                className={`btn btn-sm rounded-md text-white flex-1 sm:flex-none ${
-                  selectedEmployee ? "btn-primary" : "btn-disabled"
-                }`}
+                className={`btn btn-sm rounded-md text-white flex-1 sm:flex-none ${selectedEmployee ? "btn-primary" : "btn-disabled"
+                  }`}
                 disabled={!selectedEmployee}
               >
                 <span className="text-xs sm:text-sm">View Details</span>
               </button>
             </div>
           </div>
-          <div className="overflow-x-auto card shadow bg-white rounded">
+          <div className="overflow-x-auto card">
             <table className="table border rounded">
-              <thead>
+              <thead className="bg-primary">
                 <tr className="text-md bg-primary text-white">
-                  <th className="px-4 py-2">Employee ID</th>
-                  <th className="px-4 py-2">Employee Name</th>
-                  <th className="px-4 py-2">Department</th>
-                  <th className="px-4 py-2">Cash Advance</th>
-                  <th className="px-4 py-2">SSS</th>
-                  <th className="px-4 py-2">PHIC</th>
-                  <th className="px-4 py-2">PAGIBIG</th>
+                  <th className="px-6 py-3">Employee ID</th>
+                  <th className="px-6 py-3">Employee Name</th>
+                  <th className="px-6 py-3">Department</th>
+                  <th className="px-6 py-3">Cash Advance</th>
+                  <th className="px-6 py-3">SSS</th>
+                  <th className="px-6 py-3">PHIC</th>
+                  <th className="px-6 py-3">PAGIBIG</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="bg-white">
                 {filteredEmployees.length < 1 ? (
                   <tr>
                     <td colSpan={7} className="text-red-500 text-xs border border-gray-300 px-2 py-1">
@@ -159,24 +205,42 @@ const Deduction: React.FC = () => {
                     <tr
                       key={employee.id}
                       onClick={() => handleRowClick(employee)}
-                      className={`cursor-pointer ${
-                        selectedEmployee?.id === employee.id
-                          ? "bg-blue-100 hover:bg-blue-200"
-                          : "hover:bg-gray-100"
-                      }`}
+                      className={`cursor-pointer ${selectedEmployee?.id === employee.id
+                        ? "bg-blue-100 hover:bg-blue-200"
+                        : "hover:bg-gray-100"
+                        }`}
                     >
-                      <td className="px-2 py-1 text-xs">{employee.employeeId}</td>
-                      <td className="px-2 py-1 text-xs">{employee.name}</td>
-                      <td className="px-2 py-1 text-xs">{employee.department}</td>
-                      <td className="px-2 py-1 text-xs">{employee.cashAdvance.toFixed(2)}</td>
-                      <td className="px-2 py-1 text-xs">{employee.sssDeduction.toFixed(2)}</td>
-                      <td className="px-2 py-1 text-xs">{employee.philhealthDeduction.toFixed(2)}</td>
-                      <td className="px-2 py-1 text-xs">{employee.pagibigDeduction.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs">{employee.employeeId}</td>
+                      <td className="px-4 py-2 text-xs">{employee.name}</td>
+                      <td className="px-4 py-2 text-xs">{employee.department}</td>
+                      <td className="px-4 py-2 text-xs">{employee.cashAdvance.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs">{employee.sssDeduction.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs">{employee.philhealthDeduction.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs">{employee.pagibigDeduction.toFixed(2)}</td>
                     </tr>
                   ))
                 )}
               </tbody>
             </table>
+            {filteredEmployees.length > itemsPerPage && (
+              <div className="flex justify-between items-center mt-4">
+                <button
+                  className={`px-4 bg-primary text-white rounded-lg btn-sm text-sm ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+                <div>{renderPageNumbers()}</div>
+                <button
+                  className={`px-4 bg-primary text-white rounded-lg btn-sm text-sm ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
