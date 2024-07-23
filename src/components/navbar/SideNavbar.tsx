@@ -1,50 +1,26 @@
 import Link from "next/link";
 import React, { useState, ReactNode, useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname} from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
 import { auth, db } from "@/firebase";
-import profileMale from "../../../public/img/profile-male.jpg"
-import { GrFingerPrint } from "react-icons/gr";
 import Account from "./Account";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getDoc } from "firebase/firestore";
 import Loading from "../Loading";
 import Image from "next/image";
+import { NavLink } from "./AdminSideNavbar";
 
 
 interface NavbarProps {
   children: ReactNode;
 }
 
-interface NavLinkProps {
-  href: string;
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  isMinimized: boolean;
-  isActive: boolean;
-}
 
-const NavLink: React.FC<NavLinkProps> = ({
-  href,
-  icon: Icon,
-  label,
-  isMinimized,
-  isActive,
-}) => (
-  <Link
-    href={href}
-    className={`navlink ${isActive ? "bg-neutral text-white" : "text-zinc-700"
-      }`}
-  >
-    <Icon className="text-xl" /> {!isMinimized && label}
-  </Link>
-);
 
 const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
   const [isMinimized, setIsMinimized] = useState(false);
-  const router = useRouter();
   const pathname = usePathname();
   const [user, loading] = useAuthState(auth);
   const [userData, setUserData] = useState<any>(null);
@@ -109,7 +85,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
       <div className="w-full overflow-y-auto h-full flex">
         <nav
           className={`flex ${isMinimized ? "w-20" : "w-56"
-            } bg-white custom-shadow h-auto custom-shadow transition-width duration-300 flex-col items-start justify-start p-5 gap-2`}
+            } bg-white custom-shadow h-auto custom-shadow transition-width duration-300 flex-col items-start justify-start p-4 pt-5 gap-2`}
         >
           <NavLink
             href="/user/dashboard"
@@ -119,11 +95,11 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
             isActive={pathname === "/user/dashboard"}
           />
           <NavLink
-            href="/user/attendance"
+            href="/user/request"
             icon={MdTry}
-            label="Attendance"
+            label="Leave"
             isMinimized={isMinimized}
-            isActive={pathname === "/user/attendance"}
+            isActive={pathname === "/user/request"}
           />
           <NavLink
             href="/user/payslip"
