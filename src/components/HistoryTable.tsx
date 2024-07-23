@@ -94,27 +94,30 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ loading, history }) => {
               ))}
             </tbody>
           </table>
-          <div className="flex justify-between items-center">
-            <button
-              className={`px-4 py-2 bg-primary text-white rounded-lg ${
-                currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              onClick={handlePrevPage}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-            <div>{renderPageNumbers()}</div>
-            <button
-              className={`px-4 py-2 bg-primary text-white rounded-lg ${
-                currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
+
+          {history.length > itemsPerPage && (
+            <div className="flex justify-between items-center">
+              <button
+                className={`px-4 py-2 bg-primary text-white rounded-lg ${
+                  currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+              <div>{renderPageNumbers()}</div>
+              <button
+                className={`px-4 py-2 bg-primary text-white rounded-lg ${
+                  currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
