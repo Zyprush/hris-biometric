@@ -5,6 +5,8 @@ import { db } from "@/firebase";
 import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import { toast } from "react-toastify";
 import { BsSearch } from "react-icons/bs";
+import Modal from "./components/payrollModal"; // You'll need to create this component
+import PayslipContent from "./components/payslip"; // You'll need to create this component
 
 interface Employee {
   id: string;
@@ -24,11 +26,15 @@ interface Employee {
 }
 
 const Payroll: React.FC = () => {
+  const [selectAll, setSelectAll] = useState(false);
+
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
-  //page number
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -82,6 +88,7 @@ const Payroll: React.FC = () => {
     }
   };
 
+
   const handleSearch = () => {
     const filtered = employees.filter(
       (employee: Employee) =>
@@ -107,8 +114,122 @@ const Payroll: React.FC = () => {
     }
   };
 
-  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
+  const handleRowClick = (employee: Employee) => {
+    setSelectedEmployee(employee);
+    setIsModalOpen(true);
+  };
 
+  const handleCheckboxChange = (employeeId: string) => {
+    setSelectedEmployees(prev => {
+      const newSelected = prev.includes(employeeId)
+        ? prev.filter(id => id !== employeeId)
+        : [...prev, employeeId];
+      setSelectAll(newSelected.length === currentItems.length);
+      return newSelected;
+    });
+  };
+
+  const handlePrintSelected = () => {
+    const employeesToPrint = employees.filter(emp => selectedEmployees.includes(emp.id));
+    if (employeesToPrint.length > 0) {
+      printMultiplePayslips(employeesToPrint);
+    } else {
+      toast.error("No employees selected for printing");
+    }
+  };
+
+  const printMultiplePayslips = (employees: Employee[]) => {
+    const printContent = employees.map(emp => `
+      <div class="p-4 border rounded-lg shadow-lg max-w-lg mx-auto mb-8" style="page-break-after: always;">
+        <h2 class="text-2xl font-bold mb-4 text-center">Payslip for ${emp.name}</h2>
+        <table class="w-full border-collapse">
+          <tbody>
+            <tr>
+              <th class="border px-4 py-2 bg-gray-100 text-left">Rate</th>
+              <td class="border px-4 py-2 text-right">${emp.rate.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <th class="border px-4 py-2 bg-gray-100 text-left">Days of Work</th>
+              <td class="border px-4 py-2 text-right">${emp.daysOfWork.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <th class="border px-4 py-2 bg-gray-100 text-left">Total Regular Wage</th>
+              <td class="border px-4 py-2 text-right">${emp.totalRegularWage.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <th class="border px-4 py-2 bg-gray-100 text-left">Overtime</th>
+              <td class="border px-4 py-2 text-right">${emp.overtime.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <th class="border px-4 py-2 bg-gray-100 text-left">Holiday</th>
+              <td class="border px-4 py-2 text-right">${emp.holiday.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <th class="border px-4 py-2 bg-gray-100 text-left">Total Amount</th>
+              <td class="border px-4 py-2 text-right">${emp.totalAmount.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <th class="border px-4 py-2 bg-gray-100 text-left" colSpan="2">Deductions</th>
+            </tr>
+            <tr>
+              <th class="border px-4 py-2 bg-gray-100 text-left">SSS</th>
+              <td class="border px-4 py-2 text-right">${emp.sssDeduction.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <th class="border px-4 py-2 bg-gray-100 text-left">PhilHealth</th>
+              <td class="border px-4 py-2 text-right">${emp.philhealthDeduction.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <th class="border px-4 py-2 bg-gray-100 text-left">Pag-IBIG</th>
+              <td class="border px-4 py-2 text-right">${emp.pagibigDeduction.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <th class="border px-4 py-2 bg-gray-100 text-left">Cash Advance</th>
+              <td class="border px-4 py-2 text-right">${emp.cashAdvance.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <th class="border px-4 py-2 bg-gray-100 text-left">Total Deductions</th>
+              <td class="border px-4 py-2 text-right">${emp.totalDeductions.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <th class="border px-4 py-2 bg-gray-100 text-left">Total Net Amount</th>
+              <td class="border px-4 py-2 text-right">${emp.totalNetAmount.toFixed(2)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    `).join('');
+
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(`
+      <html>
+        <head>
+          <title>Payslips</title>
+          <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        </head>
+        <body>${printContent}</body>
+      </html>
+    `);
+      printWindow.document.close();
+      printWindow.print();
+    } else {
+      toast.error("Unable to open print window. Please check your browser settings.");
+    }
+  };
+
+  const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const isChecked = event.target.checked;
+    setSelectAll(isChecked);
+    if (isChecked) {
+      setSelectedEmployees(currentItems.map(emp => emp.id));
+    } else {
+      setSelectedEmployees([]);
+    }
+  };
+
+
+  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredEmployees.slice(indexOfFirstItem, indexOfLastItem);
@@ -132,11 +253,16 @@ const Payroll: React.FC = () => {
     return pageNumbers;
   };
 
+  useEffect(() => {
+    fetchEmployees();
+    setSelectAll(false);
+  }, []);
+
   return (
     <AdminRouteGuard>
       <div className="container mx-auto p-4 h-full">
         <div className="grid grid-cols-1 gap-4">
-          <div className="flex flex-col-1 space-x-2 sm:flex-row items-center sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
             <input
               type="text"
               placeholder="Search by name"
@@ -144,17 +270,35 @@ const Payroll: React.FC = () => {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
               className="input input-sm input-bordered rounded-sm w-full sm:w-64"
             />
-            <button
-              onClick={handleSearch}
-              className="btn rounded-md btn-sm btn-primary text-white flex-1 sm:flex-none"
-            >
-              <BsSearch className="text-xs sm:text-sm" />
-            </button>
+            <div className="flex w-full sm:flex-1 space-x-2">
+              <button
+                onClick={handleSearch}
+                className="btn rounded-md btn-sm btn-primary text-white flex-1 sm:flex-none"
+              >
+                <BsSearch className="text-xs sm:text-sm" />
+              </button>
+              <button
+                onClick={handlePrintSelected}
+                className={`btn btn-sm rounded-md text-white flex-1 sm:flex-none ${selectedEmployees.length > 0 ? "btn-primary" : "btn-disabled"
+                  }`}
+                disabled={selectedEmployees.length === 0}
+              >
+                Print Selected Payslips
+              </button>
+            </div>
           </div>
           <div className="overflow-x-auto card">
             <table className="table-auto rounded-lg border">
               <thead className="bg-primary text-white">
                 <tr>
+                  <th className="border border-gray-500 px-2 py-1 text-xs" rowSpan={2}>
+                    <input
+                      type="checkbox"
+                      checked={selectAll}
+                      onChange={handleSelectAll}
+                      className="checkbox checkbox-sm"
+                    />
+                  </th>
                   <th className="border border-gray-500 px-2 py-1 text-xs" rowSpan={2}>Name of Employee</th>
                   <th className="border border-gray-500 px-2 py-1 text-xs" rowSpan={2}>Rate</th>
                   <th className="border border-gray-500 px-2 py-1 text-xs" rowSpan={2}>Days of Works</th>
@@ -174,28 +318,41 @@ const Payroll: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white">
-                {filteredEmployees.length < 1 ? (
+                {currentItems.length < 1 ? (
                   <tr>
-                    <td colSpan={13} className="text-red-500 text-xs border border-gray-300 px-2 py-1">
+                    <td colSpan={14} className="text-red-500 text-xs border border-gray-300 px-2 py-1">
                       No results
                     </td>
                   </tr>
                 ) : (
-                  filteredEmployees.map((employee: Employee) => (
-                    <tr key={employee.id} className="hover:bg-gray-100">
-                      <td className=" px-4 py-2 text-xs border border-b">{employee.name}</td>
-                      <td className=" px-4 py-2 text-xs border border-b">{employee.rate.toFixed(2)}</td>
-                      <td className=" px-4 py-2 text-xs border border-b">{employee.daysOfWork.toFixed(2)}</td>
-                      <td className=" px-4 py-2 text-xs border border-b">{employee.totalRegularWage.toFixed(2)}</td>
-                      <td className=" px-4 py-2 text-xs border border-b">{employee.overtime.toFixed(2)}</td>
-                      <td className=" px-4 py-2 text-xs border border-b">{employee.holiday.toFixed(2)}</td>
-                      <td className=" px-4 py-2 text-xs border border-b">{employee.totalAmount.toFixed(2)}</td>
-                      <td className=" px-4 py-2 text-xs border border-b">{employee.sssDeduction.toFixed(2)}</td>
-                      <td className=" px-4 py-2 text-xs border border-b">{employee.philhealthDeduction.toFixed(2)}</td>
-                      <td className=" px-4 py-2 text-xs border border-b">{employee.pagibigDeduction.toFixed(2)}</td>
-                      <td className=" px-4 py-2 text-xs border border-b">{employee.cashAdvance.toFixed(2)}</td>
-                      <td className=" px-4 py-2 text-xs border border-b">{employee.totalDeductions.toFixed(2)}</td>
-                      <td className=" px-4 py-2 text-xs border border-b">{employee.totalNetAmount.toFixed(2)}</td>
+                  currentItems.map((employee: Employee) => (
+                    <tr
+                      key={employee.id}
+                      className="hover:bg-gray-100 cursor-pointer"
+                      onClick={() => handleRowClick(employee)}
+                    >
+                      <td className="px-4 py-2 text-xs border border-b">
+                        <input
+                          type="checkbox"
+                          checked={selectedEmployees.includes(employee.id)}
+                          onChange={() => handleCheckboxChange(employee.id)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="checkbox checkbox-sm"
+                        />
+                      </td>
+                      <td className="px-4 py-2 text-xs border border-b">{employee.name}</td>
+                      <td className="px-4 py-2 text-xs border border-b">{employee.rate.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b">{employee.daysOfWork.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b">{employee.totalRegularWage.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b">{employee.overtime.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b">{employee.holiday.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b">{employee.totalAmount.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b">{employee.sssDeduction.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b">{employee.philhealthDeduction.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b">{employee.pagibigDeduction.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b">{employee.cashAdvance.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b">{employee.totalDeductions.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b">{employee.totalNetAmount.toFixed(2)}</td>
                     </tr>
                   ))
                 )}
@@ -223,8 +380,13 @@ const Payroll: React.FC = () => {
           </div>
         </div>
       </div>
+      {selectedEmployee && (
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          <PayslipContent employee={selectedEmployee} />
+        </Modal>
+      )}
     </AdminRouteGuard>
   );
 };
 
-export default Payroll;
+export default Payroll
