@@ -34,20 +34,20 @@ const AdminAttendance = () => {
               <p className="text-lg font-bold">{currentTab}</p>
               <div className="join rounded-md my-4">
                 <button
-                  className={`btn join-item border-2 border-zinc-400 ${
+                  className={`btn btn-md md:btn-md join-item border border-primary ${
                     currentTab === "Leave"
-                      ? "bg-primary text-white border-primary"
-                      : ""
+                      ? "bg-primary text-white border-primary hover:bg-secondary hover:text-white hover:border-primary"
+                      : "hover:bg-secondary hover:text-white hover:border-primary bg-white "
                   }`}
                   onClick={() => setCurrentTab("Leave")}
                 >
                   <FaFileCircleQuestion className="text-base" /> Leave Request
                 </button>
                 <button
-                  className={`btn join-item border-2 border-zinc-400 ${
+                  className={`btn btn-md md:btn-md join-item border border-primary ${
                     currentTab === "Attendance"
-                      ? "bg-primary text-white border-primary"
-                      : ""
+                      ? "bg-primary text-white border-primary hover:bg-secondary hover:text-white hover:border-primary"
+                      : "hover:bg-secondary hover:text-white hover:border-primary bg-white "
                   }`}
                   onClick={() => setCurrentTab("Attendance")}
                 >

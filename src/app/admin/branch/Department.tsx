@@ -169,7 +169,7 @@ const DepartmentComponent = () => {
                         const chartData = getChartData(dept.totalEmployees);
                         return (
                             <div key={dept.id} className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-                                <h2 className="text-lg font-semibold text-blue-600 mb-3 truncate text-center">{dept.name}</h2>
+                                <h2 className="text-lg font-semibold text-primary mb-3 truncate text-center">{dept.name}</h2>
                                 <div className="flex flex-col items-center">
                                     <div className="w-full h-48 mb-4">
                                         <Doughnut data={chartData} options={chartOptions} />

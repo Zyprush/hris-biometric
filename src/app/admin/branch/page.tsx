@@ -31,13 +31,21 @@ const AdminBranch = () => {
               <p className="text-lg font-bold">{currentTab}</p>
               <div className="join rounded-md my-5">
                 <button
-                  className={`btn join-item border-2 border-zinc-400 ${currentTab === "Department" ? "bg-primary text-white border-primary" : ""}`}
+                  className={`btn btn-md md:btn-md join-item border border-primary ${
+                    currentTab === "Department"
+                      ? "bg-primary text-white border-primary hover:bg-secondary hover:text-white hover:border-primary"
+                      : "hover:bg-secondary hover:text-white hover:border-primary bg-white "
+                  }`}
                   onClick={() => setCurrentTab("Department")}
                 >
                   <BsBuilding className="text-base" /> Department
                 </button>
                 <button
-                  className={`btn join-item border-2 border-zinc-400 ${currentTab === "Branch" ? "bg-primary text-white border-primary" : ""}`}
+                  className={`btn btn-md md:btn-md join-item border border-primary ${
+                    currentTab === "Branch"
+                      ? "bg-primary text-white border-primary hover:bg-secondary hover:text-white hover:border-primary"
+                      : "hover:bg-secondary hover:text-white hover:border-primary bg-white "
+                  }`}
                   onClick={() => setCurrentTab("Branch")}
                 >
                   <BsBuildingFill className="text-base" /> Branch

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Loading from "@/components/bioLoading";
 import { FaCommentAlt } from "react-icons/fa";
 import { format } from "date-fns";
@@ -15,6 +15,9 @@ interface HistoryTableProps {
 }
 
 const HistoryTable: React.FC<HistoryTableProps> = ({ loading, history }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
   if (loading) {
     return <Loading />;
   }
@@ -27,22 +30,60 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ loading, history }) => {
     );
   }
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = history.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(history.length / itemsPerPage);
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handlePageClick = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(
+        <button
+          key={i}
+          className={`px-4 py-2 mx-1 rounded-lg ${
+            currentPage === i
+              ? "bg-primary text-white"
+              : "bg-gray-200 text-gray-700"
+          }`}
+          onClick={() => handlePageClick(i)}
+        >
+          {i}
+        </button>
+      );
+    }
+    return pageNumbers;
+  };
+
   return (
     <div className="container mx-auto p-4 h-full">
       <div className="grid grid-cols-1 gap-4">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto card">
           <table className="mb-5 text-sm rounded-lg border max-w-[72rem] min-w-full divide-y divide-gray-200">
             <thead className="bg-primary">
-              <tr className="text-sm text-white font-semibold">
+              <tr className="text-md text-white font-semibold">
                 <th className="px-6 py-3 text-left">Date</th>
                 <th className="px-6 py-3 text-left">Time</th>
                 <th className="px-6 py-3 text-left">Action</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {history.map((h) => (
-                <tr key={h.id} className="hover:bg-gray-100">
-                  <td className="px-6 py-4 whitespace-nowrap font-semibold text-zinc-600">
+              {currentItems.map((h) => (
+                <tr key={h.id} className="hover:bg-gray-100 text-sm">
+                  <td className="px-6 py-4 whitespace-nowrap text-zinc-600">
                     {h?.time ? format(new Date(h?.time), "MMM dd, yyyy") : ""}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -53,6 +94,27 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ loading, history }) => {
               ))}
             </tbody>
           </table>
+          <div className="flex justify-between items-center">
+            <button
+              className={`px-4 py-2 bg-primary text-white rounded-lg ${
+                currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <div>{renderPageNumbers()}</div>
+            <button
+              className={`px-4 py-2 bg-primary text-white rounded-lg ${
+                currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>
