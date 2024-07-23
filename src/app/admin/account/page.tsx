@@ -150,7 +150,7 @@ const UserInfo = ({ label, value, icon: Icon }: UserInfoProps) => {
       <div className="flex items-center">
         <Icon className="text-2xl text-primary mr-3" />
         <div className=" truncate">
-          <p className="text-sm font-medium text-gray-600">{label}</p>
+          <p className="text-sm font-medium text-gray-600 ">{label}</p>
           <p className="text-base font-semibold text-gray-800">{value}</p>
         </div>
       </div>
