@@ -14,18 +14,16 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import {
-  FaCalendarTimes,
-  FaCheckCircle,
   FaCommentAlt,
   FaQuestion,
 } from "react-icons/fa";
-import { MdEmail, MdViewTimeline } from "react-icons/md";
+import { MdEmail } from "react-icons/md";
 import { ToastContainer } from "react-toastify";
 import { format } from "date-fns";
-import { successToast, warnToast } from "@/components/toast";
+import { successToast } from "@/components/toast";
 import RequestForm from "@/app/user/request/RequestForm";
 import Link from "next/link";
 
