@@ -8,6 +8,8 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { EventClickArg, DateSelectArg } from '@fullcalendar/core';
 import { db } from '@/firebase';
 import { collection, addDoc, getDocs, deleteDoc, query, where } from 'firebase/firestore';
+import { UserRouteGuard } from '@/components/UserRouteGuard';
+import { SignedIn } from '@/components/signed-in';
 import UserLayout from '@/components/UserLayout';
 
 interface Holiday {
@@ -16,8 +18,7 @@ interface Holiday {
   date: string;
   color: string;
 }
-
-const Attendance: React.FC = () => {
+const Attendance = () => {
   const [holidays, setHolidays] = useState<Holiday[]>([]);
 
   useEffect(() => {
@@ -32,7 +33,8 @@ const Attendance: React.FC = () => {
   };
 
   const handleEventClick = async (clickInfo: EventClickArg) => {
-    {/*
+    {/**
+      
       const confirmDelete = window.confirm(`Do you want to delete the holiday: ${clickInfo.event.title}?`);
       if (confirmDelete) {
         try {
@@ -52,6 +54,7 @@ const Attendance: React.FC = () => {
 
   const handleDateSelect = async (selectInfo: DateSelectArg) => {
     {/**
+      
       const title = prompt('Enter holiday name:');
       if (title) {
         const newHoliday: Holiday = {
@@ -71,27 +74,32 @@ const Attendance: React.FC = () => {
   };
 
   return (
-    <UserLayout>
-      <div className="w-full h-screen p-4 bg-gray-100">
-        <div className="bg-white rounded-lg shadow-md p-4 h-[calc(100%-5rem)]">
-          <FullCalendar
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            initialView="dayGridMonth"
-            headerToolbar={{
-              left: 'prev,next today',
-              center: 'title',
-              right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            }}
-            events={holidays}
-            eventClick={handleEventClick}
-            selectable={true}
-            select={handleDateSelect}
-            height="100%"
-          />
-        </div>
-      </div>
-    </UserLayout>
+    <UserRouteGuard>
+      <SignedIn>
+        <UserLayout>
+          <div className="w-full h-screen p-4 bg-gray-100">
+            <div className="bg-white rounded-lg shadow-md p-4 h-[calc(100%-5rem)]">
+              <FullCalendar
+                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                initialView="dayGridMonth"
+                headerToolbar={{
+                  left: 'prev,next today',
+                  center: 'title',
+                  right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                }}
+                events={holidays}
+                eventClick={handleEventClick}
+                selectable={true}
+                select={handleDateSelect}
+                height="100%"
+              />
+            </div>
+          </div>
+        </UserLayout>
+      </SignedIn>
+    </UserRouteGuard>
   );
 };
+
 
 export default Attendance;
