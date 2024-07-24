@@ -1,17 +1,66 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { EventClickArg } from '@fullcalendar/core';
+import { EventClickArg, DateSelectArg } from '@fullcalendar/core';
+import { db } from '@/firebase';
+import { collection, addDoc, getDocs, deleteDoc, query, where } from 'firebase/firestore';
+
+interface Holiday {
+  id?: string;
+  title: string;
+  date: string;
+  color: string;
+}
 
 const Attendance: React.FC = () => {
-  const handleEventClick = (clickInfo: EventClickArg) => {
-    alert(`Attendance for: ${clickInfo.event.title}`);
+  const [holidays, setHolidays] = useState<Holiday[]>([]);
+
+  useEffect(() => {
+    fetchHolidays();
+  }, []);
+
+  const fetchHolidays = async () => {
+    const holidaysCollection = collection(db, 'holidays');
+    const holidaySnapshot = await getDocs(holidaysCollection);
+    const holidayList = holidaySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Holiday));
+    setHolidays(holidayList);
   };
 
-  const handleDateClick = (arg: { date: Date; allDay: boolean }) => {
-    alert(`Date clicked: ${arg.date}`);
+  const handleEventClick = async (clickInfo: EventClickArg) => {
+    const confirmDelete = window.confirm(`Do you want to delete the holiday: ${clickInfo.event.title}?`);
+    if (confirmDelete) {
+      try {
+        const holidaysCollection = collection(db, 'holidays');
+        const q = query(holidaysCollection, where("title", "==", clickInfo.event.title));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          deleteDoc(doc.ref);
+        });
+        await fetchHolidays();
+      } catch (error) {
+        console.error("Error deleting document: ", error);
+      }
+    }
+  };
+
+  const handleDateSelect = async (selectInfo: DateSelectArg) => {
+    const title = prompt('Enter holiday name:');
+    if (title) {
+      const newHoliday: Holiday = {
+        title,
+        date: selectInfo.startStr,
+        color: '#F44336'
+      };
+      try {
+        const holidaysCollection = collection(db, 'holidays');
+        await addDoc(holidaysCollection, newHoliday);
+        await fetchHolidays();
+      } catch (error) {
+        console.error("Error adding document: ", error);
+      }
+    }
   };
 
   return (
@@ -25,13 +74,10 @@ const Attendance: React.FC = () => {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
           }}
-          events={[
-            { title: 'Present', date: '2024-07-22', color: '#4CAF50' },
-            { title: 'Absent', date: '2024-07-23', color: '#F44336' },
-            { title: 'Late', date: '2024-07-24', color: '#FFC107' },
-          ]}
+          events={holidays}
           eventClick={handleEventClick}
-          dateClick={handleDateClick}
+          selectable={true}
+          select={handleDateSelect}
           height="100%"
         />
       </div>
