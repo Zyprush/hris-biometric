@@ -28,6 +28,7 @@ const AdminDashboard = () => {
   };
 
   const [totalEmployees, setTotalEmployees] = useState(0);
+  const [totalBraches, setTotalBraches] = useState(0);
   const [formerEmployees, setFormerEmployees] = useState(0);
   const [recentHires, setRecentHires] = useState(0);
   const [upcomingBirthdays, setUpcomingBirthdays] = useState(0);
@@ -70,6 +71,15 @@ const AdminDashboard = () => {
       console.log('Total recent hires:', recentHiresCount);  // Debugging log
     } catch (error) {
       console.error("Error fetching total employees: ", error);
+    }
+  };
+
+  const fetchTotalBraches = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "branches"));
+      setTotalBraches(querySnapshot.size);
+    } catch (error) {
+      console.error("Error fetching total branches: ", error);
     }
   };
 
@@ -123,6 +133,8 @@ const AdminDashboard = () => {
     fetchTotalEmployees();
     fetchFormerEmployees();
     fetchUpcomingBirthdays();
+    fetchTotalBraches();
+
   }, []);
 
   const doughnutData = {
@@ -170,7 +182,7 @@ const AdminDashboard = () => {
 
   const cardData = [
     { title: "Total Employees", icon: FaUsers, color: "text-[#135D66]", value: totalEmployees - 1 },
-    { title: "Total Branches", icon: FaBuilding, color: "text-[#1A7680]", value: 2 },
+    { title: "Total Branches", icon: FaBuilding, color: "text-[#1A7680]", value: totalBraches },
     { title: "Recent Hires", icon: FaUserPlus, color: "text-[#238F99]", value: recentHires },
     { title: "Former Employees", icon: FaUserMinus, color: "text-[#104A55]", value: formerEmployees },
     { title: "Upcoming Birthdays", icon: FaBirthdayCake, color: "text-[#0B3944]", value: upcomingBirthdays },
