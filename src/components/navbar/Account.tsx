@@ -94,7 +94,7 @@ const Account = () => {
   return (
     <span
       tabIndex={0}
-      className="flex flex-col mt-2 dropdown-content menu bg-base-100 rounded-2xl border border-zinc-300 z-[1] h-auto  shadow-2xl w-[13rem] p-0"
+      className="flex flex-col mt-2 dropdown-content menu bg-base-100 rounded-2xl border border-zinc-300 z-50 h-auto shadow-2xl w-[13rem] p-0 absolute"
     >
       <span className="w-full h-auto border-b-2 gap-3 p-3 flex justify-start items-center">
         <div
