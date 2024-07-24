@@ -286,7 +286,7 @@ const EmployeeList = () => {
                       key={employee.id}
                       onClick={() => handleRowClick(employee)}
                       className={`cursor-pointer ${selectedEmployee?.id === employee.id
-                        ? "bg-blue-100 hover:bg-blue-200"
+                        ? "bg-teal-700 text-white hover:bg-teal-600"
                         : "hover:bg-gray-100"
                         }`}
                     >

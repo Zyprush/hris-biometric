@@ -14,7 +14,7 @@ const PasswordManagement = () => {
   const [change, setChange] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [filteredEmployees, setFilteredEmployees] = useState<EmployeeDetails[]>([]);
-  //page number
+  const [selectedEmployee, setSelectedEmployee] = useState<EmployeeDetails | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 10;
 
@@ -96,6 +96,13 @@ const PasswordManagement = () => {
     return pageNumbers;
   };
 
+  const handleViewDetails = () => {
+    if (selectedEmployee) {
+      setChange(true);
+      setEmail(selectedEmployee.email);
+    }
+  };
+
   return (
     <AdminRouteGuard>
       <div className="container mx-auto p-4 h-full">
@@ -116,6 +123,14 @@ const PasswordManagement = () => {
               >
                 <BsSearch className="text-xs sm:text-sm" />
               </button>
+              <button
+                onClick={handleViewDetails}
+                className={`btn btn-sm rounded-md text-white flex-1 sm:flex-none ${selectedEmployee ? "btn-primary" : "btn-disabled"
+                  }`}
+                disabled={!selectedEmployee}
+              >
+                <span className="text-xs sm:text-sm">Reset Password</span>
+              </button>
             </div>
           </div>
           <div className="overflow-x-auto card">
@@ -124,34 +139,29 @@ const PasswordManagement = () => {
                 <tr className="text-xs text-white bg-primary">
                   <th className="px-6 py-3">Employee Name</th>
                   <th className="px-6 py-3">Email</th>
-                  <th className="px-6 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white">
                 {filteredEmployees.length < 1 ? (
                   <tr>
-                    <td colSpan={3} className="text-red-500 text-xs text-center">
+                    <td colSpan={2} className="text-red-500 text-xs text-center">
                       No results
                     </td>
                   </tr>
                 ) : (
-                  filteredEmployees.map((employee) => (
+                  currentItems.map((employee) => (
                     <tr
                       key={employee.id}
-                      className="cursor-pointer hover:bg-gray-100"
+                      className={`cursor-pointer ${selectedEmployee?.id === employee.id
+                        ? "bg-teal-700 text-white hover:bg-teal-600"
+                        : "hover:bg-gray-100"
+                        }`}
+                      onClick={() => setSelectedEmployee(employee)}
                     >
                       <td className="px-4 py-2 text-xs text-left">
                         {employee.name}
                       </td>
                       <td className="px-4 py-2 text-xs text-left">{employee.email}</td>
-                      <td className="px-4 py-2 text-xs text-left">
-                        <button
-                          className="btn btn-xs btn-primary text-white"
-                          onClick={() => { setChange(true); setEmail(employee.email); }}
-                        >
-                          change
-                        </button>
-                      </td>
                     </tr>
                   ))
                 )}

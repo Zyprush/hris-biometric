@@ -124,7 +124,7 @@ const FormerEmployee = () => {
       toast.error("Failed to delete employee and associated documents");
     }
   };
-//start of pagenation
+  //start of pagenation
   const handlePageClick = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
@@ -217,7 +217,7 @@ const FormerEmployee = () => {
                       key={employee.id}
                       onClick={() => handleRowClick(employee)}
                       className={`cursor-pointer ${selectedEmployee?.id === employee.id
-                        ? "bg-blue-100 hover:bg-blue-200"
+                        ? "bg-teal-700 text-white hover:bg-teal-600"
                         : "hover:bg-gray-100"
                         }`}
                     >

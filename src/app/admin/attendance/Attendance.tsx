@@ -6,6 +6,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { EventClickArg, DateSelectArg } from '@fullcalendar/core';
 import { db } from '@/firebase';
 import { collection, addDoc, getDocs, deleteDoc, query, where } from 'firebase/firestore';
+import { AdminRouteGuard } from '@/components/AdminRouteGuard';
 
 interface Holiday {
   id?: string;
@@ -64,24 +65,26 @@ const Attendance: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-screen p-4 bg-gray-100">
-      <div className="bg-white rounded-lg shadow-md p-4 h-[calc(100%-5rem)]">
-        <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          initialView="dayGridMonth"
-          headerToolbar={{
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-          }}
-          events={holidays}
-          eventClick={handleEventClick}
-          selectable={true}
-          select={handleDateSelect}
-          height="100%"
-        />
+    <AdminRouteGuard>
+      <div className="w-full h-screen p-4 bg-gray-100">
+        <div className="bg-white rounded-lg shadow-md p-4 h-[calc(100%-5rem)]">
+          <FullCalendar
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+            initialView="dayGridMonth"
+            headerToolbar={{
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            }}
+            events={holidays}
+            eventClick={handleEventClick}
+            selectable={true}
+            select={handleDateSelect}
+            height="100%"
+          />
+        </div>
       </div>
-    </div>
+    </AdminRouteGuard>
   );
 };
 
