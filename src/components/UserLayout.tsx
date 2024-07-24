@@ -22,6 +22,8 @@ const UserLayout: React.FC<NavbarProps> = ({ children }) => {
     };
   }, []);
 
+
+
   return (
     <>
       {isMobile ? (
