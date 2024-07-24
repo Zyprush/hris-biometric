@@ -42,44 +42,36 @@ const SignInPage = () => {
       if (userDocSnap.exists()) {
         const { role, name, email } = userDocSnap.data();
         console.log("role:", role);
-        await router.push(
-          role === "admin" ? "/admin/dashboard" : "/user/dashboard"
-        );
         const currentDate = new Date().toISOString();
         addHistory({
-          text: `$${name} signed in using ${email}`,
+          text: `${name} signed in using ${email}`,
           userId: user.uid,
           time: currentDate,
-          login: true
+          login: true,
         });
+        router.push(role === "admin" ? "/admin/dashboard" : "/user/dashboard");
       } else {
         warnToast("User data not found. Please contact support.");
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error during sign in:", error);
-
       if (error instanceof FirebaseError) {
         const errorMessages: { [key: string]: string } = {
-          "auth/invalid-credential":
-            "Invalid email or password. Please try again.",
-          "auth/user-disabled":
-            "This account has been disabled. Please contact support.",
-          "auth/too-many-requests":
-            "Too many failed login attempts. Please try again later.",
+          "auth/invalid-credential": "Invalid email or password. Please try again.",
+          "auth/user-disabled": "This account has been disabled. Please contact support.",
+          "auth/too-many-requests": "Too many failed login attempts. Please try again later.",
         };
-        errorToast(
-          errorMessages[error.code as string] ||
-            "An unexpected error occurred. Please try again."
-        );
+        errorToast(errorMessages[error.code] || "An unexpected error occurred. Please try again.");
       } else {
         errorToast("An unexpected error occurred. Please try again.");
       }
+      setLoading(false);
     }
-    setLoading(false);
-  }, [email, password, router]);
+  }, [email, password, router, addHistory]);
 
   const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
+    (e:any) => {
       if (e.key === "Enter") {
         handleSignIn();
       }
@@ -93,7 +85,7 @@ const SignInPage = () => {
         <ToastContainer />
         <div className="flex flex-col items-center justify-center h-screen dark w-full px-4">
           <div className="w-full max-w-lg bg-gray-800 bg-opacity-30 backdrop-blur-sm rounded-lg shadow-md p-6 z-10 relative">
-            <h1 className="text-2xl text-white font-bold mb-6">Sign in page</h1>
+            <h1 className="text-2xl text-white font-bold mb-6">Sign in</h1>
             <div className="flex flex-col" onKeyDown={handleKeyDown}>
               <input
                 type="text"
@@ -133,7 +125,7 @@ const SignInPage = () => {
         <RoleBasedRedirect />
         <div className="flex flex-col items-center justify-center h-screen dark w-full px-4">
           <div className="w-full max-w-lg bg-gray-800 bg-opacity-30 backdrop-blur-sm rounded-lg shadow-md p-6 z-10 relative">
-            <h1 className="text-2xl text-white font-bold mb-6">Sign in page</h1>
+            <h1 className="text-2xl text-white font-bold mb-6">Sign in</h1>
             <div className="flex flex-col" onKeyDown={handleKeyDown}>
               <input
                 type="text"

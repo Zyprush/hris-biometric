@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
-import Lottie from "react-lottie";
-import animationData from "../../public/bio-animation.json";
+import { GiFingerPrint } from "react-icons/gi";
 
 const FingerprintLoading = () => {
   const [percentage, setPercentage] = useState(0);
-  const [isStopped, setIsStopped] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -22,25 +19,11 @@ const FingerprintLoading = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
-
   return (
     <div className="flex flex-col items-center justify-center h-screen p-4">
       <div className="flex items-center gap-4 p-4">
-        <Lottie
-          options={defaultOptions}
-          height={400}
-          width={400}
-          isStopped={isStopped}
-          isPaused={isPaused}
-        />
+        <GiFingerPrint className="text-4xl md:text-6xl animate-ping absolute inline-flex rounded-full text-primary opacity-75" />
+        <GiFingerPrint className="text-4xl md:text-6xl relative inline-flex rounded-full text-primary" />
       </div>
       <div className="w-40 mt-4 relative">
         <div className="h-3 md:h-5 bg-gray-300 rounded-lg">

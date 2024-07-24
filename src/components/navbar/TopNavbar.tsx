@@ -121,10 +121,10 @@ const TopNavbar: React.FC<NavbarProps> = ({ children }) => {
               isActive={pathname === "/user/dashboard"}
             />
             <NavLink
-              href="/user/attendance"
+              href="/user/request"
               icon={MdTry}
-              label="Attendance"
-              isActive={pathname === "/user/attendance"}
+              label="Leave"
+              isActive={pathname === "/user/request"}
             />
             <NavLink
               href="/user/payslip"

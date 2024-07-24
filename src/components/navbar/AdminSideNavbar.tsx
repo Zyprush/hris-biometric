@@ -24,7 +24,7 @@ interface NavLinkProps {
   isActive: boolean;
 }
 
-const NavLink: React.FC<NavLinkProps> = ({
+export const NavLink: React.FC<NavLinkProps> = ({
   href,
   icon: Icon,
   label,
@@ -33,11 +33,14 @@ const NavLink: React.FC<NavLinkProps> = ({
 }) => (
   <Link
     href={href}
-    className={`navlink ${
+    className={`w-full items-center justify-start flex gap-3 text-sm font-[600] p-3 hover:bg-secondary rounded-md hover:text-white transition-all duration-300 hover:shadow-md hover:drop-shadow-sm ${
       isActive ? "bg-neutral text-white" : "text-zinc-700"
     }`}
   >
-    <Icon className="text-xl" /> {!isMinimized && label}
+    <span className={`w-auto ${isMinimized && " mx-auto"}`}>
+      <Icon className="text-xl" />
+    </span>
+    {!isMinimized && label}
   </Link>
 );
 
@@ -84,7 +87,13 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
           data-tip="toggle width"
           className=" flex items-center text-white tooltip tooltip-right font-semibold rounded-md gap-2"
         >
-          <Image width={50} height={50} src={"/img/smarthr-logo.png"} alt="logo" className="w-14 drop-shadow-lg" />
+          <Image
+            width={50}
+            height={50}
+            src={"/img/smarthr-logo.png"}
+            alt="logo"
+            className="w-14 drop-shadow-lg"
+          />
           {!isMinimized && (
             <p className="px-3 py-1 rounded-md text-neutral border-2 border-neutral font-bold text-xs">
               SMART HR
@@ -112,7 +121,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
         <nav
           className={`flex ${
             isMinimized ? "w-20" : "w-56"
-          } bg-white custom-shadow h-auto transition-width duration-300 flex-col items-start justify-start p-5 gap-2`}
+          } bg-white custom-shadow h-auto transition-width duration-300 flex-col items-start justify-start pt-5 p-4 gap-2`}
         >
           <NavLink
             href="/admin/dashboard"

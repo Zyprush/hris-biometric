@@ -35,6 +35,7 @@ import {
   where,
 } from "firebase/firestore";
 import { FaUser } from "react-icons/fa6";
+import { format } from 'date-fns'; // Add this import
 
 ChartJS.register(
   CategoryScale,
@@ -313,20 +314,20 @@ export default function UserDashboard() {
               {/* Leave/Day Off Balance */}
               <div className="bg-white rounded-lg shadow p-6">
                 <h2 className="text-xl font-semibold mb-4">
-                  Leave/Day Off Taken
+                  Leave, Day Off Taken
                 </h2>
                 <ul className="space-y-2">
                   <li className="flex items-center gap-2">
-                    <FaCalendarAlt className="text-blue-500" />
-                    <span>This year: 10 days</span>
+                    <FaCalendarAlt className="text-neutral" />
+                    <span className="text-neutral">{format(new Date(), 'yyyy')}: 10 days</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <FaCalendarAlt className="text-blue-500" />
-                    <span>This Month: 10 days</span>
+                    <FaCalendarAlt className="text-neutral" />
+                    <span className="text-neutral">{format(new Date(), 'MMMM')}: 10 days</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <FaCalendarAlt className="text-blue-500" />
-                    <span>This Quarter: 10 days</span>
+                    <FaCalendarAlt className="text-neutral" />
+                    <span className="text-neutral">This Quarter: 10 days</span>
                   </li>
                 </ul>
               </div>
