@@ -1,93 +1,97 @@
 "use client";
-import FingerprintLoading from "@/components/Loading";
-import UserLayout from "@/components/UserLayout";
-import { SignedIn } from "@/components/signed-in";
-import { auth } from "@/firebase";
-import { useUserStore } from "@/state/user";
-import React, { useEffect, useRef, useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
-import ReactToPrint from "react-to-print";
-import { UserRouteGuard } from "@/components/UserRouteGuard";
-import Dtr from "./Dtr";
 
-const Attendance = () => {
-  const componentRef = useRef<HTMLTableElement>(null);
-  const [user, authLoading] = useAuthState(auth);
-  const [month, setMonth] = useState<string>("");
-  const [year, setYear] = useState<string>("");
-  const { userData: userData, loading, fetchUserData } = useUserStore();
+import React, { useState, useEffect } from 'react';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import { EventClickArg, DateSelectArg } from '@fullcalendar/core';
+import { db } from '@/firebase';
+import { collection, addDoc, getDocs, deleteDoc, query, where } from 'firebase/firestore';
+import UserLayout from '@/components/UserLayout';
+
+interface Holiday {
+  id?: string;
+  title: string;
+  date: string;
+  color: string;
+}
+
+const Attendance: React.FC = () => {
+  const [holidays, setHolidays] = useState<Holiday[]>([]);
+
   useEffect(() => {
-    if (user) {
-      fetchUserData(user.uid);
-    }
-  }, [user, fetchUserData]);
+    fetchHolidays();
+  }, []);
 
-
-  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setMonth(e.target.value);
+  const fetchHolidays = async () => {
+    const holidaysCollection = collection(db, 'holidays');
+    const holidaySnapshot = await getDocs(holidaysCollection);
+    const holidayList = holidaySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Holiday));
+    setHolidays(holidayList);
   };
 
-  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setYear(e.target.value);
+  const handleEventClick = async (clickInfo: EventClickArg) => {
+    {/*
+      const confirmDelete = window.confirm(`Do you want to delete the holiday: ${clickInfo.event.title}?`);
+      if (confirmDelete) {
+        try {
+          const holidaysCollection = collection(db, 'holidays');
+          const q = query(holidaysCollection, where("title", "==", clickInfo.event.title));
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach((doc) => {
+            deleteDoc(doc.ref);
+          });
+          await fetchHolidays();
+        } catch (error) {
+          console.error("Error deleting document: ", error);
+        }
+      }
+      */}
+  };
+
+  const handleDateSelect = async (selectInfo: DateSelectArg) => {
+    {/**
+      const title = prompt('Enter holiday name:');
+      if (title) {
+        const newHoliday: Holiday = {
+          title,
+          date: selectInfo.startStr,
+          color: '#F44336'
+        };
+        try {
+          const holidaysCollection = collection(db, 'holidays');
+          await addDoc(holidaysCollection, newHoliday);
+          await fetchHolidays();
+        } catch (error) {
+          console.error("Error adding document: ", error);
+        }
+      }
+      */}
   };
 
   return (
-    <UserRouteGuard>
-      <SignedIn>
-        <UserLayout>
-          <div className="container p-2 md:p-10 flex flex-col justify-start items-center">
-            <div className="flex gap-2">
-              <select
-                onChange={handleMonthChange}
-                className="border-2 rounded-md p-2 px-3"
-                value={month}
-              >
-                <option value="">Month</option>
-                <option value="January">January</option>
-                <option value="February">February</option>
-                <option value="March">March</option>
-                <option value="April">April</option>
-                <option value="May">May</option>
-                <option value="June">June</option>
-                <option value="July">July</option>
-                <option value="August">August</option>
-                <option value="September">September</option>
-                <option value="October">October</option>
-                <option value="November">November</option>
-                <option value="December">December</option>
-              </select>
-              <select
-                onChange={handleYearChange}
-                className="border-2 rounded-md p-2 px-3"
-                value={year}
-              >
-                <option value="">Year</option>
-                {Array.from({ length: 31 }, (_, i) => (
-                  <option key={i} value={2020 + i}>{2020 + i}</option>
-                ))}
-              </select>
-              <ReactToPrint
-                trigger={() => (
-                  <button
-                    data-tip="Save or Print DTR"
-                    className="p-4 text-xs md:text-sm rounded-md tooltip tooltip-top text-white font-[600] bg-neutral fixed bottom-4 right-4"
-                  >
-                    Download PDF
-                  </button>
-                )}
-                content={() => componentRef.current}
-              />
-            </div>
-
-            <div className="flex p-5" ref={componentRef}>
-              <Dtr userData={userData} date={`${month} ${year}`} />
-            </div>
-          </div>
-        </UserLayout>
-      </SignedIn>
-    </UserRouteGuard>
+    <UserLayout>
+      <div className="w-full h-screen p-4 bg-gray-100">
+        <div className="bg-white rounded-lg shadow-md p-4 h-[calc(100%-5rem)]">
+          <FullCalendar
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+            initialView="dayGridMonth"
+            headerToolbar={{
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            }}
+            events={holidays}
+            eventClick={handleEventClick}
+            selectable={true}
+            select={handleDateSelect}
+            height="100%"
+          />
+        </div>
+      </div>
+    </UserLayout>
   );
 };
-
 
 export default Attendance;
