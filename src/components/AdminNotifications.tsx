@@ -25,30 +25,23 @@ const AdminNotifications: React.FC<NotificationsProps> = ({
     },
   };
   return (
-    <div className="fixed inset-0 w-full h-full bg-zinc-800 bg-opacity-40 py-6 flex flex-col justify-center sm:py-12 gap-4 z-50">
-      <div className="bg-white shadow flex flex-col gap-10 rounded-xl pt-28 mx-auto p-8 text-zinc-600  max-w-[23rem]">
-        <span className="flex -mt-32">
-          <Lottie options={defaultOptions} height={200} width={200} />
-        </span>
-        <p className="text-sm text-center border shadow-sm rounded-md p-4 -mt-20 z-50 bg-white">
-         {text}
-        </p>
-        <span className="flex justify-between">
-          <Link
-            className="flex p-4 btn btn-neutral text-xs rounded w-auto mx-auto"
-            href={"/admin/attendance"}
-          >
-            <FaMessage className="text-sm" />
-            view
-          </Link>
-          <button
-            onClick={() => setShowNotif(false)}
-            className="flex p-4 btn btn-neutral text-xs rounded w-auto mx-auto"
-          >
-            <IoIosCloseCircle className="text-sm" /> close
-          </button>
-        </span>
-      </div>
+    <div className="fixed border border-red-400 inset-0 py-6 flex flex-col justify-center sm:py-12 gap-4 z-50">
+      <span className="bg-white border relative flex flex-row gap-10 rounded-xl p-4 h-auto text-zinc-600 mb-10 mr-4 m-auto shadow-xl max-w-[22rem] custom-shadow2">
+        <Link className="flex gap-2" href={"/admin/attendance"}>
+          <span className="flex">
+            <Lottie options={defaultOptions} height={50} width={50} />
+          </span>
+          <p className="text-xs my-auto">
+            {text}
+          </p>
+        </Link>
+        <button
+          onClick={() => setShowNotif(false)}
+          className="absolute -top-2 -right-2"
+        >
+          <IoIosCloseCircle className="text-2xl" />
+        </button>
+      </span>
     </div>
   );
 };

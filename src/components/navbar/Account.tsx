@@ -25,7 +25,7 @@ const Account = () => {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
   const { setUserData, setUser, userData } = useUserStore();
-  const [showNotif, setShowNotif] = useState(false);
+  const [showNotif, setShowNotif] = useState<boolean>(false);
   const [notRead, setNotRead] = useState<number>(0);
   const [newRequest, setNewRequest] = useState<number>(0);
 
@@ -45,20 +45,20 @@ const Account = () => {
   const fetchNewRequest = async () => {
     if (user) {
       const queryNewRequest = await getDocs(
-        query(collection(db, "requests"),where("status", "==", "pending"))
+        query(collection(db, "requests"), where("status", "==", "pending"))
       );
       setNewRequest(queryNewRequest.docs.length);
-      console.log("newRequest",queryNewRequest.docs.length);
+      console.log("newRequest", queryNewRequest.docs.length);
     }
   };
 
   useEffect(() => {
-    if (userData?.role == "admin") {
+    if (userData?.role === "admin") {
       fetchNewRequest();
     } else {
       fetchNotRead();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData]);
 
   useEffect(() => {
@@ -81,9 +81,9 @@ const Account = () => {
   }, [user, setUser, setUserData]);
 
   useEffect(() => {
-    setShowNotif(notRead > 0);
-    setShowNotif(newRequest > 0);
-  }, [notRead,newRequest]);
+    setShowNotif(notRead > 0 || newRequest > 0);
+  }, [notRead, newRequest]);
+
 
   const handleSignOut = async () => {
     await auth.signOut();
@@ -101,13 +101,13 @@ const Account = () => {
       {showNotif && memoizedUserData?.role === "user" && (
         <UserNotifications
           setShowNotif={setShowNotif}
-          text={`You have ${notRead} new updates for your leave request. Please check them out.`}
+          text={`You have ${notRead} new updates for your leave request.`}
         />
       )}
       {showNotif && memoizedUserData?.role === "admin" && (
         <AdminNotifications
           setShowNotif={setShowNotif}
-          text={`You have ${newRequest} new pending leave request. Please check them out.`}
+          text={`You have ${newRequest} new pending leave requests.`}
         />
       )}
       <span
