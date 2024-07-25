@@ -13,7 +13,6 @@ import {
   where,
 } from "firebase/firestore";
 import { useRouter } from "next/navigation";
-import { sendEmailVerification } from "firebase/auth";
 import { warnToast } from "@/components/toast";
 import { useUserStore } from "@/state/user";
 import Link from "next/link";
@@ -39,10 +38,8 @@ interface UserData {
 
 const Account = () => {
   const [user, loading] = useAuthState(auth);
-  const [isEmailVerified, setIsEmailVerified] = useState(true);
   const router = useRouter();
   const { setUserData, setUser, userData } = useUserStore();
-  const [isResendingVerification, setIsResendingVerification] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
   const [notRead, setNotRead] = useState<number>(0);
 
@@ -61,11 +58,14 @@ const Account = () => {
   }, [user]);
 
   useEffect(() => {
-    fetchNotRead();
-    if (notRead > 0) {
-      setShowNotif(true);
+    if (user) {
+      fetchNotRead();
     }
-  }, [fetchNotRead, notRead]);
+  }, [fetchNotRead, user]);
+
+  useEffect(() => {
+    setShowNotif(notRead > 0);
+  }, [notRead]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -76,7 +76,6 @@ const Account = () => {
           setUserData(userDocSnap.data() as UserData);
           setUser(user);
           if (!user.emailVerified) {
-            setIsEmailVerified(false);
             warnToast(
               "Your email is not verified. Please check your inbox for a verification email."
             );
@@ -92,30 +91,7 @@ const Account = () => {
     router.push("/sign-in");
   };
 
-  const handleResendVerification = async () => {
-    if (user && !user.emailVerified) {
-      setIsResendingVerification(true);
-      try {
-        await sendEmailVerification(user);
-        warnToast("Verification email sent. Please check your inbox.");
-      } catch (error) {
-        console.error("Error sending verification email:", error);
-        warnToast("Failed to send verification email. Please try again later.");
-      } finally {
-        setIsResendingVerification(false);
-      }
-    }
-  };
-
   const memoizedUserData = useMemo(() => userData, [userData]);
-  const memoizedIsEmailVerified = useMemo(
-    () => isEmailVerified,
-    [isEmailVerified]
-  );
-  const memoizedIsResendingVerification = useMemo(
-    () => isResendingVerification,
-    [isResendingVerification]
-  );
 
   if (!memoizedUserData || loading) {
     return null;
@@ -136,11 +112,11 @@ const Account = () => {
             role="button"
             className="h-14 min-w-14 max-w-14 flex items-center justify-center overflow-hidden border-2 border-primary bg-primary rounded-full drop-shadow-md"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={
-                userData?.profilePicUrl ||
-                (userData?.role === "admin"
+                memoizedUserData?.profilePicUrl ||
+                (memoizedUserData?.role === "admin"
                   ? "/img/profile-admin.jpg"
                   : "/img/profile-male.jpg")
               }
