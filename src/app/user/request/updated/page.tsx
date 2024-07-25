@@ -1,5 +1,4 @@
 "use client";
-
 import UserLayout from "@/components/UserLayout";
 import { SignedIn } from "@/components/signed-in";
 import { auth, db } from "@/firebase";
@@ -10,34 +9,12 @@ import { FaCommentAlt, FaQuestion } from "react-icons/fa";
 import { format } from "date-fns";
 import Link from "next/link";
 import { errorToast } from "@/components/toast";
-import Loading from "@/components/bioLoading";
 import { UserRouteGuard } from "@/components/UserRouteGuard";
 
 const Request = () => {
   const [user] = useAuthState(auth);
   const [requests, setRequests] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleMarkRead = async (request: any) => {
-    setLoading(true)
-    console.log('request', request)
-    try {
-      const docRef = doc(db, "requests", request.id);
-      const updateData = {
-        ...request,
-        seen: true,
-      };
-      await updateDoc(docRef, updateData);
-
-      setRequests((prevRequests) =>
-        prevRequests.filter((req) => req.id !== request.id)
-      );
-    } catch (error) {
-      console.log('error', error)
-      errorToast(`Error marking request as read: ${error}`);
-    }
-    setLoading(false)
-  };
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -50,42 +27,48 @@ const Request = () => {
               where("seen", "==", false),
               limit(20)
             )
-          );
+          );  
           const userRequests = querySnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
           }));
           setRequests(userRequests);
+
+          // Mark all fetched requests as seen
+          userRequests.forEach(async (request) => {
+            const docRef = doc(db, "requests", request.id);
+            try {
+              await updateDoc(docRef, { seen: true });
+            } catch (error) {
+              console.log('error', error);
+              errorToast(`Error marking request as seen: ${error}`);
+            }
+          });
         } catch (error) {
           errorToast(`Error fetching requests: ${error}`);
         }
       }
     };
-  
+
     fetchRequests();
   }, [user]);
-  
 
   return (
     <UserRouteGuard>
       <SignedIn>
         <UserLayout>
           <div className="container flex flex-col justify-start items-center md:p-10 p-4 mx-auto">
-            {loading && <span className="fixed top-2"><Loading/></span>}
             
-            <div className="flex flex-col rounded-md bg-white p-3 w-full md:max-w-[25rem]">
+            <div className="flex flex-col p-3 w-full md:max-w-[25rem]">
               {requests?.length == 0 && (
-                <span className=" mx-auto text-xs font-semibold text-zinc-700 p-2 border rounded-lg flex gap-2 items-center">
+                <span className="mx-auto text-xs font-semibold text-zinc-700 p-2 border rounded-lg flex gap-2 items-center">
                   <FaCommentAlt /> No Unread leave request!
                 </span>
               )}
               {requests?.map((request) => (
-                <button
-                  className="p-4 border-2 rounded-lg mb-4 flex justify-start text-left bg-base tooltip tooltip-top"
+                <span
+                  className="p-4 border-2 rounded-lg mb-4 flex justify-start text-left bg-white"
                   key={request?.id}
-                  disabled={loading}
-                  onClick={() => handleMarkRead(request)}
-                  data-tip="Click to mark as read!"
                 >
                   <div className="flex gap-2 items-start justify-start w-full flex-col">
                     <div className="text-zinc-700 mb-2 flex gap-2 items-center w-full">
@@ -111,7 +94,7 @@ const Request = () => {
                       </div>
                     )}
                   </div>
-                </button>
+                </span>
               ))}
             </div>
             <Link

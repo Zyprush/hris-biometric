@@ -66,7 +66,7 @@ const Leave = () => {
                 role="tab"
                 className="tab text-sm font-bold text-neutral"
                 aria-label={tabStatus}
-                defaultChecked={tabStatus === "Approved"}
+                defaultChecked={tabStatus === "Pending"}
                 onClick={() => setStatus(tabStatus.toLowerCase())}
               />
               <div

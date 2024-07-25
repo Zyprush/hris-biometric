@@ -121,7 +121,7 @@ const Request = () => {
                       role="tab"
                       className="tab text-sm font-bold text-neutral"
                       aria-label={tabStatus}
-                      defaultChecked={tabStatus === "Approved"}
+                      defaultChecked={tabStatus === "Pending"}
                       onClick={() => setStatus(tabStatus.toLowerCase())}
                     />
                     <div
@@ -200,9 +200,9 @@ const Request = () => {
 
             <button
               onClick={toggleRequestForm}
-              className={`fixed bottom-4 right-4 p-4 btn ${showRequestForm? "bg-white text-zinc-800" : "bg-neutral text-white"} text-xs rounded z-50`}
+              className={`fixed p-4 btn bg-neutral text-white bottom-4 right-4 text-xs rounded`}
             >
-              {showRequestForm ? "Close" : "Submit"}
+            Submit
             </button>
           </div>
         </UserLayout>

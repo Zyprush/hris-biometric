@@ -71,7 +71,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ loading, history }) => {
   return (
     <div className="container mx-auto p-4 h-full">
       <div className="grid grid-cols-1 gap-4">
-        <div className="overflow-x-auto card">
+        <div className="overflow-x-auto">
           <table className="table mb-5 text-sm rounded-lg border">
             <thead className="bg-primary">
               <tr className="text-md text-white font-semibold">

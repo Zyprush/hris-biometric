@@ -287,8 +287,8 @@ const Payroll: React.FC = () => {
               </button>
             </div>
           </div>
-          <div className="overflow-x-auto card">
-            <table className="table-auto rounded-lg border">
+          <div className="overflow-x-auto rounded-sm">
+            <table className="table-auto rounded-sm border">
               <thead className="bg-primary text-white">
                 <tr>
                   <th className="border border-gray-500 px-2 py-1 text-xs" rowSpan={2}>

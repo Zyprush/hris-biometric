@@ -2,13 +2,12 @@
 
 import { auth, db } from "@/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   collection,
   doc,
   getDoc,
   getDocs,
-  limit,
   query,
   where,
 } from "firebase/firestore";
@@ -18,23 +17,9 @@ import { useUserStore } from "@/state/user";
 import Link from "next/link";
 import { IoMdSettings } from "react-icons/io";
 import { IoCaretBackCircle } from "react-icons/io5";
-import Notifications from "../Notifications";
-
-interface UserData {
-  name: string;
-  nickname: string;
-  email: string;
-  employeeId: string;
-  role: string;
-  phone: string;
-  department: string;
-  position: string;
-  sss: string;
-  startDate: string;
-  philHealthNumber: string;
-  tinNumber: string;
-  profilePicUrl: string;
-}
+import UserNotifications from "../UserNotifications";
+import AdminNotifications from "../AdminNotifications";
+import { UserDatainterface } from "@/state/interface";
 
 const Account = () => {
   const [user, loading] = useAuthState(auth);
@@ -42,38 +27,47 @@ const Account = () => {
   const { setUserData, setUser, userData } = useUserStore();
   const [showNotif, setShowNotif] = useState(false);
   const [notRead, setNotRead] = useState<number>(0);
+  const [newRequest, setNewRequest] = useState<number>(0);
 
-  const fetchNotRead = useCallback(async () => {
+  const fetchNotRead = async () => {
     if (user) {
       const queryNotRead = await getDocs(
         query(
           collection(db, "requests"),
           where("userId", "==", user.uid),
-          where("seen", "==", false),
-          limit(20)
+          where("seen", "==", false)
         )
       );
       setNotRead(queryNotRead.docs.length);
     }
-  }, [user]);
+  };
+
+  const fetchNewRequest = async () => {
+    if (user) {
+      const queryNewRequest = await getDocs(
+        query(collection(db, "requests"),where("status", "==", "pending"))
+      );
+      setNewRequest(queryNewRequest.docs.length);
+      console.log("newRequest",queryNewRequest.docs.length);
+    }
+  };
+
+  useEffect(() => {
+    if (userData?.role == "admin") {
+      fetchNewRequest();
+    } else {
+      fetchNotRead();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userData]);
 
   useEffect(() => {
     if (user) {
-      fetchNotRead();
-    }
-  }, [fetchNotRead, user]);
-
-  useEffect(() => {
-    setShowNotif(notRead > 0);
-  }, [notRead]);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (user) {
+      const fetchUserData = async () => {
         const userDocRef = doc(db, "users", user.uid);
         const userDocSnap = await getDoc(userDocRef);
         if (userDocSnap.exists()) {
-          setUserData(userDocSnap.data() as UserData);
+          setUserData(userDocSnap.data() as UserDatainterface);
           setUser(user);
           if (!user.emailVerified) {
             warnToast(
@@ -81,10 +75,15 @@ const Account = () => {
             );
           }
         }
-      }
-    };
-    fetchUserData();
+      };
+      fetchUserData();
+    }
   }, [user, setUser, setUserData]);
+
+  useEffect(() => {
+    setShowNotif(notRead > 0);
+    setShowNotif(newRequest > 0);
+  }, [notRead,newRequest]);
 
   const handleSignOut = async () => {
     await auth.signOut();
@@ -99,8 +98,17 @@ const Account = () => {
 
   return (
     <React.Fragment>
-      {showNotif && (
-        <Notifications setShowNotif={setShowNotif} notRead={notRead} />
+      {showNotif && memoizedUserData?.role === "user" && (
+        <UserNotifications
+          setShowNotif={setShowNotif}
+          text={`You have ${notRead} new updates for your leave request. Please check them out.`}
+        />
+      )}
+      {showNotif && memoizedUserData?.role === "admin" && (
+        <AdminNotifications
+          setShowNotif={setShowNotif}
+          text={`You have ${newRequest} new pending leave request. Please check them out.`}
+        />
       )}
       <span
         tabIndex={0}
@@ -112,7 +120,7 @@ const Account = () => {
             role="button"
             className="h-14 min-w-14 max-w-14 flex items-center justify-center overflow-hidden border-2 border-primary bg-primary rounded-full drop-shadow-md"
           >
-             {/* eslint-disable-next-line @next/next/no-img-element */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={
                 memoizedUserData?.profilePicUrl ||

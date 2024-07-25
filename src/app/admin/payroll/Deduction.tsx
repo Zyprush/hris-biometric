@@ -180,7 +180,7 @@ const Deduction: React.FC = () => {
               </button>
             </div>
           </div>
-          <div className="overflow-x-auto card">
+          <div className="overflow-x-auto">
             <table className="table border rounded">
               <thead className="bg-primary">
                 <tr className="text-md bg-primary text-white">
