@@ -101,13 +101,13 @@ const Account = () => {
       {showNotif && memoizedUserData?.role === "user" && (
         <UserNotifications
           setShowNotif={setShowNotif}
-          text={`You have ${notRead} new updates for your leave request.`}
+          text={`You have ${notRead} new updates for your leave request. Click here.`}
         />
       )}
       {showNotif && memoizedUserData?.role === "admin" && (
         <AdminNotifications
           setShowNotif={setShowNotif}
-          text={`You have ${newRequest} new pending leave requests.`}
+          text={`You have ${newRequest} new pending leave requests. Click here.`}
         />
       )}
       <span

@@ -25,13 +25,13 @@ const AdminNotifications: React.FC<NotificationsProps> = ({
     },
   };
   return (
-    <div className="fixed border border-red-400 inset-0 py-6 flex flex-col justify-center sm:py-12 gap-4 z-50">
-      <span className="bg-white border relative flex flex-row gap-10 rounded-xl p-4 h-auto text-zinc-600 mb-10 mr-4 m-auto shadow-xl max-w-[22rem] custom-shadow2">
+    <div className="fixed max-w-[22rem] min-h-10 right-4 bottom-10 top-auto left-auto inset-0 flex gap-4">
+      <span className="bg-white border relative flex flex-row gap-10 rounded-lg p-4 h-auto text-zinc-600 mb-10 mr-4 m-auto shadow-xl  max-w-[22rem]  min-w-[22rem] custom-shadow2 z-50">
         <Link className="flex gap-2" href={"/admin/attendance"}>
           <span className="flex">
-            <Lottie options={defaultOptions} height={50} width={50} />
+            <Lottie options={defaultOptions} height={60} width={70} />
           </span>
-          <p className="text-xs my-auto">
+          <p className="text-sm my-auto">
             {text}
           </p>
         </Link>
