@@ -16,7 +16,7 @@ interface UserData {
   role: "user" | "admin";
 }
 
-const UserRouteGuard = ({ children }: UserRouteGuardProps) => {
+export function UserRouteGuard ({ children }: UserRouteGuardProps) {
   const [user, loading] = useAuthState(auth);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [userDataLoading, setUserDataLoading] = useState(true);
@@ -71,4 +71,3 @@ const UserRouteGuard = ({ children }: UserRouteGuardProps) => {
   return <>{children}</>;
 };
 
-export default UserRouteGuard;
