@@ -1,9 +1,5 @@
 "use client";
 import React from "react";
-import { IoPersonCircle } from "react-icons/io5";
-import { BsCalendar2DayFill } from "react-icons/bs";
-import { MdDiscount } from "react-icons/md";
-import { FaClipboardQuestion, FaQuestion } from "react-icons/fa6";
 import { format } from "date-fns";
 
 const LeaveInfo = ({

@@ -95,7 +95,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
             className="w-14 drop-shadow-lg"
           />
           {!isMinimized && (
-            <p className="px-3 py-1 rounded-md text-neutral border-2 border-neutral font-bold text-xs">
+            <p className="logo-banner">
               SMART HR
             </p>
           )}

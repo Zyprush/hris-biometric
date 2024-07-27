@@ -1,6 +1,5 @@
 "use client";
 import React, { Dispatch, SetStateAction } from "react";
-import { FaMessage } from "react-icons/fa6";
 import animationData from "../../public/img/read-animation.json";
 import Lottie from "react-lottie";
 import Link from "next/link";

@@ -11,11 +11,12 @@ import Loading from "./Loading";
 interface UserRouteGuardProps {
   children: ReactNode;
 }
+
 interface UserData {
   role: "user" | "admin";
 }
 
-export function UserRouteGuard({ children }: UserRouteGuardProps) {
+const UserRouteGuard = ({ children }: UserRouteGuardProps) => {
   const [user, loading] = useAuthState(auth);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [userDataLoading, setUserDataLoading] = useState(true);
@@ -68,4 +69,6 @@ export function UserRouteGuard({ children }: UserRouteGuardProps) {
   }
 
   return <>{children}</>;
-}
+};
+
+export default UserRouteGuard;
