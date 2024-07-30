@@ -35,7 +35,7 @@ import {
   where,
 } from "firebase/firestore";
 import { FaUser } from "react-icons/fa6";
-import { format } from 'date-fns'; // Add this import
+import { format } from "date-fns"; // Add this import
 
 ChartJS.register(
   CategoryScale,
@@ -245,7 +245,9 @@ export default function UserDashboard() {
               {/* Financial Information */}
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold">Financial Overview</h2>
+                  <h2 className="text-xl font-semibold text-neutral">
+                    Financial Overview
+                  </h2>
                   <button onClick={() => setShowFinancials(!showFinancials)}>
                     {showFinancials ? <FaEyeSlash /> : <FaEye />}
                   </button>
@@ -297,7 +299,9 @@ export default function UserDashboard() {
 
               {/* Quick Actions */}
               <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
+                <h2 className="text-xl font-semibold mb-4 text-neutral">
+                  Quick Actions
+                </h2>
                 <div className="flex flex-wrap gap-2">
                   <Link href="/user/request">
                     <QuickActionButton icon={FaUserAlt} label="Leave Request" />
@@ -313,28 +317,27 @@ export default function UserDashboard() {
 
               {/* Leave/Day Off Balance */}
               <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold mb-4">
-                  Leave, Day Off Taken
+                <h2 className="text-xl font-semibold mb-4 text-neutral">
+                  Leave Taken
                 </h2>
-                <ul className="space-y-2">
-                  <li className="flex items-center gap-2">
-                    <FaCalendarAlt className="text-neutral" />
-                    <span className="text-neutral">{format(new Date(), 'yyyy')}: 10 days</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <FaCalendarAlt className="text-neutral" />
-                    <span className="text-neutral">{format(new Date(), 'MMMM')}: 10 days</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <FaCalendarAlt className="text-neutral" />
-                    <span className="text-neutral">This Quarter: 10 days</span>
-                  </li>
-                </ul>
+                <div className="stats shadow mx-auto flex">
+                  <div className="stat">
+                    {/* <div className="stat-title">{new Date().toLocaleString('default', { month: 'long' })}</div> */}
+                    <div className="stat-value text-primary">12</div>
+                    <div className="stat-desc"> Leave this month</div>
+                  </div>
+
+                  <div className="stat">
+                    {/* <div className="stat-title">{new Date().getFullYear()}</div> */}
+                    <div className="stat-value text-primary">24</div>
+                    <div className="stat-desc">Leave this year</div>
+                  </div>
+                </div>
               </div>
 
               {/* Productivity Chart */}
               <div className="bg-white rounded-lg shadow p-6 col-span-full md:col-span-2">
-                <h2 className="text-xl font-semibold mb-4">
+                <h2 className="text-xl font-semibold mb-4 text-neutral">
                   Attendance and Overtime
                 </h2>
                 <Line options={options} data={attendanceData} />
@@ -342,7 +345,9 @@ export default function UserDashboard() {
 
               {/* Team Status */}
               <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold mb-4">Team Status</h2>
+                <h2 className="text-xl font-semibold mb-4 text-neutral">
+                  Team Status
+                </h2>
                 <ul className="space-y-4">
                   {teamData.map((member, index) => (
                     <li
@@ -355,8 +360,16 @@ export default function UserDashboard() {
                         className="rounded-full object-cover w-14 h-14 border-2 border-primary"
                       />
                       <span className="font-semibold text-sm flex flex-col items-start">
-                        <p >{member.name}</p> 
-                        <p className={`p-1 px-2 rounded-md text-white w-auto ${member.attendanceStatus === "present" ? "bg-[#61a34a]" : "bg-neutral"}`}>{member.attendanceStatus}</p>
+                        <p>{member.name}</p>
+                        <p
+                          className={`p-1 px-2 rounded-md text-white w-auto ${
+                            member.attendanceStatus === "present"
+                              ? "bg-[#61a34a]"
+                              : "bg-neutral"
+                          }`}
+                        >
+                          {member.attendanceStatus}
+                        </p>
                       </span>
                     </li>
                   ))}

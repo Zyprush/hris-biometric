@@ -11,6 +11,7 @@ import { doc, getDoc } from "firebase/firestore";
 import Loading from "../Loading";
 import Image from "next/image";
 import { NavLink } from "./AdminSideNavbar";
+import { IoIosArrowBack } from "react-icons/io";
 
 interface NavbarProps {
   children: ReactNode;
@@ -53,11 +54,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
   return (
     <div className="h-screen w-full flex flex-col">
       <span className="w-full h-14 bg-white justify-between px-5 custom-shadow items-center border-b border-zinc-300 hidden md:flex">
-        <button
-          onClick={toggleNavbar}
-          data-tip="toggle width"
-          className=" flex items-center text-white tooltip tooltip-right font-semibold rounded-md gap-2"
-        >
+        <span className=" flex items-center text-white font-semibold rounded-md gap-2">
           <Image
             width={50}
             height={50}
@@ -66,7 +63,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
             className="w-14 drop-shadow-lg"
           />
           {!isMinimized && <p className="logo-banner">SMART HR</p>}
-        </button>
+        </span>
         <div className="dropdown dropdown-end">
           <div
             tabIndex={0}
@@ -89,7 +86,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
         <nav
           className={`flex ${
             isMinimized ? "w-20" : "w-56"
-          } bg-white custom-shadow h-auto custom-shadow transition-width duration-300 flex-col items-start justify-start p-4 pt-5 gap-2`}
+          } bg-white custom-shadow relative h-auto custom-shadow transition-width duration-300 flex-col items-start justify-start p-4 pt-5 gap-2`}
         >
           <NavLink
             href="/user/dashboard"
@@ -119,6 +116,14 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
             isMinimized={isMinimized}
             isActive={pathname === "/user/history"}
           />
+          <button
+            onClick={toggleNavbar}
+            className={`flex items-center p-1 border border-zinc-300 absolute -right-4 bg-white bottom-14 text-zinc-400  rounded-full transition-all duration-300 ${
+              isMinimized ? "transform rotate-180" : ""
+            }`}
+          >
+            <IoIosArrowBack className="text-xl" />
+          </button>
         </nav>
         <div className="overflow-y-auto w-full">{children}</div>
       </div>

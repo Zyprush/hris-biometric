@@ -12,6 +12,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase";
 import Image from "next/image";
+import { IoIosArrowBack } from "react-icons/io";
 interface NavbarProps {
   children: ReactNode;
 }
@@ -82,10 +83,8 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
   return (
     <div className="h-screen w-full flex flex-col">
       <span className="w-full h-14 bg-white custom-shadow justify-between px-5 items-center border-b border-zinc-300 hidden md:flex">
-        <button
-          onClick={toggleNavbar}
-          data-tip="toggle width"
-          className=" flex items-center text-white tooltip tooltip-right font-semibold rounded-md gap-2"
+        <span
+          className=" flex items-center text-white font-semibold rounded-md gap-2"
         >
           <Image
             width={50}
@@ -94,12 +93,8 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
             alt="logo"
             className="w-14 drop-shadow-lg"
           />
-          {!isMinimized && (
-            <p className="logo-banner">
-              SMART HR
-            </p>
-          )}
-        </button>
+          {!isMinimized && <p className="logo-banner">SMART HR</p>}
+        </span>
         <div className="dropdown dropdown-end">
           <div
             tabIndex={0}
@@ -121,7 +116,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
         <nav
           className={`flex ${
             isMinimized ? "w-20" : "w-56"
-          } bg-white custom-shadow h-auto transition-width duration-300 flex-col items-start justify-start pt-5 p-4 gap-2`}
+          } bg-white custom-shadow relative h-auto transition-width duration-300 flex-col items-start justify-start pt-5 p-4 gap-2`}
         >
           <NavLink
             href="/admin/dashboard"
@@ -166,6 +161,12 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
             isMinimized={isMinimized}
             isActive={pathname === "/admin/history"}
           />
+          <button
+            onClick={toggleNavbar}
+            className={`flex items-center p-1 border border-zinc-300 absolute -right-4 bg-white bottom-14 text-zinc-400  rounded-full transition-all duration-300 ${isMinimized ? 'transform rotate-180' : ''}`}
+          >
+            <IoIosArrowBack className="text-xl"/>
+          </button>
         </nav>
         <div className="overflow-y-auto w-full h-full flex items-center justify-center">
           {children}
