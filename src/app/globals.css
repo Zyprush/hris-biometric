@@ -6,9 +6,6 @@
   box-sizing: border-box;
   /* border: red solid 1px; */
 }
-body {
-  background-color: rgb(247, 245, 242);
-}
 .custom-shadow {
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
-import { FaUserAlt, FaBuilding } from "react-icons/fa";
+import { FaUserAlt, FaBuilding, FaBell } from "react-icons/fa";
 import Account from "./Account";
 import Loading from "../Loading";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -13,6 +13,8 @@ import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase";
 import Image from "next/image";
 import { IoIosArrowBack } from "react-icons/io";
+import { useTheme } from "next-themes";
+import { IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
 interface NavbarProps {
   children: ReactNode;
 }
@@ -34,9 +36,8 @@ export const NavLink: React.FC<NavLinkProps> = ({
 }) => (
   <Link
     href={href}
-    className={`w-full items-center justify-start flex gap-3 text-sm font-[600] p-3 hover:bg-secondary rounded-md hover:text-white transition-all duration-300 hover:shadow-md hover:drop-shadow-sm ${
-      isActive ? "bg-neutral text-white" : "text-zinc-700"
-    }`}
+    className={`w-full items-center justify-start flex gap-3 text-sm font-[600] p-3 hover:bg-secondary rounded-md hover:text-white transition-all duration-300 hover:shadow-md hover:drop-shadow-sm ${isActive ? "bg-neutral text-white" : "text-zinc-700 dark:text-zinc-400"
+      }`}
   >
     <span className={`w-auto ${isMinimized && " mx-auto"}`}>
       <Icon className="text-xl" />
@@ -51,6 +52,8 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
 
   const [user, loading] = useAuthState(auth);
   const [userData, setUserData] = useState<any>(null);
+
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -80,12 +83,14 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
     setIsMinimized(!isMinimized);
   };
 
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
   return (
     <div className="h-screen w-full flex flex-col">
-      <span className="w-full h-14 bg-white custom-shadow justify-between px-5 items-center border-b border-zinc-300 hidden md:flex">
-        <span
-          className=" flex items-center text-white font-semibold rounded-md gap-2"
-        >
+      <span className="w-full h-14 bg-white dark:bg-black custom-shadow justify-between px-5 items-center border-b border-zinc-300 dark:border-zinc-800 hidden md:flex">
+        <span className="flex items-center text-white font-semibold rounded-md gap-2">
           <Image
             width={50}
             height={50}
@@ -95,28 +100,52 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
           />
           {!isMinimized && <p className="logo-banner">SMART HR</p>}
         </span>
-        <div className="dropdown dropdown-end">
-          <div
-            tabIndex={0}
-            role="button"
-            className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-primary bg-primary rounded-full"
-          >
-            <img
-              src={userData?.profilePicUrl || "/img/profile-admin.jpg"}
-              alt="profile"
-              width={40}
-              height={40}
-              className="h-full w-full object-cover"
-            />
+        <div className="flex items-center gap-4">
+          <div className="dropdown dropdown-end">
+            <button className="btn btn-ghost btn-circle">
+              <div className="indicator">
+                <FaBell className="h-5 w-5 text-black dark:text-white" />
+                <span className="badge badge-xs badge-primary indicator-item"></span>
+              </div>
+            </button>
+            <div tabIndex={0} className="mt-3 z-[1] card card-compact dropdown-content w-52 bg-base-100 shadow">
+              <div className="card-body">
+                <span className="font-bold text-lg">8 New Notifications</span>
+                <span className="text-info">Dummy notification content</span>
+                <div className="card-actions">
+                  <button className="btn btn-primary btn-block">View all</button>
+                </div>
+              </div>
+            </div>
           </div>
-          <Account />
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-full border border-neutral-200 dark:border-white/[0.2] bg-white dark:bg-black text-black dark:text-white"
+          >
+            {theme === 'dark' ? <IoSunnyOutline className="h-5 w-5" /> : <IoMoonOutline className="h-5 w-5" />}
+          </button>
+          <div className="dropdown dropdown-end">
+            <div
+              tabIndex={0}
+              role="button"
+              className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-primary bg-primary rounded-full"
+            >
+              <img
+                src={userData?.profilePicUrl || "/img/profile-admin.jpg"}
+                alt="profile"
+                width={40}
+                height={40}
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <Account />
+          </div>
         </div>
       </span>
       <div className="w-full overflow-y-auto h-full flex">
         <nav
-          className={`flex ${
-            isMinimized ? "w-20" : "w-56"
-          } bg-white custom-shadow relative h-auto transition-width duration-300 flex-col items-start justify-start pt-5 p-4 gap-2`}
+          className={`flex ${isMinimized ? "w-20" : "w-56"
+            } bg-white dark:bg-black custom-shadow relative h-auto transition-width duration-300 flex-col items-start justify-start pt-5 p-4 gap-2`}
         >
           <NavLink
             href="/admin/dashboard"
@@ -163,9 +192,9 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
           />
           <button
             onClick={toggleNavbar}
-            className={`flex items-center p-1 border border-zinc-300 absolute -right-4 bg-white bottom-14 text-zinc-400  rounded-full transition-all duration-300 ${isMinimized ? 'transform rotate-180' : ''}`}
+            className={`flex items-center p-1 border border-zinc-300 dark:border-zinc-700 absolute -right-4 bg-primary bottom-14 text-zinc-400  rounded-full transition-all duration-300 ${isMinimized ? 'transform rotate-180' : ''}`}
           >
-            <IoIosArrowBack className="text-xl"/>
+            <IoIosArrowBack className="text-xl" />
           </button>
         </nav>
         <div className="overflow-y-auto w-full h-full flex items-center justify-center">
