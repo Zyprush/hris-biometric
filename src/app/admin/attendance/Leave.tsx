@@ -6,8 +6,10 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import LeaveModal from "./LeaveModal";
 import LeaveRequests from "./LeaveRequests";
 import LeaveInfo from "./LeaveInfo";
+import { useTheme } from "next-themes";
 
 const Leave = () => {
+  const { theme} = useTheme();
   const [user] = useAuthState(auth);
   const [requests, setRequests] = useState<any[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -64,14 +66,14 @@ const Leave = () => {
                 type="radio"
                 name="my_tabs_2"
                 role="tab"
-                className="tab text-sm font-bold text-neutral"
+                className={`tab text-sm font-bold text-neutral dark:text-white ${status == tabStatus.toLowerCase() && "dark:text-neutral"} `}
                 aria-label={tabStatus}
                 defaultChecked={tabStatus === "Pending"}
                 onClick={() => setStatus(tabStatus.toLowerCase())}
               />
               <div
                 role="tabpanel"
-                className="tab-content bg-base-100 border-base-300 w-full rounded-box p-6"
+                className="tab-content bg-base-100 border-base-300 w-full rounded-box p-6 "
               >
                 <LeaveRequests
                   requests={requests}

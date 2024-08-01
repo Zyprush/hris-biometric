@@ -36,7 +36,7 @@ export const NavLink: React.FC<NavLinkProps> = ({
 }) => (
   <Link
     href={href}
-    className={`w-full items-center justify-start flex gap-3 text-sm font-[600] p-3 hover:bg-secondary rounded-md hover:text-white transition-all duration-300 hover:shadow-md hover:drop-shadow-sm ${isActive ? "bg-neutral text-white" : "text-zinc-700 dark:text-zinc-400"
+    className={`w-full items-center justify-start flex gap-3 text-sm font-[600] p-3 hover:bg-secondary rounded-md hover:text-white transition-all duration-300 hover:dark:text-zinc-800 hover:shadow-md hover:drop-shadow-sm ${isActive ? "bg-neutral text-white" : "text-zinc-700 dark:text-zinc-400"
       }`}
   >
     <span className={`w-auto ${isMinimized && " mx-auto"}`}>
@@ -120,7 +120,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
           </div>
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-full border border-neutral-200 dark:border-white/[0.2] bg-white dark:bg-black text-black dark:text-white"
+            className="p-2 rounded-full border border-neutral-200 dark:border-white/[0.2] bg-white dark:bg-gray-800 text-black dark:text-white"
           >
             {theme === 'dark' ? <IoSunnyOutline className="h-5 w-5" /> : <IoMoonOutline className="h-5 w-5" />}
           </button>
@@ -192,7 +192,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
           />
           <button
             onClick={toggleNavbar}
-            className={`flex items-center p-1 border border-zinc-300 dark:border-zinc-700 absolute -right-4 bg-primary bottom-14 text-zinc-400  rounded-full transition-all duration-300 ${isMinimized ? 'transform rotate-180' : ''}`}
+            className={`flex items-center p-1 border bg-zinc-100 border-zinc-300 dark:border-zinc-700 absolute -right-4 dark:bg-primary bottom-14 text-zinc-400  rounded-full transition-all duration-300 ${isMinimized ? 'transform rotate-180' : ''}`}
           >
             <IoIosArrowBack className="text-xl" />
           </button>

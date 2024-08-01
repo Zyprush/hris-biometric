@@ -181,11 +181,11 @@ const AdminDashboard = () => {
   };
 
   const cardData = [
-    { title: "Total Employees", icon: FaUsers, color: "text-[#135D66]", value: totalEmployees - 1 },
-    { title: "Total Branches", icon: FaBuilding, color: "text-[#1A7680]", value: totalBraches },
-    { title: "Recent Hires", icon: FaUserPlus, color: "text-[#238F99]", value: recentHires },
-    { title: "Former Employees", icon: FaUserMinus, color: "text-[#104A55]", value: formerEmployees },
-    { title: "Upcoming Birthdays", icon: FaBirthdayCake, color: "text-[#0B3944]", value: upcomingBirthdays },
+    { title: "Total Employees", icon: FaUsers, value: totalEmployees - 1 },
+    { title: "Total Branches", icon: FaBuilding, value: totalBraches },
+    { title: "Recent Hires", icon: FaUserPlus, value: recentHires },
+    { title: "Former Employees", icon: FaUserMinus, value: formerEmployees },
+    { title: "Upcoming Birthdays", icon: FaBirthdayCake, value: upcomingBirthdays },
   ];
 
 
@@ -193,28 +193,28 @@ const AdminDashboard = () => {
     <AdminRouteGuard>
       <SignedIn>
         <AdminLayout>
-          <div className="container h-full mx-auto p-4">
+          <div className="container h-full mx-auto p-4 bg-gray-50 dark:bg-gray-900 dark:text-zinc-200 ">
             <ToastContainer />
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4">
-              {cardData.map(({ title, icon: Icon, color, value }, index) => (
-                <div key={index} className="bg-white shadow-md rounded-lg p-4 text-center border">
-                  <Icon className={`text-3xl mb-2 mx-auto ${color}`} />
-                  <h2 className="text-lg font-semibold">{title}</h2>
+              {cardData.map(({ title, icon: Icon, value }, index) => (
+                <div key={index} className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 text-center border dark:border-zinc-800">
+                  <Icon className={`text-3xl mb-2 mx-auto text-[#135D66] dark:text-[#238F99]`} />
                   <p className="text-2xl font-bold">{value}</p>
+                  <h2 className="text-sm">{title}</h2>
                 </div>
               ))}
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="bg-white shadow-md rounded-lg p-4 border">
+              <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 border dark:border-zinc-800">
                 <h2 className="text-lg font-semibold mb-2">Attendance Summary</h2>
                 <Doughnut data={doughnutData} />
               </div>
               <div className="grid grid-cols-1 gap-4">
-                <div className="bg-white shadow-md rounded-lg p-4 border">
+                <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 border dark:border-zinc-800">
                   <h2 className="text-lg font-semibold mb-2">Main Branch</h2>
                   <Bar data={branch1} />
                 </div>
-                <div className="bg-white shadow-md rounded-lg p-4 border">
+                <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 border dark:border-zinc-800">
                   <h2 className="text-lg font-semibold mb-2">Branch 1</h2>
                   <Bar data={branch2} />
                 </div>

@@ -38,7 +38,7 @@ const Page = () => {
         <AdminLayout>
           <div className="container h-full mx-auto p-4">
             <div className="grid grid-col-1 py-4">
-              <p className="text-lg font-bold">{currentTable}</p>
+              <p className="text-lg font-bold dark:text-white">{currentTable}</p>
    
               <div className="flex justify-center md:justify-start space-x-2 md:space-x-0 my-4">
                 <div className="join join-horizontal md:join-horizontal">

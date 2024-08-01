@@ -23,7 +23,7 @@ const FingerprintLoading = () => {
     <div className="flex flex-col items-center justify-center h-screen p-4">
       <div className="flex items-center gap-4 p-4">
         <GiFingerPrint className="text-4xl md:text-6xl animate-ping absolute inline-flex rounded-full text-primary opacity-75" />
-        <GiFingerPrint className="text-4xl md:text-6xl relative inline-flex rounded-full text-primary" />
+        <GiFingerPrint className="text-4xl md:text-6xl relative inline-flex rounded-full text-primary dark:text-white" />
       </div>
       <div className="w-40 mt-4 relative">
         <div className="h-3 md:h-5 bg-gray-300 rounded-lg">

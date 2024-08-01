@@ -42,6 +42,11 @@ const config: Config = {
           accent: "#E3FEF7",
           neutral: "#003C43",
           "base-100": "#ffffff",
+          // darkPrimary: "#1FCAD1", // Lighter teal
+          // darkSecondary: "#91D3CC", // Lighter sea green
+          // darkAccent: "#0A7A84", // Darker teal
+          // darkNeutral: "#E3FEF7", // Very light cyan (previously accent)
+          // "darkBase-100": "#00272B", // Very dark teal (darker version of previous neutral)
         },
       },
       "corporate",

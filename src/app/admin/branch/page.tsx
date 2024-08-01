@@ -28,7 +28,7 @@ const AdminBranch = () => {
         <AdminLayout>
           <div className="container h-full mx-auto p-4">
             <div className="grid grid-col-1 py-4">
-              <p className="text-lg font-bold">{currentTab}</p>
+              <p className="text-lg font-bold dark:text-white">{currentTab}</p>
               <div className="join rounded-md my-5">
                 <button
                   className={`btn btn-md md:btn-md join-item border border-primary ${
