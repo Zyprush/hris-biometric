@@ -89,7 +89,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
 
   return (
     <div className="h-screen w-full flex flex-col">
-      <span className="w-full h-14 bg-white dark:bg-black custom-shadow justify-between px-5 items-center border-b border-zinc-300 dark:border-zinc-800 hidden md:flex">
+      <span className="w-full h-14 bg-gradient-to-r from-gray-100 to-gray-300 dark:from-gray-800 dark:to-gray-900 custom-shadow justify-between px-5 items-center border-b border-zinc-300 dark:border-zinc-800 hidden md:flex">
         <span className="flex items-center text-white font-semibold rounded-md gap-2">
           <Image
             width={50}
@@ -145,7 +145,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
       <div className="w-full overflow-y-auto h-full flex">
         <nav
           className={`flex ${isMinimized ? "w-20" : "w-56"
-            } bg-white dark:bg-black custom-shadow relative h-auto transition-width duration-300 flex-col items-start justify-start pt-5 p-4 gap-2`}
+            } bg-gray-100 dark:bg-gray-800 dark:to-gray-900 custom-shadow relative h-auto transition-width duration-300 flex-col items-start justify-start pt-5 p-4 gap-2`}
         >
           <NavLink
             href="/admin/dashboard"

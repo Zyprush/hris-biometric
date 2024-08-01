@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
-      <body className={`${inter.className} bg-[#f7f5f2] dark:bg-black`}>
+      <body className={`${inter.className} bg-gradient-to-r from-gray-100 to-gray-300 dark:from-gray-800 dark:to-gray-900`}>
         <ThemeProvider attribute="class">
           {children}
         </ThemeProvider>
