@@ -83,7 +83,7 @@ const SignInPage = () => {
     <AuroraBackground>
       <SignedOut>
         <ToastContainer />
-        <div className="flex flex-col items-center justify-center h-screen dark w-full px-4">
+        <div className="flex flex-col items-center justify-center h-screen dark w-full px-4 bg-black">
           <div className="w-full max-w-lg bg-gray-800 bg-opacity-30 backdrop-blur-sm rounded-lg shadow-md p-6 z-10 relative">
             <h1 className="text-2xl text-white font-bold mb-6">Sign in</h1>
             <div className="flex flex-col" onKeyDown={handleKeyDown}>
@@ -123,7 +123,7 @@ const SignInPage = () => {
       </SignedOut>
       <SignedIn>
         <RoleBasedRedirect />
-        <div className="flex flex-col items-center justify-center h-screen dark w-full px-4">
+        <div className="flex flex-col items-center justify-center h-screen dark w-full px-4 bg-black">
           <div className="w-full max-w-lg bg-gray-800 bg-opacity-30 backdrop-blur-sm rounded-lg shadow-md p-6 z-10 relative">
             <h1 className="text-2xl text-white font-bold mb-6">Sign in</h1>
             <div className="flex flex-col" onKeyDown={handleKeyDown}>
