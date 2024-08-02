@@ -54,6 +54,11 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
   const [userData, setUserData] = useState<any>(null);
 
   const { theme, setTheme } = useTheme();
+  const [checked, setChecked] = useState(theme === 'dark');
+  const handleToggle = () => {
+    setChecked(!checked);
+    toggleTheme();
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -118,12 +123,15 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
               </div>
             </div>
           </div>
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full border border-neutral-200 dark:border-white/[0.2] bg-gray-300 dark:bg-gray-900 text-zinc-700 dark:text-zinc-100"
-          >
-            {theme === 'dark' ? <IoSunnyOutline className="h-5 w-5" /> : <IoMoonOutline className="h-5 w-5" />}
-          </button>
+          <label className="toggle-switch ">
+            <input
+              type="checkbox"
+              checked={!checked}
+              onChange={handleToggle}
+            />
+            <span className="slider-custom">
+            </span>
+          </label>
           <div className="dropdown dropdown-end">
             <div
               tabIndex={0}
