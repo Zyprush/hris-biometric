@@ -72,7 +72,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ loading, history }) => {
     <div className="container mx-auto p-4 h-full">
       <div className="grid grid-cols-1 gap-4">
         <div className="overflow-x-auto">
-          <table className="table mb-5 text-sm rounded-lg border">
+          <table className="table mb-5 text-sm rounded-lg border dark:border-zinc-600">
             <thead className="bg-primary">
               <tr className="text-md text-white font-semibold">
                 <th className="px-6 py-3 text-left">Date</th>
@@ -80,9 +80,9 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ loading, history }) => {
                 <th className="px-6 py-3 text-left">Action</th>
               </tr>
             </thead>
-            <tbody className="bg-white">
+            <tbody className="bg-white dark:bg-gray-800 dark:text-zinc-100">
               {currentItems.map((h) => (
-                <tr key={h.id} className="hover:bg-gray-100 text-sm">
+                <tr key={h.id} className="text-sm dark:border-zinc-600">
                   <td className="px-4 py-2 text-left">
                     {h?.time ? format(new Date(h?.time), "MMM dd, yyyy") : ""}
                   </td>

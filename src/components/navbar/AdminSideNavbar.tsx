@@ -89,7 +89,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
 
   return (
     <div className="h-screen w-full flex flex-col">
-      <span className="w-full h-14 bg-gradient-to-r from-gray-100 to-gray-300 dark:from-gray-800 dark:to-gray-900 custom-shadow justify-between px-5 items-center border-b border-zinc-300 dark:border-zinc-800 hidden md:flex">
+      <span className="w-full h-14 bg-gradient-to-r from-gray-100 to-gray-300 dark:from-gray-800 dark:to-gray-900 custom-shadow justify-between px-5 items-center border-b border-zinc-300 dark:border-zinc-700 hidden md:flex">
         <span className="flex items-center text-white font-semibold rounded-md gap-2">
           <Image
             width={50}
@@ -103,9 +103,9 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
         <div className="flex items-center gap-4">
           <div className="dropdown dropdown-end">
             <button className="btn btn-ghost btn-circle">
-              <div className="indicator">
-                <FaBell className="h-5 w-5 text-black dark:text-white" />
-                <span className="badge badge-xs badge-primary indicator-item"></span>
+              <div className="indicator p-2 rounded-full border border-neutral-200 dark:border-white/[0.2] bg-gray-300 dark:bg-gray-900 text-zinc-700 dark:text-zinc-100">
+                <FaBell className="h-5 w-5 text-neutral dark:text-zinc-200" />
+                <span className="badge badge-xs badge-primary indicator-item mr-1 mt-1  "></span>
               </div>
             </button>
             <div tabIndex={0} className="mt-3 z-[1] card card-compact dropdown-content w-52 bg-base-100 shadow">
@@ -120,7 +120,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
           </div>
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-full border border-neutral-200 dark:border-white/[0.2] bg-white dark:bg-gray-800 text-black dark:text-white"
+            className="p-2 rounded-full border border-neutral-200 dark:border-white/[0.2] bg-gray-300 dark:bg-gray-900 text-zinc-700 dark:text-zinc-100"
           >
             {theme === 'dark' ? <IoSunnyOutline className="h-5 w-5" /> : <IoMoonOutline className="h-5 w-5" />}
           </button>
@@ -145,7 +145,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
       <div className="w-full overflow-y-auto h-full flex">
         <nav
           className={`flex ${isMinimized ? "w-20" : "w-56"
-            } bg-gray-100 dark:bg-gray-800 dark:to-gray-900 custom-shadow relative h-auto transition-width duration-300 flex-col items-start justify-start pt-5 p-4 gap-2`}
+            } bg-gray-100 dark:bg-gray-800 dark:to-gray-900 custom-shadow dark:border-r dark:border-zinc-700  relative h-auto transition-width duration-300 flex-col items-start justify-start pt-5 p-4 gap-2`}
         >
           <NavLink
             href="/admin/dashboard"
@@ -192,12 +192,12 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
           />
           <button
             onClick={toggleNavbar}
-            className={`flex items-center p-1 border bg-zinc-100 border-zinc-300 dark:border-zinc-700 absolute -right-4 dark:bg-primary bottom-14 text-zinc-400  rounded-full transition-all duration-300 ${isMinimized ? 'transform rotate-180' : ''}`}
+            className={`flex items-center p-1 border bg-zinc-100 border-zinc-300 dark:border-zinc-700 absolute -right-4 dark:bg-gray-800 bottom-14 text-zinc-400  rounded-full transition-all duration-300 ${isMinimized ? 'transform rotate-180' : ''}`}
           >
             <IoIosArrowBack className="text-xl" />
           </button>
         </nav>
-        <div className="overflow-y-auto w-full h-full flex items-center justify-center">
+        <div className="overflow-y-auto w-full dark:bg-gray-900 bg-none flex items-center justify-center">
           {children}
         </div>
       </div>

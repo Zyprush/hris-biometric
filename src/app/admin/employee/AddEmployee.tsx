@@ -136,7 +136,7 @@ const AddEmployee = () => {
     <AdminRouteGuard>
       <div className="container mx-auto p-4">
         <ToastContainer />
-        <div className="w-full max-w-6xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="w-full max-w-6xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
           <div className="p-8">
             <div className="uppercase tracking-wide text-sm text-primary font-semibold mb-4">
               Add Employee - Step {step} of 4

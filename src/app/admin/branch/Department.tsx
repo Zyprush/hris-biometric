@@ -168,29 +168,29 @@ const DepartmentComponent = () => {
                     {departments.map((dept) => {
                         const chartData = getChartData(dept.totalEmployees);
                         return (
-                            <div key={dept.id} className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-                                <h2 className="text-lg font-semibold text-primary mb-3 truncate text-center">{dept.name}</h2>
+                            <div key={dept.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                                <h2 className="text-lg font-semibold text-primary mb-3 truncate text-center dark:text-secondary">{dept.name}</h2>
                                 <div className="flex flex-col items-center">
                                     <div className="w-full h-48 mb-4">
                                         <Doughnut data={chartData} options={chartOptions} />
                                     </div>
                                     <div className="w-full grid grid-cols-2 gap-2 text-sm">
-                                        <p className="text-gray-700 col-span-2 text-center mb-2">
+                                        <p className="text-gray-700 dark:text-zinc-400 col-span-2 text-center mb-2">
                                             <span className="font-medium">Total: {dept.totalEmployees}</span>
                                         </p>
-                                        <p className="text-gray-700 flex items-center">
+                                        <p className="text-gray-700 dark:text-zinc-400 flex items-center">
                                             <span className="w-3 h-3 rounded-full bg-[#40ae75] mr-2"></span>
                                             <span className="font-medium">Present:</span> {chartData.datasets[0].data[0]}
                                         </p>
-                                        <p className="text-gray-700 flex items-center">
+                                        <p className="text-gray-700 dark:text-zinc-400 flex items-center">
                                             <span className="w-3 h-3 rounded-full bg-[#1A7680] mr-2"></span>
                                             <span className="font-medium">Absent:</span> {chartData.datasets[0].data[1]}
                                         </p>
-                                        <p className="text-gray-700 flex items-center">
+                                        <p className="text-gray-700 dark:text-zinc-400 flex items-center">
                                             <span className="w-3 h-3 rounded-full bg-[#238F99] mr-2"></span>
                                             <span className="font-medium">Rest Day:</span> {chartData.datasets[0].data[2]}
                                         </p>
-                                        <p className="text-gray-700 flex items-center">
+                                        <p className="text-gray-700 dark:text-zinc-400 flex items-center">
                                             <span className="w-3 h-3 rounded-full bg-[#104A55] mr-2"></span>
                                             <span className="font-medium">Leave:</span> {chartData.datasets[0].data[3]}
                                         </p>

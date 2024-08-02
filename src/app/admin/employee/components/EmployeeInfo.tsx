@@ -64,7 +64,7 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
             id="profilePic"
             onChange={handleProfilePicChange}
             accept="image/*"
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded dark:bg-zinc-200"
           />
         </div>
         <div className="w-full md:w-1/2 px-2 mb-4">
@@ -76,7 +76,7 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
             value={employeeId}
             placeholder="Employee ID"
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded dark:bg-zinc-200"
           />
         </div>
         <div className="w-full md:w-1/2 px-2 mb-4">
@@ -88,7 +88,7 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
             value={position}
             placeholder="Job Title"
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded dark:bg-zinc-200"
           />
         </div>
         <div className="w-full md:w-1/2 px-2 mb-4">
@@ -98,7 +98,7 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
             onChange={(e) => setDepartment(e.target.value)}
             value={department}
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded dark:bg-zinc-200"
           >
             <option value="">Select Department</option>
             {departments.map((dept, index) => (
@@ -113,7 +113,7 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
             onChange={(e) => setBranch(e.target.value)}
             value={branch}
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded dark:bg-zinc-200"
           >
             <option value="">Select Branch</option>
             {branches.map((branch, index) => (
@@ -129,7 +129,7 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
             onChange={(e) => setStartDate(e.target.value)}
             value={startDate}
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded dark:bg-zinc-200"
           />
         </div>
         <div className="w-full md:w-1/2 px-2 mb-4">
@@ -139,7 +139,7 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
             onChange={(e) => setStatus(e.target.value)}
             value={status}
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded dark:bg-zinc-200"
           >
             <option value="">Select Status</option>
             <option value="Permanent">Permanent</option>
@@ -156,7 +156,7 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
             value={supervisor}
             placeholder="Supervisor"
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded dark:bg-zinc-200"
           />
         </div>
       </div>

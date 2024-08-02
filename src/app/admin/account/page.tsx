@@ -92,7 +92,7 @@ const AdminAccount = () => {
                   <img
                     src={userData?.profilePicUrl || "/img/profile-admin.jpg"}
                     alt={userData?.name}
-                    className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-32 h-32 rounded-full border-4 border-primary shadow-lg"
+                    className="absolute bottom-0 left-1/2 transform -translate-x-1/2 object-cover  translate-y-1/2 w-32 h-32 rounded-full border-4 border-primary shadow-lg"
                   />
                 </div>
                 <div className="pt-16 pb-8 px-4 text-center">
@@ -111,7 +111,7 @@ const AdminAccount = () => {
                   )}
                   {!edit && (
                     <button
-                      className="mt-4 px-4 py-2 bg-primary dark:bg-secondary text-white dark:text-black rounded-md hover:bg-secondary dark:hover:bg-primary transition duration-300 ease-in-out flex items-center justify-center mx-auto"
+                      className="mt-4 px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary dark:hover:bg-primary transition duration-300 ease-in-out flex items-center justify-center mx-auto"
                       onClick={() => setEdit(true)}
                     >
                       <MdModeEdit className="mr-2" /> Change Password

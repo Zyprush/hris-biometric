@@ -85,42 +85,36 @@ const UserAccount = () => {
     <UserRouteGuard>
       <SignedIn>
         <UserLayout>
-          <div className="bg-gray-100 min-h-screen w-full ">
+          <div className="bg-gray-100 dark:bg-gray-900 min-h-screen w-full">
             <ToastContainer />
             <div className="max-w-full px-4 sm:px-6 sm:py-6 lg:py-8 my-8">
-              <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+              <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
                 <div className="relative">
                   <div className="h-48 bg-primary"></div>
                   <div className="absolute bottom-0 left-0 w-full h-24 bg-black opacity-30"></div>
                   <img
                     src={userData?.profilePicUrl || "/img/profile-admin.jpg"}
                     alt={userData?.name}
-                    className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-32 h-32 rounded-full border-4 border-white shadow-lg"
+                    className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 object-cover w-32 h-32 rounded-full border-4 border-primary shadow-lg"
                   />
                 </div>
                 <div className="pt-16 pb-8 px-4 text-center">
-                  <h1 className="text-3xl font-bold text-gray-800">
-                    {userData?.name || "Admin User"}
-                  </h1>
-                  <p className="text-sm text-gray-600 mt-2">
-                    {userData?.position || "Administrator"}
-                  </p>
+                  <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">{userData?.name || "Admin User"}</h1>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">{userData?.position || "Administrator"}</p>
                   {!isEmailVerified && (
                     <div className="mt-4">
                       <button
                         onClick={handleResendVerification}
                         disabled={isResendingVerification}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 ease-in-out"
+                        className="px-4 py-2 bg-blue-600 dark:bg-blue-400 text-white dark:text-black rounded-md hover:bg-blue-700 dark:hover:bg-blue-500 transition duration-300 ease-in-out"
                       >
-                        {isResendingVerification
-                          ? "Sending..."
-                          : "Resend Verification Email"}
+                        {isResendingVerification ? "Sending..." : "Resend Verification Email"}
                       </button>
                     </div>
                   )}
                   {!edit && (
                     <button
-                      className="mt-4 px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary transition duration-300 ease-in-out flex items-center justify-center mx-auto"
+                      className="mt-4 px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary dark:hover:bg-primary transition duration-300 ease-in-out flex items-center justify-center mx-auto"
                       onClick={() => setEdit(true)}
                     >
                       <MdModeEdit className="mr-2" /> Change Password
@@ -128,7 +122,7 @@ const UserAccount = () => {
                   )}
                   {edit && <Password setEdit={setEdit} />}
                 </div>
-                <div className="bg-gray-50 px-4 py-8">
+                <div className="bg-gray-50 dark:bg-gray-900 px-4 py-8">
                   <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     <UserInfo label="Email" value={userData?.email} icon={MdEmail} />
                     <UserInfo label="Department" value={userData?.department} icon={FaBuilding} />
@@ -161,20 +155,15 @@ interface UserInfoProps {
 const UserInfo = ({ label, value, icon: Icon }: UserInfoProps) => {
   return (
     value ? 
-<div className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300 ease-in-out">
-  <div className="flex items-center">
-    <div className="flex">
-      <Icon className="text-2xl text-primary mr-3" />
-    </div>
-    <div className=" truncate">
-      <p className="text-sm font-medium text-gray-600">{label}</p>
-      <p className="text-base font-semibold text-gray-800">
-        {value}
-      </p>
-    </div>
-  </div>
-</div> : null
-
+    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300 ease-in-out">
+      <div className="flex items-center">
+        <Icon className="text-2xl text-primary dark:text-white mr-3" />
+        <div className="truncate">
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{label}</p>
+          <p className="text-base font-semibold text-gray-800 dark:text-gray-200">{value}</p>
+        </div>
+      </div>
+    </div> : null
   );
 };
 export default UserAccount;

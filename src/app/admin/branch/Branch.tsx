@@ -143,7 +143,7 @@ const BranchComponent = () => {
                 </button>
                 <div className="mt-16 grid grid-cols-3 gap-6">
                     {branches.map((branch) => (
-                        <div key={branch.id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                        <div key={branch.id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 dark:bg-gray-800">
                             {branch.imageUrl && (
                                 <img 
                                     src={branch.imageUrl} 
@@ -153,23 +153,23 @@ const BranchComponent = () => {
                             )}
                             <h2 className="text-xl font-semibold text-green-600 mb-4">{branch.name}</h2>
                             <div className="space-y-2">
-                                <p className="text-gray-700">
+                                <p className="text-gray-700 dark:text-zinc-100">
                                     <span className="font-medium">Location:</span> {branch.location}
                                 </p>
-                                <p className="text-gray-700">
+                                <p className="text-gray-700 dark:text-zinc-100">
                                     <span className="font-medium">Employees:</span> {branch.totalEmployees}
                                 </p>
                             </div>
                             <div className="mt-4 space-x-2">
                                 <button
                                     onClick={() => openEditModal(branch)}
-                                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-2 rounded"
+                                    className="bg-primary hover:bg-blue-600 text-white font-semibold py-1 px-2 rounded"
                                 >
                                     Edit
                                 </button>
                                 <button
                                     onClick={() => handleDelete(branch)}
-                                    className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-2 rounded"
+                                    className="bg-error hover:bg-red-600 text-white font-semibold py-1 px-2 rounded"
                                 >
                                     Delete
                                 </button>

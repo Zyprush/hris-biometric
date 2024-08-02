@@ -27,7 +27,7 @@ const LegalDocuments: React.FC<LegalDocumentsProps> = ({
         value={sss}
         placeholder="SSS"
         required
-        className="w-full p-2 mb-2 border rounded"
+        className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
       />
       <input
         type="text"
@@ -35,7 +35,7 @@ const LegalDocuments: React.FC<LegalDocumentsProps> = ({
         value={philHealthNumber}
         placeholder="Philhealth Number"
         required
-        className="w-full p-2 mb-2 border rounded"
+        className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
       />
       <input
         type="text"
@@ -43,7 +43,7 @@ const LegalDocuments: React.FC<LegalDocumentsProps> = ({
         value={pagIbigNumber}
         placeholder="Pag-ibig Number"
         required
-        className="w-full p-2 mb-2 border rounded"
+        className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
       />
       <input
         type="text"
@@ -51,13 +51,13 @@ const LegalDocuments: React.FC<LegalDocumentsProps> = ({
         value={tinNumber}
         placeholder="TIN Number"
         required
-        className="w-full p-2 mb-2 border rounded"
+        className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
       />
       <input
         type="file"
         onChange={(e) => setDocuments(e.target.files)}
         multiple
-        className="w-full p-2 mb-2 border rounded"
+        className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
       />
       {documents && (
         <p className="text-sm text-gray-600">

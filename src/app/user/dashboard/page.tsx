@@ -243,9 +243,9 @@ export default function UserDashboard() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Financial Information */}
-              <div className="bg-white rounded-lg shadow p-6">
+              <div className="bg-white rounded-lg shadow-lg p-6 dark:bg-gray-800">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold text-neutral">
+                  <h2 className="text-xl font-semibold text-neutral dark:text-white">
                     Financial Overview
                   </h2>
                   <button onClick={() => setShowFinancials(!showFinancials)}>
@@ -257,10 +257,10 @@ export default function UserDashboard() {
                     <p className="text-2xl font-bold text-green-600 mb-2">
                       ₱{userDataExample.expectedMonthlyEarning.toFixed(2)}
                     </p>
-                    <p className="text-sm text-gray-600 mb-2">
+                    <p className="text-sm text-gray-600 dark:text-zinc-300 mb-2">
                       Expected Monthly Salary
                     </p>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2 dark:text-zinc-300">
                       <div
                         className="bg-blue-600 h-2.5 rounded-full"
                         style={{
@@ -268,7 +268,7 @@ export default function UserDashboard() {
                         }}
                       ></div>
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-zinc-300">
                       {userDataExample.payPeriodProgress}% of pay period
                       complete
                     </p>
@@ -298,8 +298,8 @@ export default function UserDashboard() {
               </div>
 
               {/* Quick Actions */}
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold mb-4 text-neutral">
+              <div className="bg-white rounded-lg shadow p-6 dark:bg-gray-800 ">
+                <h2 className="text-xl font-semibold mb-4 text-neutral dark:text-white">
                   Quick Actions
                 </h2>
                 <div className="flex flex-wrap gap-2">
@@ -316,36 +316,36 @@ export default function UserDashboard() {
               </div>
 
               {/* Leave/Day Off Balance */}
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold mb-4 text-neutral">
+              <div className="bg-white rounded-lg shadow p-6 dark:bg-gray-800">
+                <h2 className="text-xl font-semibold mb-4 text-neutral dark:text-white">
                   Leave Taken
                 </h2>
-                <div className="stats shadow mx-auto flex">
+                <div className="stats shadow mx-auto flex dark:bg-gray-700">
                   <div className="stat">
                     {/* <div className="stat-title">{new Date().toLocaleString('default', { month: 'long' })}</div> */}
-                    <div className="stat-value text-primary">12</div>
-                    <div className="stat-desc"> Leave this month</div>
+                    <div className="stat-value text-primary dark:text-blue-200">12</div>
+                    <div className="stat-desc dark:text-zinc-300"> Leave this month</div>
                   </div>
 
                   <div className="stat">
                     {/* <div className="stat-title">{new Date().getFullYear()}</div> */}
-                    <div className="stat-value text-primary">24</div>
-                    <div className="stat-desc">Leave this year</div>
+                    <div className="stat-value text-primary dark:text-blue-200">24</div>
+                    <div className="stat-desc dark:text-zinc-300">Leave this year</div>
                   </div>
                 </div>
               </div>
 
               {/* Productivity Chart */}
-              <div className="bg-white rounded-lg shadow p-6 col-span-full md:col-span-2">
-                <h2 className="text-xl font-semibold mb-4 text-neutral">
+              <div className="bg-white rounded-lg shadow p-6 col-span-full md:col-span-2 dark:bg-gray-800">
+                <h2 className="text-xl font-semibold mb-4 text-neutral dark:text-white">
                   Attendance and Overtime
                 </h2>
                 <Line options={options} data={attendanceData} />
               </div>
 
               {/* Team Status */}
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold mb-4 text-neutral">
+              <div className="bg-white rounded-lg shadow p-6 dark:bg-gray-800">
+                <h2 className="text-xl font-semibold mb-4 text-neutral dark:text-white">
                   Team Status
                 </h2>
                 <ul className="space-y-4">
@@ -360,7 +360,7 @@ export default function UserDashboard() {
                         className="rounded-full object-cover w-14 h-14 border-2 border-primary"
                       />
                       <span className="font-semibold text-sm flex flex-col items-start">
-                        <p>{member.name}</p>
+                        <p className="dark:text-zinc-200">{member.name}</p>
                         <p
                           className={`p-1 px-2 rounded-md text-white w-auto ${
                             member.attendanceStatus === "present"
@@ -420,13 +420,13 @@ const DashboardLink: React.FC<DashboardLinkProps> = ({
 }) => (
   <Link
     href={href}
-    className="bg-white text-zinc-700 rounded-lg p-8 gap-3 flex flex-col border hover:bg-neutral hover:text-white group transition-colors"
+    className="bg-white text-zinc-700 rounded-lg dark:bg-gray-800 dark:border-gray-800 p-8 gap-3 flex flex-col border hover:bg-neutral hover:text-white group transition-colors dark:hover:bg-neutral "
   >
     <span className="flex gap-3">
-      <Icon className="text-3xl" />
-      <p className="text-2xl font-bold ">{title}</p>
+      <Icon className="text-3xl dark:text-zinc-200" />
+      <p className="text-2xl font-bold dark:text-zinc-300">{title}</p>
     </span>
-    <p className="text-sm text-zinc-500 group-hover:text-zinc-200">
+    <p className="text-sm text-zinc-500 group-hover:text-zinc-200 dark:text-zinc-300">
       {description}
     </p>
   </Link>

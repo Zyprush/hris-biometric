@@ -119,7 +119,7 @@ const Request = () => {
                       type="radio"
                       name="my_tabs_2"
                       role="tab"
-                      className={`tab text-sm font-bold text-neutral dark:text-white ${status == tabStatus.toLowerCase() && "dark:text-neutral"} `}
+                      className={`tab text-sm font-bold text-neutral dark:text-primary`}
                       aria-label={tabStatus}
                       defaultChecked={tabStatus === "Pending"}
                       onClick={() => setStatus(tabStatus.toLowerCase())}

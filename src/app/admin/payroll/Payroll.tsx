@@ -296,7 +296,7 @@ const Payroll: React.FC = () => {
                       type="checkbox"
                       checked={selectAll}
                       onChange={handleSelectAll}
-                      className="checkbox checkbox-sm"
+                      className="checkbox checkbox-sm border-zinc-300"
                     />
                   </th>
                   <th className="border border-gray-500 px-2 py-1 text-xs" rowSpan={2}>Name of Employee</th>
@@ -328,31 +328,31 @@ const Payroll: React.FC = () => {
                   currentItems.map((employee: Employee) => (
                     <tr
                       key={employee.id}
-                      className="hover:bg-gray-100 cursor-pointer"
+                      className="hover:bg-gray-100 cursor-pointer border border-gray-500 dark:text-zinc-200 dark:bg-gray-800 dark:hover:bg-gray-900 "
                       onClick={() => handleRowClick(employee)}
                     >
-                      <td className="px-4 py-2 text-xs border border-b">
+                      <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">
                         <input
                           type="checkbox"
                           checked={selectedEmployees.includes(employee.id)}
                           onChange={() => handleCheckboxChange(employee.id)}
                           onClick={(e) => e.stopPropagation()}
-                          className="checkbox checkbox-sm"
+                          className="checkbox checkbox-sm dark:border-zinc-300"
                         />
                       </td>
-                      <td className="px-4 py-2 text-xs border border-b">{employee.name}</td>
-                      <td className="px-4 py-2 text-xs border border-b">{employee.rate.toFixed(2)}</td>
-                      <td className="px-4 py-2 text-xs border border-b">{employee.daysOfWork.toFixed(2)}</td>
-                      <td className="px-4 py-2 text-xs border border-b">{employee.totalRegularWage.toFixed(2)}</td>
-                      <td className="px-4 py-2 text-xs border border-b">{employee.overtime.toFixed(2)}</td>
-                      <td className="px-4 py-2 text-xs border border-b">{employee.holiday.toFixed(2)}</td>
-                      <td className="px-4 py-2 text-xs border border-b">{employee.totalAmount.toFixed(2)}</td>
-                      <td className="px-4 py-2 text-xs border border-b">{employee.sssDeduction.toFixed(2)}</td>
-                      <td className="px-4 py-2 text-xs border border-b">{employee.philhealthDeduction.toFixed(2)}</td>
-                      <td className="px-4 py-2 text-xs border border-b">{employee.pagibigDeduction.toFixed(2)}</td>
-                      <td className="px-4 py-2 text-xs border border-b">{employee.cashAdvance.toFixed(2)}</td>
-                      <td className="px-4 py-2 text-xs border border-b">{employee.totalDeductions.toFixed(2)}</td>
-                      <td className="px-4 py-2 text-xs border border-b">{employee.totalNetAmount.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.name}</td>
+                      <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.rate.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.daysOfWork.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.totalRegularWage.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.overtime.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.holiday.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.totalAmount.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.sssDeduction.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.philhealthDeduction.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.pagibigDeduction.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.cashAdvance.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.totalDeductions.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.totalNetAmount.toFixed(2)}</td>
                     </tr>
                   ))
                 )}

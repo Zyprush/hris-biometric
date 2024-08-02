@@ -195,8 +195,8 @@ const FormerEmployee = () => {
               </button>
             </div>
           </div>
-          <div className="overflow-x-auto card">
-            <table className="table border rounded-lg mb-5 text-sm">
+          <div className="overflow-x-auto">
+            <table className="table border dark:border-zinc-600 rounded-lg mb-5 text-sm">
               <thead className="bg-primary">
                 <tr className="text-md text-white font-semibold">
                   <th className="px-6 py-3 text-left">Employee ID</th>
@@ -204,7 +204,7 @@ const FormerEmployee = () => {
                   <th className="px-6 py-3 text-left">Remarks</th>
                 </tr>
               </thead>
-              <tbody className="bg-white">
+              <tbody className="bg-white dark:bg-gray-800">
                 {currentItems.length < 1 ? (
                   <tr>
                     <td colSpan={3} className="text-red-500 text-xs">
@@ -216,9 +216,9 @@ const FormerEmployee = () => {
                     <tr
                       key={employee.id}
                       onClick={() => handleRowClick(employee)}
-                      className={`cursor-pointer ${selectedEmployee?.id === employee.id
+                      className={`cursor-pointer dark:text-white dark:border-zinc-600 ${selectedEmployee?.id === employee.id
                         ? "bg-teal-700 text-white hover:bg-teal-600"
-                        : "hover:bg-gray-100"
+                        : "hover:bg-gray-100 dark:hover:text-zinc-800"
                         }`}
                     >
                       <td className="px-4 py-2 text-xs text-left">{employee.employeeId}</td>

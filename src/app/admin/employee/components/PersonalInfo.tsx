@@ -46,7 +46,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">Personal Information</h2>
+      <h2 className="text-xl font-bold mb-4 dark:text-white">Personal Information</h2>
 
       <div className="flex flex-wrap md:flex-nowrap space-x-0 md:space-x-4 space-y-4 md:space-y-0 mb-4">
         <div className="w-full md:w-1/2">
@@ -58,7 +58,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             value={name}
             placeholder="Full Name"
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded dark:bg-zinc-200"
           />
         </div>
         <div className="w-full md:w-1/2">
@@ -70,7 +70,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             value={nickname}
             placeholder="Nickname"
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded  dark:bg-zinc-200"
           />
         </div>
       </div>
@@ -84,7 +84,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             onChange={(e) => setBirthday(e.target.value)}
             value={birthday}
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded  dark:bg-zinc-200"
           />
         </div>
         <div className="w-full md:w-1/2">
@@ -94,7 +94,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             onChange={(e) => setGender(e.target.value)}
             value={gender}
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded  dark:bg-zinc-200"
           >
             <option value="">Select Gender</option>
             <option value="male">Male</option>
@@ -112,7 +112,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             onChange={(e) => setMaritalStatus(e.target.value)}
             value={maritalStatus}
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded  dark:bg-zinc-200"
           >
             <option value="">Select Marital Status</option>
             <option value="single">Single</option>
@@ -130,7 +130,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             value={nationality}
             placeholder="Nationality"
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded dark:bg-zinc-200"
           />
         </div>
       </div>
@@ -145,7 +145,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             value={currentAddress}
             placeholder="Current Address"
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded dark:bg-zinc-200"
           />
         </div>
         <div className="w-full md:w-1/2 flex items-center">
@@ -154,7 +154,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             id="permanentSameAsCurrent"
             checked={isPermanentSameAsCurrent}
             onChange={(e) => setIsPermanentSameAsCurrent(e.target.checked)}
-            className="mr-2"
+            className="mr-2  dark:bg-zinc-200"
           />
           <label htmlFor="permanentSameAsCurrent" className="text-sm text-gray-500">Permanent address is the same as current</label>
         </div>
@@ -169,7 +169,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             value={permanentAddress}
             placeholder="Permanent Address"
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded  dark:bg-zinc-200"
           />
         </div>
       )}
@@ -184,7 +184,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             value={phone}
             placeholder="Phone"
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded dark:bg-zinc-200"
           />
         </div>
         <div className="w-full md:w-1/2">
@@ -196,7 +196,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             value={email}
             placeholder="Email"
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded dark:bg-zinc-200"
           />
         </div>
       </div>
@@ -211,7 +211,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             value={emergencyContactName}
             placeholder="Emergency Contact Name"
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded dark:bg-zinc-200"
           />
         </div>
         <div className="w-full md:w-1/3">
@@ -223,7 +223,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             value={emergencyContactPhone}
             placeholder="Emergency Contact Phone"
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded dark:bg-zinc-200"
           />
         </div>
         <div className="w-full md:w-1/3">
@@ -235,7 +235,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             value={emergencyContactAddress}
             placeholder="Emergency Contact Address"
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded dark:bg-zinc-200"
           />
         </div>
       </div>

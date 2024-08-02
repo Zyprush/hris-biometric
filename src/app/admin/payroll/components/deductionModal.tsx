@@ -43,7 +43,7 @@ const DeductionModal: React.FC<DeductionModalProps> = ({ isOpen, onClose, employ
                 name={field.id}
                 value={employee[field.id as keyof typeof employee]}
                 onChange={onInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-150 ease-in-out"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-150 ease-in-out dark:bg-zinc-400 p-1"
               />
             </div>
           ))}

@@ -133,15 +133,15 @@ const PasswordManagement = () => {
               </button>
             </div>
           </div>
-          <div className="overflow-x-auto card">
-            <table className="table border rounded-lg">
+          <div className="overflow-x-auto">
+            <table className="table border dark:border-zinc-600 rounded-lg">
               <thead className="bg-primary">
                 <tr className="text-xs text-white bg-primary">
                   <th className="px-6 py-3">Employee Name</th>
                   <th className="px-6 py-3">Email</th>
                 </tr>
               </thead>
-              <tbody className="bg-white">
+              <tbody className="bg-white dark:bg-gray-800">
                 {filteredEmployees.length < 1 ? (
                   <tr>
                     <td colSpan={2} className="text-red-500 text-xs text-center">
@@ -152,9 +152,9 @@ const PasswordManagement = () => {
                   currentItems.map((employee) => (
                     <tr
                       key={employee.id}
-                      className={`cursor-pointer ${selectedEmployee?.id === employee.id
+                      className={`cursor-pointer dark:text-white dark:border-zinc-600 ${selectedEmployee?.id === employee.id
                         ? "bg-teal-700 text-white hover:bg-teal-600"
-                        : "hover:bg-gray-100"
+                        : "hover:bg-gray-100 dark:hover:text-zinc-800"
                         }`}
                       onClick={() => setSelectedEmployee(employee)}
                     >

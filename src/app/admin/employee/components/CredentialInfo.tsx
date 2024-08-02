@@ -39,7 +39,7 @@ const Credentials: React.FC<CredentialsProps> = ({
           type="checkbox"
           onChange={handleAutoGeneratePassword}
           checked={autoGeneratePassword}
-          className="mr-2"
+          className="mr-2 dark:bg-zinc-200"
         />
         <label>Auto-generate password based on Birthday.</label>
       </div>
@@ -50,21 +50,21 @@ const Credentials: React.FC<CredentialsProps> = ({
             onChange={(e) => setPassword(e.target.value)}
             value={password}
             placeholder="Password"
-            className="w-full p-2 mb-2 border rounded"
+            className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
           />
           <input
             type="password"
             onChange={(e) => setRePassword(e.target.value)}
             value={rePassword}
             placeholder="Re-enter Password"
-            className="w-full p-2 mb-2 border rounded"
+            className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
           />
         </>
       )}
       <select
         onChange={(e) => setRole(e.target.value as "user" | "admin")}
         value={role}
-        className="w-full p-2 mb-2 border rounded"
+        className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
       >
         <option value="user">User</option>
         <option value="admin">Admin</option>

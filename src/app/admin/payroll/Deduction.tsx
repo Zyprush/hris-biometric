@@ -181,7 +181,7 @@ const Deduction: React.FC = () => {
             </div>
           </div>
           <div className="overflow-x-auto">
-            <table className="table border rounded">
+            <table className="table border dark:border-zinc-600 rounded">
               <thead className="bg-primary">
                 <tr className="text-md bg-primary text-white">
                   <th className="px-6 py-3">Employee ID</th>
@@ -205,9 +205,9 @@ const Deduction: React.FC = () => {
                     <tr
                       key={employee.id}
                       onClick={() => handleRowClick(employee)}
-                      className={`cursor-pointer ${selectedEmployee?.id === employee.id
-                        ? "bg-blue-100 hover:bg-blue-200"
-                        : "hover:bg-gray-100"
+                      className={`cursor-pointer dark:border-zinc-600 dark:text-zinc-200 dark:bg-gray-800 ${selectedEmployee?.id === employee.id
+                        ? "bg-blue-100 dark:bg-blue-100 dark:text-zinc-700 hover:bg-blue-200"
+                        : "hover:bg-gray-100 "
                         }`}
                     >
                       <td className="px-4 py-2 text-xs">{employee.employeeId}</td>
