@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useState, ReactNode, Suspense, useEffect } from "react";
+import React, { useState, ReactNode, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
@@ -14,7 +14,8 @@ import { auth, db } from "@/firebase";
 import Image from "next/image";
 import { IoIosArrowBack } from "react-icons/io";
 import { useTheme } from "next-themes";
-import { IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
+// import { IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
+import Notification from "../Notification";
 interface NavbarProps {
   children: ReactNode;
 }
@@ -113,15 +114,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
                 <span className="badge badge-xs badge-primary indicator-item mr-1 mt-1  "></span>
               </div>
             </button>
-            <div tabIndex={0} className="mt-3 z-[1] card card-compact dropdown-content w-52 bg-base-100 shadow">
-              <div className="card-body">
-                <span className="font-bold text-lg">8 New Notifications</span>
-                <span className="text-info">Dummy notification content</span>
-                <div className="card-actions">
-                  <button className="btn btn-primary btn-block">View all</button>
-                </div>
-              </div>
-            </div>
+            <Notification userData={userData} user={user}/>
           </div>
           <label className="toggle-switch ">
             <input
@@ -146,7 +139,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
                 className="h-full w-full object-cover"
               />
             </div>
-            <Account />
+            <Account userData={userData} />
           </div>
         </div>
       </span>
