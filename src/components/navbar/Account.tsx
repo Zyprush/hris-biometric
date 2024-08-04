@@ -1,115 +1,30 @@
 "use client";
 
-import { auth, db } from "@/firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
-import React, { useEffect, useState, useMemo } from "react";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
+import { auth } from "@/firebase";
+import React, { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { warnToast } from "@/components/toast";
-import { useUserStore } from "@/state/user";
 import Link from "next/link";
 import { IoMdSettings } from "react-icons/io";
 import { IoCaretBackCircle } from "react-icons/io5";
-import UserNotifications from "../UserNotifications";
-import AdminNotifications from "../AdminNotifications";
-import { UserDatainterface } from "@/state/interface";
 
-const Account = () => {
-  const [user, loading] = useAuthState(auth);
+interface AccountProps {
+  userData: any;
+}
+const Account: React.FC<AccountProps> = ({ userData }) => {
   const router = useRouter();
-  const { setUserData, setUser, userData } = useUserStore();
-  const [showNotif, setShowNotif] = useState<boolean>(false);
-  const [notRead, setNotRead] = useState<number>(0);
-  const [newRequest, setNewRequest] = useState<number>(0);
 
-  const fetchNotRead = async () => {
-    if (user) {
-      const queryNotRead = await getDocs(
-        query(
-          collection(db, "requests"),
-          where("userId", "==", user.uid),
-          where("seen", "==", false)
-        )
-      );
-      setNotRead(queryNotRead.docs.length);
-    }
-  };
+  const memoizedUserData = useMemo(() => userData, [userData]);
 
-  const fetchNewRequest = async () => {
-    if (user) {
-      const queryNewRequest = await getDocs(
-        query(collection(db, "requests"), where("status", "==", "pending"))
-      );
-      setNewRequest(queryNewRequest.docs.length);
-      console.log("newRequest", queryNewRequest.docs.length);
-    }
-  };
-
-  useEffect(() => {
-    if (userData?.role === "admin") {
-      fetchNewRequest();
-    } else {
-      fetchNotRead();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userData]);
-
-  useEffect(() => {
-    if (user) {
-      const fetchUserData = async () => {
-        const userDocRef = doc(db, "users", user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        if (userDocSnap.exists()) {
-          setUserData(userDocSnap.data() as UserDatainterface);
-          setUser(user);
-          if (!user.emailVerified) {
-            warnToast(
-              "Your email is not verified. Please check your inbox for a verification email."
-            );
-          }
-        }
-      };
-      fetchUserData();
-    }
-  }, [user, setUser, setUserData]);
-
-  useEffect(() => {
-    setShowNotif(notRead > 0 || newRequest > 0);
-  }, [notRead, newRequest]);
-
-
+  if (!memoizedUserData) {
+    return null;
+  }
   const handleSignOut = async () => {
     await auth.signOut();
     router.push("/sign-in");
   };
 
-  const memoizedUserData = useMemo(() => userData, [userData]);
-
-  if (!memoizedUserData || loading) {
-    return null;
-  }
-
   return (
     <React.Fragment>
-      {showNotif && memoizedUserData?.role === "user" && (
-        <UserNotifications
-          setShowNotif={setShowNotif}
-          text={`You have ${notRead} new updates for your leave request. Click here.`}
-        />
-      )}
-      {showNotif && memoizedUserData?.role === "admin" && (
-        <AdminNotifications
-          setShowNotif={setShowNotif}
-          text={`You have ${newRequest} new pending leave requests. Click here.`}
-        />
-      )}
       <span
         tabIndex={0}
         className="flex flex-col mt-2 dropdown-content menu bg-base-100 rounded-2xl border border-zinc-300 z-50 h-auto shadow-2xl w-[13rem] p-0 absolute"

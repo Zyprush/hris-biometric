@@ -6,14 +6,19 @@ import { auth, db } from "@/firebase";
 import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { useUserStore } from "@/state/user";
 
-const RequestForm = ({ setShowRequestForm, requests}: { setShowRequestForm: React.Dispatch<React.SetStateAction<boolean>>, requests: object}) => {
+const RequestForm = ({
+  setShowRequestForm,
+  requests,
+}: {
+  setShowRequestForm: React.Dispatch<React.SetStateAction<boolean>>;
+  requests: object;
+}) => {
   const [user] = useAuthState(auth);
   const [leaveDate, setLeaveDate] = useState<string>("");
   const [totalDays, setTotalDays] = useState<string>("");
   const [reason, setReason] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const { userData, fetchUserData} = useUserStore();
-
+  const { userData, fetchUserData } = useUserStore();
 
   useEffect(() => {
     if (user) {
@@ -52,12 +57,15 @@ const RequestForm = ({ setShowRequestForm, requests}: { setShowRequestForm: Reac
       submittedBy: userData?.name,
     };
     try {
-      const submittedDoc = await addDoc(collection(db, "requests"), requestData);
+      const submittedDoc = await addDoc(
+        collection(db, "requests"),
+        requestData
+      );
       successToast("Request created successfully");
       setLeaveDate(""); // Clear input fields after successful submission
       setTotalDays("");
       setReason("");
-      setShowRequestForm(false)
+      setShowRequestForm(false);
     } catch (error) {
       errorToast(`Error creating Request:${error}`);
     } finally {
@@ -83,61 +91,73 @@ const RequestForm = ({ setShowRequestForm, requests}: { setShowRequestForm: Reac
   };
 
   return (
-
-          <div className="fixed top-0 bottom-0 right-0 left-0 w-full h-full bg-zinc-800 bg-opacity-50 py-6 flex p-4 flex-col justify-center sm:py-12 z-50">
-            <div className="relative py-3 sm:max-w-xl sm:mx-auto">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#135D66] to-[#77B0AA] shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 rounded-3xl"></div>
-              <div className="relative px-4 py-10 bg-white shadow-lg rounded-3xl sm:p-5 sm:py-10 md:w-[24rem]">
-                <div className="max-w-md mx-auto">
-                  <div className="flex justify-start">
-                    <h1 className="text-white rounded bg-neutral font-bold p-4 py-1">Request Leave</h1>
+    <div className="fixed top-0 bottom-0 right-0 left-0 w-full h-full bg-zinc-800 bg-opacity-50 py-6 flex p-4 flex-col justify-center sm:py-12 z-50">
+      <div className="relative py-3 sm:max-w-xl sm:mx-auto">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#135D66] to-[#77B0AA] shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 rounded-3xl"></div>
+        <div className="relative px-4 py-10 bg-white shadow-lg rounded-3xl sm:p-5 sm:py-10 md:w-[24rem]">
+          <div className="max-w-md mx-auto">
+            <div className="flex justify-start">
+              <h1 className="text-white rounded bg-neutral font-bold p-4 py-1">
+                Request Leave
+              </h1>
+            </div>
+            <div className="divide-y divide-gray-200">
+              <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:leading-7">
+                <div className="relative">
+                  <div className="flex gap-2 w-full">
+                    <input
+                      type="date"
+                      value={leaveDate}
+                      onChange={(e) => setLeaveDate(e.target.value)}
+                      required
+                      className="p-2 mb-2 border text-sm rounded bg-zinc-200 text-zinc-500 w-36 md:w-40 "
+                    />
+                    <input
+                      type="number"
+                      value={totalDays}
+                      onChange={(e) => setTotalDays(e.target.value)}
+                      placeholder="Number of Days"
+                      required
+                      className="p-2 mb-2 border text-sm rounded bg-zinc-200 text-zinc-500 md:w-40 w-36"
+                    />
                   </div>
-                  <div className="divide-y divide-gray-200">
-                    <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:leading-7">
-                      <div className="relative">
-                        <div className="flex gap-2 w-full">
-                          <input
-                            type="date"
-                            value={leaveDate}
-                            onChange={(e) => setLeaveDate(e.target.value)}
-                            required
-                            className="p-2 mb-2 border text-sm rounded text-zinc-500 w-48"
-                          />
-                          <input
-                            type="number"
-                            value={totalDays}
-                            onChange={(e) => setTotalDays(e.target.value)}
-                            placeholder="Number of Days"
-                            required
-                            className="p-2 mb-2 border text-sm rounded text-zinc-500 w-40"
-                          />
-                        </div>
-                        <textarea
-                          value={reason}
-                          placeholder="Reason"
-                          onChange={(e) => setReason(e.target.value)}
-                          className="w-full p-2 text-sm mb-2 border rounded"
-                          rows={5}
-                          style={{ resize: "none" }}
-                        />
-                      </div>
-                      <div className="relative">
-                        <button
-                          onClick={createRequest}
-                          disabled={loading}
-                          className={`bg-primary text-xs hover:bg-secondary text-white font-semibold px-4 py-2 rounded-md ${
-                            loading ? "opacity-50 cursor-not-allowed" : ""
-                          }`}
-                        >
-                          {loading ? "Creating..." : "Submit Leave"}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                  <textarea
+                    value={reason}
+                    placeholder="Reason"
+                    onChange={(e) => setReason(e.target.value)}
+                    className="w-full p-2 text-sm mb-2 border rounded bg-zinc-200"
+                    rows={5}
+                    style={{ resize: "none" }}
+                  />
+                </div>
+                <div className="relative">
+                  <button
+                    onClick={createRequest}
+                    disabled={loading}
+                    className={`bg-primary text-xs hover:bg-secondary text-white font-semibold px-4 py-2 rounded-md ${
+                      loading ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  >
+                    {loading ? "Creating..." : "Submit Leave"}
+                  </button>
+                </div>
+                <div className="relative">
+                  <button
+                    onClick={() => setShowRequestForm(false)}
+                    disabled={loading}
+                    className={`btn btn-sm text-xs btn-outline text-primary font-semibold px-4 py-2 rounded-md ${
+                      loading ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  >
+                    cancel
+                  </button>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

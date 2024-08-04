@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useState, ReactNode, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
@@ -14,6 +15,7 @@ import { NavLink } from "./AdminSideNavbar";
 import { IoIosArrowBack } from "react-icons/io";
 import { useTheme } from "next-themes";
 import { IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
+import Notification from "../Notification";
 
 interface NavbarProps {
   children: ReactNode;
@@ -25,6 +27,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
   const [user, loading] = useAuthState(auth);
   const [userData, setUserData] = useState<any>(null);
   const { theme, setTheme } = useTheme();
+  const [showNotif, setShowNotif] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -53,7 +56,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
   };
 
   const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   if (loading) return <Loading />;
@@ -76,24 +79,26 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
             <button className="btn btn-ghost btn-circle">
               <div className="indicator p-2 rounded-full border border-neutral-200 dark:border-white/[0.2] bg-gray-300 dark:bg-gray-900 text-zinc-700 dark:text-zinc-100">
                 <FaBell className="h-5 w-5 text-neutral dark:text-zinc-200" />
-                <span className="badge badge-xs badge-primary indicator-item mr-1 mt-1"></span>
+                {showNotif && (
+                  <span className="badge badge-xs badge-primary indicator-item mr-1 mt-1  "></span>
+                )}
               </div>
             </button>
-            <div tabIndex={0} className="mt-3 z-[1] card card-compact dropdown-content w-52 bg-base-100 shadow">
-              <div className="card-body">
-                <span className="font-bold text-lg">8 New Notifications</span>
-                <span className="text-info">Dummy notification content</span>
-                <div className="card-actions">
-                  <button className="btn btn-primary btn-block">View all</button>
-                </div>
-              </div>
-            </div>
+              <Notification
+                userData={userData}
+                user={user}
+                setShowNotif={setShowNotif}
+              />
           </div>
           <button
             onClick={toggleTheme}
             className="p-2 rounded-full border border-neutral-200 dark:border-white/[0.2] bg-gray-300 dark:bg-gray-900 text-zinc-700 dark:text-zinc-100"
           >
-            {theme === 'dark' ? <IoSunnyOutline className="h-5 w-5" /> : <IoMoonOutline className="h-5 w-5" />}
+            {theme === "dark" ? (
+              <IoSunnyOutline className="h-5 w-5" />
+            ) : (
+              <IoMoonOutline className="h-5 w-5" />
+            )}
           </button>
           <div className="dropdown dropdown-end">
             <div
@@ -109,13 +114,15 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
                 className="h-full w-full object-cover"
               />
             </div>
-            <Account />
+            <Account userData={userData} />
           </div>
         </div>
       </span>
       <div className="w-full overflow-y-auto h-full flex">
         <nav
-          className={`flex ${isMinimized ? "w-20" : "w-56"} bg-gray-100 dark:bg-gray-800 dark:to-gray-900 custom-shadow relative h-auto transition-width duration-300 flex-col items-start justify-start pt-5 p-4 gap-2`}
+          className={`flex ${
+            isMinimized ? "w-20" : "w-56"
+          } bg-gray-100 dark:bg-gray-800 dark:to-gray-900 custom-shadow relative h-auto transition-width duration-300 flex-col items-start justify-start pt-5 p-4 gap-2`}
         >
           <NavLink
             href="/user/dashboard"
@@ -147,7 +154,9 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
           />
           <button
             onClick={toggleNavbar}
-            className={`flex items-center p-1 border bg-zinc-100 border-zinc-300 dark:border-zinc-700 absolute -right-4 dark:bg-gray-800 bottom-14 text-zinc-400 rounded-full transition-all duration-300 ${isMinimized ? 'transform rotate-180' : ''}`}
+            className={`flex items-center p-1 border bg-zinc-100 border-zinc-300 dark:border-zinc-700 absolute -right-4 dark:bg-gray-800 bottom-14 text-zinc-400 rounded-full transition-all duration-300 ${
+              isMinimized ? "transform rotate-180" : ""
+            }`}
           >
             <IoIosArrowBack className="text-xl" />
           </button>

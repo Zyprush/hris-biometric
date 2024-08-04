@@ -141,10 +141,10 @@ const Request = () => {
                             >
                               <div className="flex gap-2 items-start justify-start w-full flex-col">
                                 <div className="text-zinc-700 mb-2 flex gap-2 items-center w-full">
-                                  <span className="bg-zinc-700 rounded text-sm font-semibold p-2 py-1 text-white">
+                                  <span className="bg-neutral rounded text-sm italic p-2 py-1 text-white">
                                     {format(
                                       new Date(request.leaveDate),
-                                      "MMM dd yyyy"
+                                      "MMM do yyyy"
                                     )}
                                   </span>
                                   <span

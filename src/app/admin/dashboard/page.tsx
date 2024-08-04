@@ -198,7 +198,7 @@ const AdminDashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4">
               {cardData.map(({ title, icon: Icon, value }, index) => (
                 <div key={index} className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 text-center border dark:border-zinc-800">
-                  <Icon className={`text-3xl mb-2 mx-auto text-[#135D66] dark:text-[#238F99]`} />
+                  <Icon className={`text-4xl mb-2 mx-auto border border-zinc-300 rounded-sm p-1 dark:bg-gray-900 dark:border-gray-950 bg-zinc-200 text-[#135D66] dark:text-[#238F99]`} />
                   <p className="text-2xl font-bold">{value}</p>
                   <h2 className="text-sm">{title}</h2>
                 </div>

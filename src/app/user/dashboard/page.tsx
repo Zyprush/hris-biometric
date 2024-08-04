@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { SignedIn } from "@/components/signed-in";
 import Userlayout from "@/components/UserLayout";
@@ -320,17 +321,26 @@ export default function UserDashboard() {
                 <h2 className="text-xl font-semibold mb-4 text-neutral dark:text-white">
                   Leave Taken
                 </h2>
-                <div className="stats shadow mx-auto flex dark:bg-gray-700">
+                <div className="stats flex dark:bg-gray-800">
                   <div className="stat">
                     {/* <div className="stat-title">{new Date().toLocaleString('default', { month: 'long' })}</div> */}
-                    <div className="stat-value text-primary dark:text-blue-200">12</div>
-                    <div className="stat-desc dark:text-zinc-300"> Leave this month</div>
+                    <div className="stat-value text-primary  dark:text-white">
+                      12
+                    </div>
+                    <div className="stat-desc dark:text-zinc-300">
+                      {" "}
+                      Leave this month
+                    </div>
                   </div>
 
                   <div className="stat">
                     {/* <div className="stat-title">{new Date().getFullYear()}</div> */}
-                    <div className="stat-value text-primary dark:text-blue-200">24</div>
-                    <div className="stat-desc dark:text-zinc-300">Leave this year</div>
+                    <div className="stat-value text-primary dark:text-white">
+                      24
+                    </div>
+                    <div className="stat-desc dark:text-zinc-300">
+                      Leave this year
+                    </div>
                   </div>
                 </div>
               </div>

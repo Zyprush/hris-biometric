@@ -1,6 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import Link from "next/link";
-import React, { useState, ReactNode, Suspense, useEffect } from "react";
+import React, { useState, ReactNode, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
@@ -14,7 +15,8 @@ import { auth, db } from "@/firebase";
 import Image from "next/image";
 import { IoIosArrowBack } from "react-icons/io";
 import { useTheme } from "next-themes";
-import { IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
+// import { IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
+import Notification from "../Notification";
 interface NavbarProps {
   children: ReactNode;
 }
@@ -36,8 +38,9 @@ export const NavLink: React.FC<NavLinkProps> = ({
 }) => (
   <Link
     href={href}
-    className={`w-full items-center justify-start flex gap-3 text-sm font-[600] p-3 hover:bg-secondary rounded-md hover:text-white transition-all duration-300 hover:dark:text-zinc-800 hover:shadow-md hover:drop-shadow-sm ${isActive ? "bg-neutral text-white" : "text-zinc-700 dark:text-zinc-400"
-      }`}
+    className={`w-full items-center justify-start flex gap-3 text-sm font-[600] p-3 hover:bg-secondary rounded-md hover:text-white transition-all duration-300 hover:dark:text-zinc-800 hover:shadow-md hover:drop-shadow-sm ${
+      isActive ? "bg-neutral text-white" : "text-zinc-700 dark:text-zinc-400"
+    }`}
   >
     <span className={`w-auto ${isMinimized && " mx-auto"}`}>
       <Icon className="text-xl" />
@@ -52,9 +55,10 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
 
   const [user, loading] = useAuthState(auth);
   const [userData, setUserData] = useState<any>(null);
+  const [showNotif, setShowNotif] = useState<boolean>(false);
 
   const { theme, setTheme } = useTheme();
-  const [checked, setChecked] = useState(theme === 'dark');
+  const [checked, setChecked] = useState(theme === "dark");
   const handleToggle = () => {
     setChecked(!checked);
     toggleTheme();
@@ -89,7 +93,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
   };
 
   const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   return (
@@ -110,25 +114,22 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
             <button className="btn btn-ghost btn-circle">
               <div className="indicator p-2 rounded-full border border-neutral-200 dark:border-white/[0.2] bg-gray-300 dark:bg-gray-900 text-zinc-700 dark:text-zinc-100">
                 <FaBell className="h-5 w-5 text-neutral dark:text-zinc-200" />
-                <span className="badge badge-xs badge-primary indicator-item mr-1 mt-1  "></span>
+                {showNotif && (
+                  <span className="badge badge-xs badge-primary indicator-item mr-1 mt-1  "></span>
+                )}
               </div>
             </button>
-            <div tabIndex={0} className="mt-3 z-[1] card card-compact dropdown-content w-52 bg-base-100 shadow">
-              <div className="card-body">
-                <span className="font-bold text-lg">8 New Notifications</span>
-                <span className="text-info">Dummy notification content</span>
-                <div className="card-actions">
-                  <button className="btn btn-primary btn-block">View all</button>
-                </div>
-              </div>
-            </div>
+            <Notification userData={userData} user={user} setShowNotif={setShowNotif} />
           </div>
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full border border-neutral-200 dark:border-white/[0.2] bg-gray-300 dark:bg-gray-900 text-zinc-700 dark:text-zinc-100"
-          >
-            {theme === 'dark' ? <IoSunnyOutline className="h-5 w-5" /> : <IoMoonOutline className="h-5 w-5" />}
-          </button>
+          <label className="toggle-switch ">
+            <input
+              type="checkbox"
+              checked={!checked}
+              onChange={handleToggle}
+            />
+            <span className="slider-custom">
+            </span>
+          </label>
           <div className="dropdown dropdown-end">
             <div
               tabIndex={0}
@@ -143,14 +144,15 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
                 className="h-full w-full object-cover"
               />
             </div>
-            <Account />
+            <Account userData={userData} />
           </div>
         </div>
       </span>
       <div className="w-full overflow-y-auto h-full flex">
         <nav
-          className={`flex ${isMinimized ? "w-20" : "w-56"
-            } bg-gray-100 dark:bg-gray-800 dark:to-gray-900 custom-shadow dark:border-r dark:border-zinc-700  relative h-auto transition-width duration-300 flex-col items-start justify-start pt-5 p-4 gap-2`}
+          className={`flex ${
+            isMinimized ? "w-20" : "w-56"
+          } bg-gray-100 dark:bg-gray-800 dark:to-gray-900 custom-shadow dark:border-r dark:border-zinc-700  relative h-auto transition-width duration-300 flex-col items-start justify-start pt-5 p-4 gap-2`}
         >
           <NavLink
             href="/admin/dashboard"
@@ -197,7 +199,9 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
           />
           <button
             onClick={toggleNavbar}
-            className={`flex items-center p-1 border bg-zinc-100 border-zinc-300 dark:border-zinc-700 absolute -right-4 dark:bg-gray-800 bottom-14 text-zinc-400  rounded-full transition-all duration-300 ${isMinimized ? 'transform rotate-180' : ''}`}
+            className={`flex items-center p-1 border bg-zinc-100 border-zinc-300 dark:border-zinc-700 absolute -right-4 dark:bg-gray-800 bottom-14 text-zinc-400  rounded-full transition-all duration-300 ${
+              isMinimized ? "transform rotate-180" : ""
+            }`}
           >
             <IoIosArrowBack className="text-xl" />
           </button>
