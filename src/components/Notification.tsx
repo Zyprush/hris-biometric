@@ -69,7 +69,7 @@ const Notification: React.FC<NotificationsProps> = ({
     },
   };
   return (
-    <div
+    <ul
       tabIndex={0}
       className="mt-3 z-[1] card card-compact dropdown-content w-52 bg-base-100 shadow-2xl border"
     >
@@ -96,7 +96,7 @@ const Notification: React.FC<NotificationsProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </ul>
   );
 };
 

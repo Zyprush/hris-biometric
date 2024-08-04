@@ -25,7 +25,7 @@ const Account: React.FC<AccountProps> = ({ userData }) => {
 
   return (
     <React.Fragment>
-      <span
+      <ul
         tabIndex={0}
         className="flex flex-col mt-2 dropdown-content menu bg-base-100 rounded-2xl border border-zinc-300 z-50 h-auto shadow-2xl w-[13rem] p-0 absolute"
       >
@@ -76,7 +76,7 @@ const Account: React.FC<AccountProps> = ({ userData }) => {
         >
           <IoCaretBackCircle className="text-lg" /> <h1>Sign Out</h1>
         </button>
-      </span>
+      </ul>
     </React.Fragment>
   );
 };

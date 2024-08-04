@@ -28,6 +28,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
   const [userData, setUserData] = useState<any>(null);
   const { theme, setTheme } = useTheme();
   const [showNotif, setShowNotif] = useState<boolean>(false);
+  const [showAcc, setShowAcc] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -75,21 +76,21 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
           {!isMinimized && <p className="logo-banner">SMART HR</p>}
         </span>
         <div className="flex items-center gap-4">
-          <div className="dropdown dropdown-end">
-            <button className="btn btn-ghost btn-circle">
+          <details className="dropdown dropdown-end">
+            <summary className="btn btn-ghost btn-circle">
               <div className="indicator p-2 rounded-full border border-neutral-200 dark:border-white/[0.2] bg-gray-300 dark:bg-gray-900 text-zinc-700 dark:text-zinc-100">
                 <FaBell className="h-5 w-5 text-neutral dark:text-zinc-200" />
                 {showNotif && (
                   <span className="badge badge-xs badge-primary indicator-item mr-1 mt-1  "></span>
                 )}
               </div>
-            </button>
-              <Notification
-                userData={userData}
-                user={user}
-                setShowNotif={setShowNotif}
-              />
-          </div>
+            </summary>
+            <Notification
+              userData={userData}
+              user={user}
+              setShowNotif={setShowNotif}
+            />
+          </details>
           <button
             onClick={toggleTheme}
             className="p-2 rounded-full border border-neutral-200 dark:border-white/[0.2] bg-gray-300 dark:bg-gray-900 text-zinc-700 dark:text-zinc-100"
@@ -100,8 +101,8 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
               <IoMoonOutline className="h-5 w-5" />
             )}
           </button>
-          <div className="dropdown dropdown-end">
-            <div
+          <details className="dropdown dropdown-end" >
+            <summary
               tabIndex={0}
               role="button"
               className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-primary bg-primary rounded-full"
@@ -113,9 +114,9 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
                 height={40}
                 className="h-full w-full object-cover"
               />
-            </div>
+            </summary>
             <Account userData={userData} />
-          </div>
+          </details>
         </div>
       </span>
       <div className="w-full overflow-y-auto h-full flex">

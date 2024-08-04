@@ -84,11 +84,11 @@ const TopNavbar: React.FC<NavbarProps> = ({ children }) => {
     <div className="h-screen w-screen flex flex-col dark:bg-gray-900">
       {/* topbar */}
       <span className="w-full h-14 z-50 bg-zinc-200 dark:bg-gray-800 justify-between px-3 items-center border-b-2 border-zinc-300 dark:border-zinc-700 flex fixed top-0">
-        <div className="dropdown dropdown-start">
-          <div
+      <details className="dropdown dropdown-start">
+          <summary
             tabIndex={0}
             role="button"
-            className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-zinc-500 dark:border-zinc-400 bg-zinc-500 dark:bg-zinc-600 rounded-full"
+            className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-primary bg-primary rounded-full"
           >
             <img
               src={userData?.profilePicUrl || "/img/profile-male.jpg"}
@@ -97,24 +97,25 @@ const TopNavbar: React.FC<NavbarProps> = ({ children }) => {
               height={40}
               className="h-full w-full object-cover"
             />
-          </div>
+          </summary>
           <Account userData={userData} />
-        </div>
-        <div className="dropdown dropdown-end mr-0 ml-auto">
-          <button className="btn btn-ghost btn-circle">
-            <div className="indicator p-2 rounded-full border border-neutral-200 dark:border-white/[0.2] bg-gray-300 dark:bg-gray-900 text-zinc-700 dark:text-zinc-100">
-              <FaBell className="h-5 w-5 text-neutral dark:text-zinc-200" />
-              {showNotif && (
-                <span className="badge badge-xs badge-primary indicator-item mr-1 mt-1  "></span>
-              )}
-            </div>
-          </button>
-          <Notification
-            userData={userData}
-            user={user}
-            setShowNotif={setShowNotif}
-          />
-        </div>
+        </details>
+        <details className="dropdown dropdown-start">
+          <summary
+            tabIndex={0}
+            role="button"
+            className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-primary bg-primary rounded-full"
+          >
+            <img
+              src={userData?.profilePicUrl || "/img/profile-admin.jpg"}
+              alt="profile"
+              width={40}
+              height={40}
+              className="h-full w-full object-cover"
+            />
+          </summary>
+          <Account userData={userData} />
+        </details>
         <button
           onClick={toggleMenu}
           className="text-2xl text-zinc-700 dark:text-zinc-300 p-2"

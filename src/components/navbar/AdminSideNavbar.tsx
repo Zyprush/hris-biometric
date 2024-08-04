@@ -51,18 +51,27 @@ export const NavLink: React.FC<NavLinkProps> = ({
 );
 
 const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
-  const [isMinimized, setIsMinimized] = useState(false);
-  const pathname = usePathname();
+  const [isMinimized, setIsMinimized] = useState(() => {
+    // Initialize state from localStorage if available, otherwise default to false
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("isNavbarMinimized");
+      return saved !== null ? JSON.parse(saved) : false;
+    }
+    return false;
+  });
 
+  const pathname = usePathname();
   const [user, loading] = useAuthState(auth);
   const [userData, setUserData] = useState<any>(null);
   const [showNotif, setShowNotif] = useState<boolean>(false);
 
   const { theme, setTheme } = useTheme();
-  const [checked, setChecked] = useState(theme === "dark");
-  const handleToggle = () => {
-    setChecked(!checked);
-    toggleTheme();
+  useEffect(() => {
+    // Save isMinimized state to localStorage whenever it changes
+    localStorage.setItem("isNavbarMinimized", JSON.stringify(isMinimized));
+  }, [isMinimized]);
+  const toggleNavbar = () => {
+    setIsMinimized((prev: boolean) => !prev);
   };
 
   useEffect(() => {
@@ -89,10 +98,6 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
 
   if (loading) return <Loading />;
 
-  const toggleNavbar = () => {
-    setIsMinimized(!isMinimized);
-  };
-
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
@@ -111,25 +116,33 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
           {!isMinimized && <p className="logo-banner">SMART HR</p>}
         </span>
         <div className="flex items-center gap-4">
-          <div className="dropdown dropdown-end">
-            <button className="btn btn-ghost btn-circle">
+        <details className="dropdown dropdown-end">
+            <summary className="btn btn-ghost btn-circle">
               <div className="indicator p-2 rounded-full border border-neutral-200 dark:border-white/[0.2] bg-gray-300 dark:bg-gray-900 text-zinc-700 dark:text-zinc-100">
                 <FaBell className="h-5 w-5 text-neutral dark:text-zinc-200" />
                 {showNotif && (
                   <span className="badge badge-xs badge-primary indicator-item mr-1 mt-1  "></span>
                 )}
               </div>
-            </button>
-            <Notification userData={userData} user={user} setShowNotif={setShowNotif} />
-          </div>
+            </summary>
+            <Notification
+              userData={userData}
+              user={user}
+              setShowNotif={setShowNotif}
+            />
+          </details>
           <button
             onClick={toggleTheme}
             className="p-2 rounded-full border border-neutral-200 dark:border-white/[0.2] bg-gray-300 dark:bg-gray-900 text-zinc-700 dark:text-zinc-100"
           >
-            {theme === 'dark' ? <IoSunnyOutline className="h-5 w-5" /> : <IoMoonOutline className="h-5 w-5" />}
+            {theme === "dark" ? (
+              <IoSunnyOutline className="h-5 w-5" />
+            ) : (
+              <IoMoonOutline className="h-5 w-5" />
+            )}
           </button>
-          <div className="dropdown dropdown-end">
-            <div
+          <details className="dropdown dropdown-end" >
+            <summary
               tabIndex={0}
               role="button"
               className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-primary bg-primary rounded-full"
@@ -141,9 +154,9 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
                 height={40}
                 className="h-full w-full object-cover"
               />
-            </div>
+            </summary>
             <Account userData={userData} />
-          </div>
+          </details>
         </div>
       </span>
       <div className="w-full overflow-y-auto h-full flex">
