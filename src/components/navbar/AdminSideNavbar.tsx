@@ -123,15 +123,12 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
               </div>
             </div>
           </div>
-          <label className="toggle-switch ">
-            <input
-              type="checkbox"
-              checked={!checked}
-              onChange={handleToggle}
-            />
-            <span className="slider-custom">
-            </span>
-          </label>
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-full border border-neutral-200 dark:border-white/[0.2] bg-gray-300 dark:bg-gray-900 text-zinc-700 dark:text-zinc-100"
+          >
+            {theme === 'dark' ? <IoSunnyOutline className="h-5 w-5" /> : <IoMoonOutline className="h-5 w-5" />}
+          </button>
           <div className="dropdown dropdown-end">
             <div
               tabIndex={0}
