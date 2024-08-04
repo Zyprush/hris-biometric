@@ -2,7 +2,15 @@
 import UserLayout from "@/components/UserLayout";
 import { SignedIn } from "@/components/signed-in";
 import { auth, db } from "@/firebase";
-import { collection, doc, getDocs, limit, query, updateDoc, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  limit,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { FaCommentAlt, FaQuestion } from "react-icons/fa";
@@ -15,7 +23,6 @@ const Request = () => {
   const [user] = useAuthState(auth);
   const [requests, setRequests] = useState<any[]>([]);
 
-
   useEffect(() => {
     const fetchRequests = async () => {
       if (user) {
@@ -27,7 +34,7 @@ const Request = () => {
               where("seen", "==", false),
               limit(20)
             )
-          );  
+          );
           const userRequests = querySnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
@@ -40,7 +47,7 @@ const Request = () => {
             try {
               await updateDoc(docRef, { seen: true });
             } catch (error) {
-              console.log('error', error);
+              console.log("error", error);
               errorToast(`Error marking request as seen: ${error}`);
             }
           });
@@ -58,22 +65,21 @@ const Request = () => {
       <SignedIn>
         <UserLayout>
           <div className="container flex flex-col justify-start items-center md:p-10 p-4 mx-auto">
-            
             <div className="flex flex-col p-3 w-full md:max-w-[25rem]">
               {requests?.length == 0 && (
-                <span className="mx-auto text-xs font-semibold text-zinc-700 p-2 border rounded-lg flex gap-2 items-center">
+                <span className="mx-auto text-xs dark:text-white font-semibold text-zinc-700 p-2 border rounded-lg flex gap-2 items-center">
                   <FaCommentAlt /> No Unread leave request!
                 </span>
               )}
               {requests?.map((request) => (
                 <span
-                  className="p-4 border-2 rounded-lg mb-4 flex justify-start text-left bg-white"
+                  className="p-4 border-2 rounded-lg mb-4 flex  justify-start text-left bg-white"
                   key={request?.id}
                 >
                   <div className="flex gap-2 items-start justify-start w-full flex-col">
                     <div className="text-zinc-700 mb-2 flex gap-2 items-center w-full">
-                      <span className="bg-zinc-700 rounded text-sm font-semibold p-2 py-1 text-white">
-                        {request?.leaveDate && format(new Date(request?.leaveDate), "MMM dd yyyy")}
+                      <span className="bg-neutral rounded text-sm italic p-2 py-1 text-white">
+                        {format(new Date(request.leaveDate), "MMM do yyyy")}
                       </span>
                       <p
                         className="font-normal text-sm text-zinc-500 tooltip tooltip-right"
@@ -81,6 +87,9 @@ const Request = () => {
                       >
                         {request?.totalDays} days
                       </p>
+                      <div className="border px-4 py-1 text-[0.7rem] text-center border-primary text-primary font-bold rounded-md mr-0 ml-auto">
+                        {request?.status}
+                      </div>
                     </div>
                     <div className="text-sm text-zinc-500 leading-5 ml-1">
                       {request?.reason}
