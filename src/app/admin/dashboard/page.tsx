@@ -19,6 +19,7 @@ import { ToastContainer } from "react-toastify";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase";
+import CardComponent from "@/components/CardComponents";
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
@@ -195,15 +196,7 @@ const AdminDashboard = () => {
         <AdminLayout>
           <div className="container h-full mx-auto p-4 dark:text-zinc-200">
             <ToastContainer />
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4">
-              {cardData.map(({ title, icon: Icon, value }, index) => (
-                <div key={index} className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 text-center border dark:border-zinc-800">
-                  <Icon className={`text-4xl mb-2 mx-auto border border-zinc-300 rounded-sm p-1 dark:bg-gray-900 dark:border-gray-950 bg-zinc-200 text-[#135D66] dark:text-[#238F99]`} />
-                  <p className="text-2xl font-bold">{value}</p>
-                  <h2 className="text-sm">{title}</h2>
-                </div>
-              ))}
-            </div>
+            <CardComponent cardData={cardData} />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 border dark:border-zinc-800">
                 <h2 className="text-lg font-semibold mb-2">Attendance Summary</h2>
