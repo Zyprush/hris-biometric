@@ -50,7 +50,25 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ loading, history }) => {
 
   const renderPageNumbers = () => {
     const pageNumbers = [];
-    for (let i = 1; i <= totalPages; i++) {
+    const leftSibling = Math.max(currentPage - 2, 1);
+    const rightSibling = Math.min(currentPage + 2, totalPages);
+
+    if (leftSibling > 1) {
+      pageNumbers.push(
+        <button
+          key={1}
+          className="px-4 py-2 mx-1 rounded-lg bg-gray-200 text-gray-700"
+          onClick={() => handlePageClick(1)}
+        >
+          1
+        </button>
+      );
+      if (leftSibling > 2) {
+        pageNumbers.push(<span key="left-ellipsis"  className="mx-2 text-xl dark:text-white">...</span>);
+      }
+    }
+
+    for (let i = leftSibling; i <= rightSibling; i++) {
       pageNumbers.push(
         <button
           key={i}
@@ -65,6 +83,22 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ loading, history }) => {
         </button>
       );
     }
+
+    if (rightSibling < totalPages) {
+      if (rightSibling < totalPages - 1) {
+        pageNumbers.push(<span key="right-ellipsis" className="mx-2 text-xl dark:text-white">...</span>);
+      }
+      pageNumbers.push(
+        <button
+          key={totalPages}
+          className="px-4 py-2 mx-1 rounded-lg bg-gray-200 text-gray-700"
+          onClick={() => handlePageClick(totalPages)}
+        >
+          {totalPages}
+        </button>
+      );
+    }
+
     return pageNumbers;
   };
 
@@ -104,12 +138,14 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ loading, history }) => {
                 onClick={handlePrevPage}
                 disabled={currentPage === 1}
               >
-                Previous
+                Prev
               </button>
               <div>{renderPageNumbers()}</div>
               <button
                 className={`px-4 py-2 bg-primary text-white rounded-lg ${
-                  currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+                  currentPage === totalPages
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
                 }`}
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}

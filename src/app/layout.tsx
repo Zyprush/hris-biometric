@@ -17,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
       <body className={`${inter.className} bg-gradient-to-r from-gray-100 to-gray-100 dark:from-gray-800 dark:to-gray-800`}>
         <ThemeProvider attribute="class">
