@@ -105,7 +105,7 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
             <summary
               tabIndex={0}
               role="button"
-              className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-primary bg-primary rounded-full"
+              className="h-10 w-10 hidden md:flex items-center justify-center overflow-hidden border-2 border-primary bg-primary rounded-full"
             >
               <img
                 src={userData?.profilePicUrl || "/img/profile-male.jpg"}

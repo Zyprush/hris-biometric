@@ -84,11 +84,11 @@ const TopNavbar: React.FC<NavbarProps> = ({ children }) => {
     <div className="h-screen w-screen flex flex-col dark:bg-gray-900">
       {/* topbar */}
       <span className="w-full h-14 z-50 bg-zinc-200 dark:bg-gray-800 justify-between px-3 items-center border-b-2 border-zinc-300 dark:border-zinc-700 flex fixed top-0">
-      <details className="dropdown dropdown-start">
+        {/* <details className="dropdown dropdown-start">
           <summary
             tabIndex={0}
             role="button"
-            className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 border-primary bg-primary rounded-full"
+            className="h-10 w-10 flex items-center justify-center overflow-hidden border-2 bg-primary rounded-full"
           >
             <img
               src={userData?.profilePicUrl || "/img/profile-male.jpg"}
@@ -99,7 +99,7 @@ const TopNavbar: React.FC<NavbarProps> = ({ children }) => {
             />
           </summary>
           <Account userData={userData} />
-        </details>
+        </details> */}
         <details className="dropdown dropdown-start">
           <summary
             tabIndex={0}

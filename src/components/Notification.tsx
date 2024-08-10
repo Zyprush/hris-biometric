@@ -7,7 +7,6 @@ import { db } from "@/firebase";
 import { getDocs, query, collection, where } from "firebase/firestore";
 import { UserDatainterface } from "@/state/interface";
 
-// Define the shape of the props
 interface NotificationsProps {
   userData: UserDatainterface;
   user: any;
@@ -41,7 +40,6 @@ const Notification: React.FC<NotificationsProps> = ({
         query(collection(db, "requests"), where("status", "==", "pending"))
       );
       setNewRequest(queryNewRequest.docs.length);
-      console.log("newRequest", queryNewRequest.docs.length);
     }
   };
 
@@ -52,8 +50,6 @@ const Notification: React.FC<NotificationsProps> = ({
       fetchNotRead();
     }
 
-    console.log("newRequest", newRequest);
-    console.log("notRead", notRead);
     if (notRead >= 1 || newRequest >= 1) {
       setShowNotif(true);
     }
