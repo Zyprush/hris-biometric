@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import React, { useState, ReactNode, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
@@ -22,7 +21,14 @@ interface NavbarProps {
 }
 
 const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMinimized, setIsMinimized] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      const savedState = localStorage.getItem("isMinimized");
+      return savedState ? JSON.parse(savedState) : false;
+    }
+    return false;
+  });
+
   const pathname = usePathname();
   const [user, loading] = useAuthState(auth);
   const [userData, setUserData] = useState<any>(null);
@@ -51,6 +57,10 @@ const SideNavbar: React.FC<NavbarProps> = ({ children }) => {
       fetchUserData();
     }
   }, [user]);
+
+  useEffect(() => {
+    localStorage.setItem("isMinimized", JSON.stringify(isMinimized));
+  }, [isMinimized]);
 
   const toggleNavbar = () => {
     setIsMinimized(!isMinimized);
