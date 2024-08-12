@@ -13,7 +13,6 @@ import { doc, getDoc } from "firebase/firestore";
 import { SignedOut } from "@/components/signed-out";
 import { SignedIn } from "@/components/signed-in";
 import { RoleBasedRedirect } from "@/components/RoleBasedRedirect";
-import Link from "next/link";
 
 const SignInPage = () => {
   const router = useRouter();

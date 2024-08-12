@@ -1,5 +1,4 @@
 "use client";
-
 import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import AdminLayout from "@/components/AdminLayout";
 import { SignedIn } from "@/components/signed-in";

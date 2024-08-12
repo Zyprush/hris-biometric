@@ -7,12 +7,10 @@ import {
   FaTrash,
   FaSave,
   FaUser,
-  FaIdCard,
   FaAddressCard,
   FaBriefcase,
   FaFileAlt,
 } from "react-icons/fa";
-import Image from "next/image";
 import Link from "next/link";
 
 interface EmployeeDetails {
