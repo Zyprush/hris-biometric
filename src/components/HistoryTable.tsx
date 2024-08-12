@@ -24,7 +24,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ loading, history }) => {
 
   if (!history || history.length === 0) {
     return (
-      <span className="flex mx-auto text-xs font-semibold text-zinc-700 p-2 border rounded-lg gap-2 items-center">
+      <span className="flex m-auto text-xs font-semibold dark:text-white text-primary p-2 border rounded-lg gap-2 items-center">
         <FaCommentAlt /> No history to display!
       </span>
     );

@@ -13,6 +13,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { SignedOut } from "@/components/signed-out";
 import { SignedIn } from "@/components/signed-in";
 import { RoleBasedRedirect } from "@/components/RoleBasedRedirect";
+import Link from "next/link";
 
 const SignInPage = () => {
   const router = useRouter();
@@ -58,11 +59,17 @@ const SignInPage = () => {
       console.error("Error during sign in:", error);
       if (error instanceof FirebaseError) {
         const errorMessages: { [key: string]: string } = {
-          "auth/invalid-credential": "Invalid email or password. Please try again.",
-          "auth/user-disabled": "This account has been disabled. Please contact support.",
-          "auth/too-many-requests": "Too many failed login attempts. Please try again later.",
+          "auth/invalid-credential":
+            "Invalid email or password. Please try again.",
+          "auth/user-disabled":
+            "This account has been disabled. Please contact support.",
+          "auth/too-many-requests":
+            "Too many failed login attempts. Please try again later.",
         };
-        errorToast(errorMessages[error.code] || "An unexpected error occurred. Please try again.");
+        errorToast(
+          errorMessages[error.code] ||
+            "An unexpected error occurred. Please try again."
+        );
       } else {
         errorToast("An unexpected error occurred. Please try again.");
       }
@@ -71,7 +78,7 @@ const SignInPage = () => {
   }, [email, password, router, addHistory]);
 
   const handleKeyDown = useCallback(
-    (e:any) => {
+    (e: any) => {
       if (e.key === "Enter") {
         handleSignIn();
       }
@@ -110,12 +117,20 @@ const SignInPage = () => {
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
+              {/* <Link href={"/reset-password"}>forgot password?</Link> */}
               <button
-                className="bg-gradient-to-r from-indigo-500 to-blue-500 bg-opacity-80 hover:bg-opacity-100 text-white font-bold py-2 px-4 rounded-md mt-4 transition ease-in-out duration-150"
+                className="bg-gradient-to-r from-indigo-500 to-blue-500 bg-opacity-80 hover:bg-opacity-100 text-white font-bold py-2 px-4 rounded-md mt-4 transition ease-in-out duration-150 flex justify-center items-center"
                 onClick={handleSignIn}
                 disabled={loading}
               >
-                {loading ? "SIGNING IN..." : "SIGN IN"}
+                {loading ? (
+                  <span className="flex gap-2 text-center">
+                    <span className="loading loading-spinner loading-sm"></span>
+                    Signing in...
+                  </span>
+                ) : (
+                  "Sign in"
+                )}
               </button>
             </div>
           </div>
@@ -151,11 +166,14 @@ const SignInPage = () => {
                 </button>
               </div>
               <button
-                className="bg-gradient-to-r from-indigo-500 to-blue-500 bg-opacity-80 hover:bg-opacity-100 text-white font-bold py-2 px-4 rounded-md mt-4 transition ease-in-out duration-150"
+                className="bg-gradient-to-r from-indigo-500 to-blue-500 bg-opacity-80 hover:bg-opacity-100 text-white font-bold py-2 px-4 rounded-md mt-4 transition ease-in-out duration-150 flex justify-center items-center"
                 onClick={handleSignIn}
                 disabled={loading}
               >
-                SIGNING IN...
+                  <span className="flex gap-2 text-center">
+                    <span className="loading loading-spinner loading-sm"></span>
+                    Signing in...
+                  </span>
               </button>
             </div>
           </div>
