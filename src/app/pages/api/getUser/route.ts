@@ -24,6 +24,8 @@ export async function GET() {
 
 /*
 * this is the json format of the fetch users
+
+need parsing of role; Admin=14, User=0,
 {
   data: [
     {
