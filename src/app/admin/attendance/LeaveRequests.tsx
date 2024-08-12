@@ -1,7 +1,5 @@
 import React from "react";
-import { FaCommentAlt, FaQuestion } from "react-icons/fa";
-import { BsPersonCircle } from "react-icons/bs";
-import { SlOptions } from "react-icons/sl";
+import { FaCommentAlt } from "react-icons/fa";
 import { format } from "date-fns";
 import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 

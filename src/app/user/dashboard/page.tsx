@@ -8,8 +8,6 @@ import {
   FaMoneyCheckAlt,
   FaEye,
   FaEyeSlash,
-  FaCalendarAlt,
-  FaUsers,
 } from "react-icons/fa";
 import Link from "next/link";
 import { UserRouteGuard } from "@/components/UserRouteGuard";
@@ -35,8 +33,6 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { FaUser } from "react-icons/fa6";
-import { format } from "date-fns"; // Add this import
 
 ChartJS.register(
   CategoryScale,

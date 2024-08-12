@@ -4,7 +4,7 @@ import {AdminRouteGuard} from "@/components/AdminRouteGuard";
 import AdminLayout from "@/components/AdminLayout";
 import { SignedIn } from "@/components/signed-in";
 import { useState } from "react";
-import { BsBuilding, BsBuildingDash, BsBuildingFill, BsCashStack, BsFileMinus } from "react-icons/bs";
+import { BsBuilding, BsBuildingFill } from "react-icons/bs";
 import Department from "./Department";
 import Branch from "./Branch";
 

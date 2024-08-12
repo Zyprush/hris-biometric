@@ -13,7 +13,7 @@ import {
   BarElement,
   Title,
 } from "chart.js";
-import { FaUsers, FaUserCheck, FaUserTimes, FaUserAltSlash, FaCalendarAlt, FaUserMinus, FaBuilding, FaUserPlus, FaBirthdayCake } from 'react-icons/fa';
+import { FaUsers, FaUserMinus, FaBuilding, FaUserPlus, FaBirthdayCake } from 'react-icons/fa';
 import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import { ToastContainer } from "react-toastify";
 import { useEffect, useState } from "react";
