@@ -36,4 +36,5 @@ export async function GET() {
   }
 }
   kulang ng TYPE (check-in, check out)
+  at kung anong state (fingerprint, face, etc)
  */
