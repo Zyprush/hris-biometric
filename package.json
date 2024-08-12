@@ -34,6 +34,7 @@
     "react-toastify": "^10.0.5",
     "sharp": "^0.33.4",
     "tailwind-merge": "^2.4.0",
+    "zkh-lib": "^1.0.0",
     "zkteco-lib": "^1.1.1",
     "zustand": "^4.5.4"
   },

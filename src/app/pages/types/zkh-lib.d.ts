@@ -1,5 +1,5 @@
-declare module 'node-zklib' {
-    class ZKLib {
+declare module 'zkh-lib' {
+    class ZKHLIB {
       constructor(ip: string, port: number, timeout: number, inport: number);
       createSocket(): Promise<void>;
       getInfo(): Promise<any>;
@@ -11,6 +11,6 @@ declare module 'node-zklib' {
       disconnect(): Promise<void>;
     }
   
-    export default ZKLib;
+    export default ZKHLIB;
   }
   
