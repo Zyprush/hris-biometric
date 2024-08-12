@@ -29,7 +29,7 @@ export async function GET() {
       {
         "userSn": 64,
         "deviceUserId": "3",
-        "recordTime": "2024-08-10T00:43:31.000Z",
+        "recordTime": "Sat Aug 10 2024 08:43:31 GMT+0800 (Philippine Standard Time)",
         "ip": "192.168.1.169"
       },
     ]
