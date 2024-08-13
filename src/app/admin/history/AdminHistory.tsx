@@ -5,11 +5,11 @@ import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import HistoryTable from "@/components/HistoryTable";
 
 const AdminHistory = () => {
-  const { history, loadingHistory, fetchHistory } = useHistoryStore();
+  const { history, loadingHistory, fetchHistoryByAdmin } = useHistoryStore();
 
   useEffect(() => {
-    fetchHistory();
-  }, [fetchHistory]);
+    fetchHistoryByAdmin();
+  }, [fetchHistoryByAdmin]);
 
   return (
     <AdminRouteGuard>

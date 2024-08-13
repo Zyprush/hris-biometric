@@ -12,6 +12,7 @@ import {
   FaFileAlt,
 } from "react-icons/fa";
 import Link from "next/link";
+import { MdEditDocument } from "react-icons/md";
 
 interface EmployeeDetails {
   id: string;
@@ -96,11 +97,12 @@ const Modal: React.FC<ModalProps> = ({
     if (editedEmployee) {
       await onEdit(editedEmployee, newProfilePic);
       const currentDate = new Date().toISOString();
+      console.log('userData', userData)
       await addHistory({
-        adminId: userData?.id,
-        text: `${userData?.name} edited ${editedEmployee.name} account`,
+        text: `An admin edited ${editedEmployee.name} account`,
         time: currentDate,
         userId: editedEmployee?.id,
+        type: "admin",
       });
       setIsEditing(false);
 
@@ -427,7 +429,7 @@ const Modal: React.FC<ModalProps> = ({
               type="button"
               href={`/admin/employee/completion-cert/${employee.id}`}
             >
-              <FaEdit className="mr-2" /> Certification
+              <MdEditDocument className="mr-2" /> Certification
             </Link>
             {isEditing ? (
               <button
@@ -476,7 +478,7 @@ const DetailItem: React.FC<{
         name={label}
         value={value}
         onChange={onChange}
-        className="border rounded px-2 py-1 w-full mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="border bg-zinc-200 rounded px-2 py-1 w-full mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
       />
     ) : (
       <span className="text-gray-600">{value}</span>
