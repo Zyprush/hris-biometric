@@ -25,14 +25,10 @@ import {
 } from "chart.js";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/firebase";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
+import LeaveTaken from "./LeaveTaken";
+import TeamStatus from "./TeamStatus";
+import Productivity from "./Productivity";
 
 ChartJS.register(
   CategoryScale,
@@ -93,7 +89,6 @@ export default function UserDashboard() {
   const [showFinancials, setShowFinancials] = useState(true);
   const [user] = useAuthState(auth);
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [teamData, setTeamData] = useState<UserData[]>([]);
 
   const fetchUserData = useMemo(
     () => async () => {
@@ -114,36 +109,9 @@ export default function UserDashboard() {
     [user]
   );
 
-  const fetchTeamData = useMemo(
-    () => async () => {
-      if (user && userData?.department) {
-        try {
-          const teamQuery = query(
-            collection(db, "users"),
-            where("department", "==", userData.department)
-          );
-          const teamDocSnap = await getDocs(teamQuery);
-          const teamData = teamDocSnap.docs.map(
-            (doc) => doc.data() as UserData
-          );
-          setTeamData(teamData);
-        } catch (error) {
-          console.error("Error fetching team data:", error);
-        }
-      }
-    },
-    [user, userData?.department]
-  );
-
   useEffect(() => {
     fetchUserData();
   }, [fetchUserData]);
-
-  useEffect(() => {
-    if (userData?.department) {
-      fetchTeamData();
-    }
-  }, [userData?.department, fetchTeamData]);
 
   const today = new Date();
   const workingDaysPassed = calculateWorkingDays(
@@ -154,61 +122,6 @@ export default function UserDashboard() {
   const userDataExample = {
     expectedMonthlyEarning: 350 * workingDaysPassed.length,
     payPeriodProgress: calculateProgress(),
-  };
-
-  const attendanceData = {
-    labels: [
-      "Mon",
-      "Tue",
-      "Wed",
-      "Thu",
-      "Fri",
-      "Sat",
-      "Sun",
-      "Mon",
-      "Tue",
-      "Wed",
-      "Thu",
-      "Fri",
-    ],
-    datasets: [
-      {
-        label: "Regular Hours",
-        data: [8, 8, 8, 8, 8, 0, 0, 8, 8, 8, 8, 8],
-        borderColor: "rgb(75, 192, 192)",
-        backgroundColor: "rgba(75, 192, 192, 0.5)",
-        fill: true,
-      },
-      {
-        label: "Overtime Hours",
-        data: [1, 0, 2, 1, 0, 4, 0, 0, 1, 2, 0, 1],
-        borderColor: "rgb(255, 99, 132)",
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
-        fill: true,
-      },
-    ],
-  };
-
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top" as const,
-      },
-      title: {
-        display: true,
-        text: "Attendance and Overtime",
-      },
-    },
-    scales: {
-      y: {
-        stacked: true,
-        title: {
-          display: true,
-          text: "Hours",
-        },
-      },
-    },
   };
 
   const QuickActionButton = ({
@@ -313,74 +226,13 @@ export default function UserDashboard() {
               </div>
 
               {/* Leave/Day Off Balance */}
-              <div className="bg-white rounded-lg shadow p-6 dark:bg-gray-800">
-                <h2 className="text-xl font-semibold mb-4 text-neutral dark:text-white">
-                  Leave Taken
-                </h2>
-                <div className="stats flex dark:bg-gray-800">
-                  <div className="stat">
-                    {/* <div className="stat-title">{new Date().toLocaleString('default', { month: 'long' })}</div> */}
-                    <div className="stat-value text-primary  dark:text-white">
-                      12
-                    </div>
-                    <div className="stat-desc dark:text-zinc-300">
-                      {" "}
-                      Leave this month
-                    </div>
-                  </div>
-
-                  <div className="stat">
-                    {/* <div className="stat-title">{new Date().getFullYear()}</div> */}
-                    <div className="stat-value text-primary dark:text-white">
-                      24
-                    </div>
-                    <div className="stat-desc dark:text-zinc-300">
-                      Leave this year
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <LeaveTaken userData={userData} />
 
               {/* Productivity Chart */}
-              <div className="bg-white rounded-lg shadow p-6 col-span-full md:col-span-2 dark:bg-gray-800">
-                <h2 className="text-xl font-semibold mb-4 text-neutral dark:text-white">
-                  Attendance and Overtime
-                </h2>
-                <Line options={options} data={attendanceData} />
-              </div>
+              <Productivity userRefId={"3"} />
 
               {/* Team Status */}
-              <div className="bg-white rounded-lg shadow p-6 dark:bg-gray-800">
-                <h2 className="text-xl font-semibold mb-4 text-neutral dark:text-white">
-                  Team Status
-                </h2>
-                <ul className="space-y-4">
-                  {teamData.map((member, index) => (
-                    <li
-                      key={index}
-                      className="flex items-center text-neutral gap-2"
-                    >
-                      <img
-                        src={member?.profilePicUrl || "/img/profile-male.jpg"}
-                        alt={member?.name}
-                        className="rounded-full object-cover w-14 h-14 border-2 border-primary"
-                      />
-                      <span className="font-semibold text-sm flex flex-col items-start">
-                        <p className="dark:text-zinc-200">{member.name}</p>
-                        <p
-                          className={`p-1 px-2 rounded-md text-white w-auto ${
-                            member.attendanceStatus === "present"
-                              ? "bg-[#61a34a]"
-                              : "bg-neutral"
-                          }`}
-                        >
-                          {member.attendanceStatus}
-                        </p>
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <TeamStatus userData={userData} />
             </div>
 
             {/* Original Dashboard Links */}
