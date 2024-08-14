@@ -48,6 +48,7 @@ const SignInPage = () => {
           userId: user.uid,
           time: currentDate,
           login: true,
+          type: "login"
         });
         router.push(role === "admin" ? "/admin/dashboard" : "/user/dashboard");
       } else {

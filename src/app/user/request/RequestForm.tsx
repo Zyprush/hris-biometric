@@ -5,6 +5,7 @@ import { errorToast, successToast } from "@/components/toast";
 import { auth, db } from "@/firebase";
 import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { useUserStore } from "@/state/user";
+import { useHistoryStore } from "@/state/history";
 
 const RequestForm = ({
   setShowRequestForm,
@@ -19,6 +20,7 @@ const RequestForm = ({
   const [reason, setReason] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const { userData, fetchUserData } = useUserStore();
+  const { addHistory } = useHistoryStore();
 
   useEffect(() => {
     if (user) {
@@ -57,10 +59,14 @@ const RequestForm = ({
       submittedBy: userData?.name,
     };
     try {
-      const submittedDoc = await addDoc(
-        collection(db, "requests"),
-        requestData
-      );
+      await addDoc(collection(db, "requests"), requestData);
+      const currentDate = new Date().toISOString();
+      addHistory({
+        userId: userData?.id,
+        text: `${userData?.name} submitted a leave request`,
+        time: currentDate,
+        type: "leave",
+      });
       successToast("Request created successfully");
       setLeaveDate(""); // Clear input fields after successful submission
       setTotalDays("");

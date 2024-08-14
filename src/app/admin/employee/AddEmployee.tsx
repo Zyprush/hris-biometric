@@ -106,6 +106,7 @@ const AddEmployee = () => {
         adminId: userData?.id,
         text: `${userData?.name} created ${name} account`,
         time: currentDate,
+        type: "admin"
       });
       successToast("User created successfully.");
       // Set a short timeout before reloading to ensure the success toast is visible

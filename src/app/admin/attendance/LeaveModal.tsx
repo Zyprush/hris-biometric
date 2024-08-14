@@ -48,6 +48,7 @@ const LeaveModal = ({
             adminId: userData?.id,
             text: `${userData?.name} rejected ${curRequest.submittedBy} leave request`,
             time: currentDate,
+            type: "leave"
           });
           successToast("Request Rejected!");
           setShowModal(false);
@@ -61,6 +62,7 @@ const LeaveModal = ({
           adminId: userData?.id,
           text: `${userData?.name} approved ${curRequest.submittedBy} leave request`,
           time: currentDate,
+          type: "leave"
         });
         successToast("Request Approved!");
         setShowModal(false);
@@ -137,7 +139,7 @@ const LeaveModal = ({
           <textarea
             rows={3}
             placeholder="Why did you reject this leave request?"
-            className="border-2 p-2 rounded w-full text-xs border-zinc-400 mt-2 resize-none"
+            className="border-2 p-2 rounded w-full text-xs dark:bg-zinc-100 border-zinc-400 mt-2 resize-none"
             onChange={(e) => setReason(e.target.value)}
           />
         )}

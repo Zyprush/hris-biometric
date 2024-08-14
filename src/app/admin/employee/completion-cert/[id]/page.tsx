@@ -75,7 +75,7 @@ const EmploymentCert: React.FC<{ params: { id: string } }> = ({ params }) => {
       <SignedIn>
         <AdminLayout>
           <div className="w-full h-full p-10 flex flex-col items-center">
-            <div ref={certRef} id="print-content" className="text-lg p-5 max-w-xl mx-auto text-zinc-700">
+            <div ref={certRef} id="print-content" className="text-lg p-5 max-w-xl mx-auto text-zinc-700 dark:text-white">
               <h1 className="text-center uppercase font-bold text-xl">
                 Certificate of Employment
               </h1>

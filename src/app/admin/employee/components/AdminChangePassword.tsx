@@ -28,6 +28,13 @@ const AdminChangePassword = ({
       await sendPasswordResetEmail(auth, email);
       successToast("Password reset email sent successfully.");
       console.log("Password reset email sent successfully.");
+      // const currentDate = new Date().toISOString();
+      // addHistory({
+      //   adminId: userData?.id,
+      //   text: `${userData?.name} created ${name} account`,
+      //   time: currentDate,
+      //   type: "admin"
+      // });
       setChange(false);
     } catch (error: any) {
       console.log("Error:", error);

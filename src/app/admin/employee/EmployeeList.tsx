@@ -25,8 +25,11 @@ const EmployeeList = () => {
   const { addHistory } = useHistoryStore();
   const [employees, setEmployees] = useState<EmployeeDetails[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filteredEmployees, setFilteredEmployees] = useState<EmployeeDetails[]>([]);
-  const [selectedEmployee, setSelectedEmployee] = useState<EmployeeDetails | null>(null);
+  const [filteredEmployees, setFilteredEmployees] = useState<EmployeeDetails[]>(
+    []
+  );
+  const [selectedEmployee, setSelectedEmployee] =
+    useState<EmployeeDetails | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 10;
@@ -112,87 +115,103 @@ const EmployeeList = () => {
     setSelectedEmployee(null);
   }, []);
 
-  const handleProfilePicUpload = useCallback(async (file: File, employeeId: string) => {
-    try {
-      const profilePicRef = ref(storage, `profile_pictures/${employeeId}/${file.name}`);
-      const profilePicSnapshot = await uploadBytes(profilePicRef, file);
-      const downloadURL = await getDownloadURL(profilePicSnapshot.ref);
-      return downloadURL;
-    } catch (error) {
-      console.error("Error uploading profile picture: ", error);
-      toast.error("Failed to upload profile picture");
-      return null;
-    }
-  }, []);
-
-  const handleEdit = useCallback(async (updatedEmployee: EmployeeDetails, newProfilePic: File | null) => {
-    try {
-      let profilePicUrl = updatedEmployee.profilePicUrl;
-
-      if (newProfilePic) {
-        const uploadedUrl = await handleProfilePicUpload(newProfilePic, updatedEmployee.id);
-        if (uploadedUrl) {
-          profilePicUrl = uploadedUrl;
-        }
-      }
-
-      const employeeRef = doc(db, "users", updatedEmployee.id);
-      await updateDoc(employeeRef, { ...updatedEmployee, profilePicUrl });
-
-      const updatedEmployeeWithPic = { ...updatedEmployee, profilePicUrl };
-
-      setEmployees(
-        employees.map((emp) =>
-          emp.id === updatedEmployee.id ? updatedEmployeeWithPic : emp
-        )
-      );
-      setFilteredEmployees(
-        filteredEmployees.map((emp) =>
-          emp.id === updatedEmployee.id ? updatedEmployeeWithPic : emp
-        )
-      );
-      toast.success("Employee updated successfully");
-    } catch (error) {
-      console.error("Error updating employee: ", error);
-      toast.error("Failed to update employee");
-    }
-  }, [employees, filteredEmployees, handleProfilePicUpload]);
-
-  const handleDelete = useCallback(async (employeeId: string, documentUrls: string[]) => {
-    try {
-      const employeeDoc = await getDoc(doc(db, "users", employeeId));
-      if (employeeDoc.exists()) {
-        const employeeData = employeeDoc.data();
-
-        await setDoc(doc(db, "former_employees", employeeId), {
-          ...employeeData,
-          documentUrls: documentUrls,
-          deletedAt: new Date(),
-        });
-
-        await deleteDoc(doc(db, "users", employeeId));
-        const currentDate = new Date().toISOString();
-        await addHistory({
-          adminId: userData?.id,
-          text: `${userData?.name} deleted ${employeeData?.name} account`,
-          userId: employeeData?.id,
-          time: currentDate,
-          addedBy: "admin"
-        });
-        setEmployees(employees.filter((emp) => emp.id !== employeeId));
-        setFilteredEmployees(
-          filteredEmployees.filter((emp) => emp.id !== employeeId)
+  const handleProfilePicUpload = useCallback(
+    async (file: File, employeeId: string) => {
+      try {
+        const profilePicRef = ref(
+          storage,
+          `profile_pictures/${employeeId}/${file.name}`
         );
-
-        toast.success("Employee moved to former employees successfully");
-      } else {
-        toast.error("Employee not found");
+        const profilePicSnapshot = await uploadBytes(profilePicRef, file);
+        const downloadURL = await getDownloadURL(profilePicSnapshot.ref);
+        return downloadURL;
+      } catch (error) {
+        console.error("Error uploading profile picture: ", error);
+        toast.error("Failed to upload profile picture");
+        return null;
       }
-    } catch (error) {
-      console.error("Error moving employee to former employees: ", error);
-      toast.error("Failed to move employee to former employees");
-    }
-  }, [addHistory, employees, filteredEmployees, userData]);
+    },
+    []
+  );
+
+  const handleEdit = useCallback(
+    async (updatedEmployee: EmployeeDetails, newProfilePic: File | null) => {
+      try {
+        let profilePicUrl = updatedEmployee.profilePicUrl;
+
+        if (newProfilePic) {
+          const uploadedUrl = await handleProfilePicUpload(
+            newProfilePic,
+            updatedEmployee.id
+          );
+          if (uploadedUrl) {
+            profilePicUrl = uploadedUrl;
+          }
+        }
+
+        const employeeRef = doc(db, "users", updatedEmployee.id);
+        await updateDoc(employeeRef, { ...updatedEmployee, profilePicUrl });
+
+        const updatedEmployeeWithPic = { ...updatedEmployee, profilePicUrl };
+
+        setEmployees(
+          employees.map((emp) =>
+            emp.id === updatedEmployee.id ? updatedEmployeeWithPic : emp
+          )
+        );
+        setFilteredEmployees(
+          filteredEmployees.map((emp) =>
+            emp.id === updatedEmployee.id ? updatedEmployeeWithPic : emp
+          )
+        );
+        toast.success("Employee updated successfully");
+      } catch (error) {
+        console.error("Error updating employee: ", error);
+        toast.error("Failed to update employee");
+      }
+    },
+    [employees, filteredEmployees, handleProfilePicUpload]
+  );
+
+  const handleDelete = useCallback(
+    async (employeeId: string, documentUrls: string[]) => {
+      try {
+        const employeeDoc = await getDoc(doc(db, "users", employeeId));
+        if (employeeDoc.exists()) {
+          const employeeData = employeeDoc.data();
+
+          await setDoc(doc(db, "former_employees", employeeId), {
+            ...employeeData,
+            documentUrls: documentUrls,
+            deletedAt: new Date(),
+          });
+
+          await deleteDoc(doc(db, "users", employeeId));
+          const currentDate = new Date().toISOString();
+          await addHistory({
+            adminId: userData?.id,
+            text: `${userData?.name} deleted ${employeeData?.name} account`,
+            userId: employeeData?.id,
+            time: currentDate,
+            addedBy: "admin",
+            type: "admin",
+          });
+          setEmployees(employees.filter((emp) => emp.id !== employeeId));
+          setFilteredEmployees(
+            filteredEmployees.filter((emp) => emp.id !== employeeId)
+          );
+
+          toast.success("Employee moved to former employees successfully");
+        } else {
+          toast.error("Employee not found");
+        }
+      } catch (error) {
+        console.error("Error moving employee to former employees: ", error);
+        toast.error("Failed to move employee to former employees");
+      }
+    },
+    [addHistory, employees, filteredEmployees, userData]
+  );
 
   const handlePageClick = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -214,7 +233,10 @@ const EmployeeList = () => {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredEmployees.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredEmployees.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
   const renderPageNumbers = () => {
     const pageNumbers = [];
@@ -222,10 +244,11 @@ const EmployeeList = () => {
       pageNumbers.push(
         <button
           key={i}
-          className={`btn bg-primary text-white btn-sm rounded-lg px-4 ${currentPage === i
-            ? "bg-primary text-white"
-            : "bg-gray-200 text-gray-700"
-            }`}
+          className={`btn bg-primary text-white btn-sm rounded-lg px-4 ${
+            currentPage === i
+              ? "bg-primary text-white"
+              : "bg-gray-200 text-gray-700"
+          }`}
           onClick={() => handlePageClick(i)}
         >
           {i}
@@ -256,8 +279,9 @@ const EmployeeList = () => {
               </button>
               <button
                 onClick={handleViewDetails}
-                className={`btn btn-sm rounded-md text-white flex-1 sm:flex-none ${selectedEmployee ? "btn-primary" : "btn-disabled"
-                  }`}
+                className={`btn btn-sm rounded-md text-white flex-1 sm:flex-none ${
+                  selectedEmployee ? "btn-primary" : "btn-disabled"
+                }`}
                 disabled={!selectedEmployee}
               >
                 <span className="text-xs sm:text-sm">View Details</span>
@@ -285,12 +309,15 @@ const EmployeeList = () => {
                     <tr
                       key={employee.id}
                       onClick={() => handleRowClick(employee)}
-                      className={`cursor-pointer dark:border-zinc-600 hover:dark:bg-gray-600 dark:text-white ${selectedEmployee?.id === employee.id
-                        ? "bg-teal-700 text-white hover:bg-teal-600"
-                        : "hover:bg-gray-100"
-                        }`}
+                      className={`cursor-pointer dark:border-zinc-600 hover:dark:bg-gray-600 dark:text-white ${
+                        selectedEmployee?.id === employee.id
+                          ? "bg-teal-700 text-white hover:bg-teal-600"
+                          : "hover:bg-gray-100"
+                      }`}
                     >
-                      <td className="px-4 py-2 text-xs text-left">{employee.employeeId}</td>
+                      <td className="px-4 py-2 text-xs text-left">
+                        {employee.employeeId}
+                      </td>
                       <td className="px-4 py-2 text-xs text-left">
                         {employee.name}
                       </td>
@@ -305,8 +332,9 @@ const EmployeeList = () => {
             {filteredEmployees.length > itemsPerPage && (
               <div className="flex justify-between items-center">
                 <button
-                  className={`px-4 bg-primary text-white rounded-lg btn-sm text-sm text-center align-center ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
+                  className={`px-4 bg-primary text-white rounded-lg btn-sm text-sm text-center align-center ${
+                    currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                   onClick={handlePreviousPage}
                   disabled={currentPage === 1}
                 >
@@ -314,8 +342,11 @@ const EmployeeList = () => {
                 </button>
                 <div>{renderPageNumbers()}</div>
                 <button
-                  className={`px-4 bg-primary text-white rounded-lg btn-sm text-sm ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
+                  className={`px-4 bg-primary text-white rounded-lg btn-sm text-sm ${
+                    currentPage === totalPages
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
                 >
