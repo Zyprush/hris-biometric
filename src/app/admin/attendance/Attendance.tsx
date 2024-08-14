@@ -1,33 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import { EventClickArg, DateSelectArg } from '@fullcalendar/core';
-import { db } from '@/firebase';
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { AdminRouteGuard } from '@/components/AdminRouteGuard';
-
-interface Holiday {
-  id?: string;
-  title: string;
-  date: string;
-  color: string;
-}
-
-interface Attendee {
-  id?: string;
-  name: string;
-  date: string;
-}
+import { Holiday, Attendee } from './types';
+import { fetchAttendees, fetchDatesWithAttendance } from './utils';
+import AttendeeList from './AttendeeList';
+import AttendanceCalendar from './AttendanceCalendar';
+import AttendanceModal from './AttendanceModal';
+import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '@/firebase';
 
 const Attendance: React.FC = () => {
   const [holidays, setHolidays] = useState<Holiday[]>([]);
+  const [attendees, setAttendees] = useState<Attendee[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [view, setView] = useState<'calendar' | 'attendees'>('calendar');
+  const [datesWithAttendance, setDatesWithAttendance] = useState<string[]>([]);
 
   useEffect(() => {
     fetchHolidays();
+    fetchAttendanceDates();
   }, []);
 
   const fetchHolidays = async () => {
@@ -36,14 +27,20 @@ const Attendance: React.FC = () => {
     const holidayList = holidaySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Holiday));
     setHolidays(holidayList);
   };
+  const fetchAttendanceDates = async () => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
+    const dates = await fetchDatesWithAttendance(year, month);
+    setDatesWithAttendance(dates);
+  };
 
-  const handleDateSelect = (selectInfo: DateSelectArg) => {
-    setSelectedDate(selectInfo.startStr);
+  const handleDateSelect = (date: string) => {
+    setSelectedDate(date);
     setShowModal(true);
   };
 
-  const handleAddHoliday = async () => {
-    const title = prompt('Enter holiday name:');
+  const handleAddHoliday = async (title: string) => {
     if (title && selectedDate) {
       const newHoliday: Holiday = {
         title,
@@ -61,51 +58,54 @@ const Attendance: React.FC = () => {
     setShowModal(false);
   };
 
-  const handleViewAttendees = () => {
+  const handleViewAttendees = async () => {
     if (selectedDate) {
-      // Navigate to the attendees view page
-      // You'll need to implement this navigation logic
-      console.log(`Viewing attendees for ${selectedDate}`);
+      const fetchedAttendees = await fetchAttendees(selectedDate);
+      setAttendees(fetchedAttendees);
+      setView('attendees');
     }
     setShowModal(false);
+  };
+
+  const handleDeleteHoliday = async (holidayId: string) => {
+    try {
+      await deleteDoc(doc(db, 'holidays', holidayId));
+      await fetchHolidays(); // Refresh the holidays list
+      setShowModal(false); // Close the modal after deletion
+    } catch (error) {
+      console.error("Error deleting holiday: ", error);
+    }
+  };
+
+  const handleBackToCalendar = () => {
+    setView('calendar');
   };
 
   return (
     <AdminRouteGuard>
       <div className="w-full h-screen p-4">
-        <div className="bg-white rounded-lg shadow-md p-4 h-[calc(100%-5rem)]">
-          <FullCalendar
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            initialView="dayGridMonth"
-            headerToolbar={{
-              left: 'prev,next today',
-              center: 'title',
-              right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            }}
-            events={holidays}
-            selectable={true}
-            select={handleDateSelect}
-            height="100%"
+        {view === 'calendar' ? (
+          <AttendanceCalendar
+            holidays={holidays}
+            datesWithAttendance={datesWithAttendance}
+            onDateSelect={handleDateSelect}
           />
-        </div>
+        ) : (
+          <AttendeeList
+            attendees={attendees}
+            selectedDate={selectedDate}
+            onBackToCalendar={handleBackToCalendar}
+          />
+        )}
         {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
-            <div className="bg-white p-4 rounded-lg">
-              <h2 className="text-lg font-bold mb-4">{selectedDate}</h2>
-              <button 
-                className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
-                onClick={handleViewAttendees}
-              >
-                View Attendees
-              </button>
-              <button 
-                className="bg-green-500 text-white px-4 py-2 rounded"
-                onClick={handleAddHoliday}
-              >
-                Add Holiday
-              </button>
-            </div>
-          </div>
+          <AttendanceModal
+            selectedDate={selectedDate}
+            holidays={holidays}
+            onClose={() => setShowModal(false)}
+            onViewAttendees={handleViewAttendees}
+            onAddHoliday={handleAddHoliday}
+            onDeleteHoliday={handleDeleteHoliday}
+          />
         )}
       </div>
     </AdminRouteGuard>
