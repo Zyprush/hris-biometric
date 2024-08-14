@@ -25,10 +25,7 @@ import {
 } from "chart.js";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/firebase";
-import {
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import LeaveTaken from "./LeaveTaken";
 import TeamStatus from "./TeamStatus";
 import Productivity from "./Productivity";
@@ -112,12 +109,9 @@ export default function UserDashboard() {
     [user]
   );
 
-
-
   useEffect(() => {
     fetchUserData();
   }, [fetchUserData]);
-
 
   const today = new Date();
   const workingDaysPassed = calculateWorkingDays(
@@ -129,8 +123,6 @@ export default function UserDashboard() {
     expectedMonthlyEarning: 350 * workingDaysPassed.length,
     payPeriodProgress: calculateProgress(),
   };
-
-
 
   const QuickActionButton = ({
     icon: Icon,
@@ -234,14 +226,13 @@ export default function UserDashboard() {
               </div>
 
               {/* Leave/Day Off Balance */}
-              <LeaveTaken userData={userData}/>
+              <LeaveTaken userData={userData} />
 
               {/* Productivity Chart */}
-<Productivity/>
+              <Productivity userRefId={"3"} />
 
               {/* Team Status */}
-              <TeamStatus userData={userData}/>
-
+              <TeamStatus userData={userData} />
             </div>
 
             {/* Original Dashboard Links */}

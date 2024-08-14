@@ -1,149 +1,119 @@
 import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
-import { getDatabase, ref, get, child } from "firebase/database";
+import { Chart as ChartJS, LineElement, Title, Tooltip, Legend, CategoryScale, LinearScale } from "chart.js";
+import { getDatabase, ref, get } from "firebase/database";
+import { format, subDays, parse, isBefore } from "date-fns";
 
-// Define types for attendance records
-interface AttendanceRecord {
-  type: string;
-  time: string;
-}
+ChartJS.register(LineElement, Title, Tooltip, Legend, CategoryScale, LinearScale);
 
-interface AttendanceData {
-  [key: string]: AttendanceRecord;
-}
+const Productivity: React.FC<{ userRefId: string }> = ({ userRefId }) => {
+  const [dailyHours, setDailyHours] = useState<{ date: string, hours: number }[]>([]);
 
-interface ChartData {
-  labels: string[];
-  datasets: {
-    label: string;
-    data: number[];
-    borderColor: string;
-    backgroundColor: string;
-    fill: boolean;
-  }[];
-}
+  useEffect(() => {
+    const fetchWorkingHours = async () => {
+      const db = getDatabase();
+      const today = new Date();
+      const daysAgo10 = subDays(today, 10);
+      const formattedToday = format(today, "yyyy-MM-dd");
+      const formattedDaysAgo10 = format(daysAgo10, "yyyy-MM-dd");
 
-const calculateWorkingHours = (attendanceRecords: any) => {
-  let totalHours = 0;
-  let overtimeHours = 0;
+      const dailyHoursMap: { [key: string]: number } = {};
 
-  Object.keys(attendanceRecords).forEach((key) => {
-    const record = attendanceRecords[key];
-    const checkInTime = record.type === "Check-in" ? record.time : null;
-    const checkOutTime = record.type === "Check-out" ? record.time : null;
+      // Fetch data from Firebase
+      const snapshot = await get(ref(db, "attendance"));
 
-    if (checkInTime && checkOutTime) {
-      const checkInDate = new Date(`1970-01-01T${checkInTime}Z`);
-      const checkOutDate = new Date(`1970-01-01T${checkOutTime}Z`);
-      const diff = (checkOutDate.getTime() - checkInDate.getTime()) / 1000 / 3600; // Convert milliseconds to hours
-
-      totalHours += diff;
-
-      if (totalHours > 8) {
-        overtimeHours += totalHours - 8;
+      if (!snapshot.exists()) {
+        console.log("No data available");
+        return;
       }
-    }
-  });
 
-  return { totalHours, overtimeHours };
-};
+      const data = snapshot.val();
 
-const fetchAttendanceData = async (userRefId: string, setChartData: React.Dispatch<React.SetStateAction<ChartData>>) => {
-  const dbRef = ref(getDatabase());
-  const last10DaysAttendance: { date: string; data: AttendanceData }[] = [];
-
-  const today = new Date();
-  for (let i = 0; i < 10; i++) {
-    const dateKey = new Date(today);
-    dateKey.setDate(today.getDate() - i);
-    const dateString = dateKey.toISOString().split("T")[0];
-
-    const snapshot = await get(child(dbRef, `attendance/${dateString}`));
-    if (snapshot.exists()) {
-      const dailyData = snapshot.val();
-      const userAttendance: AttendanceData = {};
-
-      Object.keys(dailyData).forEach((userId) => {
-        if (userId === userRefId) {
-          userAttendance[userId] = dailyData[userId];
+      // Process each day's data
+      for (const date in data) {
+        if (isBefore(parse(date, "yyyy-MM-dd", new Date()), daysAgo10) || date > formattedToday) {
+          continue;
         }
-      });
 
-      if (Object.keys(userAttendance).length > 0) {
-        last10DaysAttendance.push({ date: dateString, data: userAttendance });
+        const dailyData = data[date][`id_${userRefId}`];
+        if (!dailyData) continue;
+
+        const checkIns: Date[] = [];
+        const checkOuts: Date[] = [];
+
+        // Separate check-ins and check-outs
+        for (const key in dailyData) {
+          const entry = dailyData[key];
+          const entryTime = parse(entry.time, "HH:mm:ss", new Date());
+
+          if (entry.type === "Check-in") {
+            checkIns.push(entryTime);
+          } else if (entry.type === "Check-out") {
+            checkOuts.push(entryTime);
+          }
+        }
+
+        // Calculate working hours for the day
+        checkIns.sort();
+        checkOuts.sort();
+
+        let dailyHours = 0;
+        while (checkIns.length > 0 && checkOuts.length > 0) {
+          const checkInTime = checkIns.shift();
+          const checkOutTime = checkOuts.shift();
+
+          if (checkInTime && checkOutTime) {
+            dailyHours +=
+              (checkOutTime.getTime() - checkInTime.getTime()) / (1000 * 60 * 60); // Convert milliseconds to hours
+          }
+        }
+
+        dailyHoursMap[date] = dailyHours;
       }
-    }
-  }
 
-  const regularHours: number[] = [];
-  const overtimeHours: number[] = [];
-  const labels: string[] = [];
+      // Create array of daily hours
+      const sortedDates = Array.from({ length: 10 }, (_, i) => format(subDays(today, 10 - i), "yyyy-MM-dd"));
+      const dailyHoursArray = sortedDates.map(date => ({
+        date,
+        hours: dailyHoursMap[date] || 0,
+      }));
 
-  last10DaysAttendance.forEach((attendance) => {
-    let totalHours = 0;
-    let overtime = 0;
+      setDailyHours(dailyHoursArray);
+    };
 
-    Object.values(attendance.data).forEach((record) => {
-      const { totalHours: regular, overtimeHours: overtimeCalculated } = calculateWorkingHours(record);
-      totalHours += regular;
-      overtime += overtimeCalculated;
-    });
+    fetchWorkingHours();
+  }, [userRefId]);
 
-    regularHours.push(totalHours);
-    overtimeHours.push(overtime);
-    labels.push(attendance.date);
-  });
-
-  setChartData({
-    labels,
+  // Prepare data for the chart
+  const chartData = {
+    labels: dailyHours.map(entry => entry.date),
     datasets: [
       {
-        label: "Regular Hours",
-        data: regularHours,
-        borderColor: "rgb(75, 192, 192)",
-        backgroundColor: "rgba(75, 192, 192, 0.5)",
-        fill: true,
-      },
-      {
-        label: "Overtime Hours",
-        data: overtimeHours,
-        borderColor: "rgb(255, 99, 132)",
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
+        label: 'Working Hours',
+        data: dailyHours.map(entry => entry.hours),
+        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderWidth: 1,
         fill: true,
       },
     ],
-  });
-};
-
-const Productivity: React.FC = () => {
-  const [chartData, setChartData] = useState<ChartData>({
-    labels: [],
-    datasets: [],
-  });
-  const userRefId = "3"; // Replace with the actual userRefId
-
-  useEffect(() => {
-    fetchAttendanceData(userRefId, setChartData);
-  }, [userRefId]);
+  };
 
   const options = {
     responsive: true,
-    plugins: {
-      legend: {
-        position: "top" as const,
-      },
-      title: {
-        display: true,
-        text: "Attendance and Overtime",
-      },
-    },
     scales: {
-      y: {
-        stacked: true,
+      x: {
         title: {
           display: true,
-          text: "Hours",
+          text: 'Date',
         },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Hours',
+        },
+        beginAtZero: true,
       },
     },
   };
@@ -153,7 +123,7 @@ const Productivity: React.FC = () => {
       <h2 className="text-xl font-semibold mb-4 text-neutral dark:text-white">
         Attendance and Overtime
       </h2>
-      <Line options={options} data={chartData} />
+      <Line data={chartData} options={options} />
     </div>
   );
 };
