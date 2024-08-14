@@ -24,6 +24,7 @@ interface SubmitParams {
     emergencyContactName: string;
     emergencyContactPhone: string;
     emergencyContactAddress: string;
+    userIdRef: string;
     email: string;
     phone: string;
     position: string;

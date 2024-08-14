@@ -14,6 +14,8 @@ interface ValidationResult {
 export const validateStep = (step: number, formData: any): ValidationResult => {
   switch (step) {
     case 1: // Personal Information
+      if (formData.userIdRef === "")
+        return { isValid: false, errorMessage: "User Reference is required." };
       if (formData.name === "")
         return { isValid: false, errorMessage: "Name is required." };
       if (formData.nickname === "")
@@ -89,7 +91,7 @@ export const validateStep = (step: number, formData: any): ValidationResult => {
         return { isValid: false, errorMessage: "Supervisor is required." };
       return { isValid: true };
 
-      case 3: // Legal Compliance and Documents
+    case 3: // Legal Compliance and Documents
       if (formData.sss === "" || formData.sss === "N/A") {
         if (formData.sss === "") {
           return { isValid: false, errorMessage: "SSS number is required." };
@@ -100,8 +102,11 @@ export const validateStep = (step: number, formData: any): ValidationResult => {
           errorMessage: "SSS number must be exactly 10 digits.",
         };
       }
-    
-      if (formData.philHealthNumber === "" || formData.philHealthNumber === "N/A") {
+
+      if (
+        formData.philHealthNumber === "" ||
+        formData.philHealthNumber === "N/A"
+      ) {
         if (formData.philHealthNumber === "") {
           return {
             isValid: false,
@@ -114,10 +119,13 @@ export const validateStep = (step: number, formData: any): ValidationResult => {
           errorMessage: "PhilHealth number must be exactly 12 digits.",
         };
       }
-    
+
       if (formData.pagIbigNumber === "" || formData.pagIbigNumber === "N/A") {
         if (formData.pagIbigNumber === "") {
-          return { isValid: false, errorMessage: "Pag-IBIG number is required." };
+          return {
+            isValid: false,
+            errorMessage: "Pag-IBIG number is required.",
+          };
         }
       } else if (!/^\d{12}$/.test(formData.pagIbigNumber)) {
         return {
@@ -125,7 +133,7 @@ export const validateStep = (step: number, formData: any): ValidationResult => {
           errorMessage: "Pag-IBIG number must be exactly 12 digits.",
         };
       }
-    
+
       if (formData.tinNumber === "" || formData.tinNumber === "N/A") {
         if (formData.tinNumber === "") {
           return { isValid: false, errorMessage: "TIN is required." };
@@ -136,13 +144,13 @@ export const validateStep = (step: number, formData: any): ValidationResult => {
           errorMessage: "TIN must be exactly 14 digits.",
         };
       }
-    
+
       if (formData.documents === null) {
         return { isValid: false, errorMessage: "Documents are required." };
       }
-    
+
       return { isValid: true };
-    
+
     case 4: // Credentials
       if (!formData.autoGeneratePassword) {
         if (formData.password === "")

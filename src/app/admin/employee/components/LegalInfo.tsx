@@ -53,12 +53,15 @@ const LegalDocuments: React.FC<LegalDocumentsProps> = ({
         required
         className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
       />
-      <input
-        type="file"
-        onChange={(e) => setDocuments(e.target.files)}
-        multiple
-        className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
-      />
+      <div className="w-full mb-4">
+        <label htmlFor="profilePic" className="text-sm text-gray-500 mb-1">Documents</label>
+        <input
+          type="file"
+          onChange={(e) => setDocuments(e.target.files)}
+          multiple
+          className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
+        />
+      </div>
       {documents && (
         <p className="text-sm text-gray-600">
           {documents.length} file(s) selected

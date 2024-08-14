@@ -34,6 +34,8 @@ const AddEmployee = () => {
   const [emergencyContactName, setEmergencyContactName] = useState<string>("");
   const [emergencyContactPhone, setEmergencyContactPhone] = useState<string>("");
   const [emergencyContactAddress, setEmergencyContactAddress] = useState<string>("");
+  const [userIdRef, setUserIdRef] = useState<string>("");
+
 
   // Employment Info
   const [employeeId, setEmployeeId] = useState<string>("");
@@ -63,7 +65,7 @@ const AddEmployee = () => {
 
   const nextStep = () => {
     const validationResult = validateStep(step, {
-      name, nickname, birthday, gender, nationality, currentAddress, permanentAddress, phone, email, emergencyContactName, emergencyContactPhone, emergencyContactAddress,
+      userIdRef, name, nickname, birthday, gender, nationality, currentAddress, permanentAddress, phone, email, emergencyContactName, emergencyContactPhone, emergencyContactAddress,
       position, department, startDate, employeeId, sss, philHealthNumber, pagIbigNumber, tinNumber, status, supervisor, branch, documents
     });
 
@@ -95,7 +97,7 @@ const AddEmployee = () => {
         profilePic,
         formData: {
           name, nickname, gender, maritalStatus, nationality, currentAddress, permanentAddress, isPermanentSameAsCurrent, email, phone, birthday, emergencyContactName, emergencyContactPhone, emergencyContactAddress, position, department, startDate, employeeId,
-          sss, philHealthNumber, pagIbigNumber, tinNumber, role, status, supervisor, branch
+          sss, philHealthNumber, pagIbigNumber, tinNumber, role, status, supervisor, branch, userIdRef
         }
       });
       // add to history
@@ -120,7 +122,7 @@ const AddEmployee = () => {
   const renderStep = () => {
     switch (step) {
       case 1:
-        return <PersonalInfo {...{ name, setName, nickname, setNickname, birthday, setBirthday, gender, setGender, maritalStatus, setMaritalStatus, nationality, setNationality, currentAddress, setCurrentAddress, permanentAddress, setPermanentAddress, isPermanentSameAsCurrent, setIsPermanentSameAsCurrent, phone, setPhone, email, setEmail, emergencyContactName, setEmergencyContactName, emergencyContactPhone, setEmergencyContactPhone, emergencyContactAddress, setEmergencyContactAddress }} />;
+        return <PersonalInfo {...{ name, setName, nickname, setNickname, birthday, setBirthday, gender, setGender, maritalStatus, setMaritalStatus, nationality, setNationality, currentAddress, setCurrentAddress, permanentAddress, setPermanentAddress, isPermanentSameAsCurrent, setIsPermanentSameAsCurrent, phone, setPhone, email, setEmail, emergencyContactName, setEmergencyContactName, emergencyContactPhone, setEmergencyContactPhone, emergencyContactAddress, setEmergencyContactAddress, userIdRef, setUserIdRef }} />;
       case 2:
         return <EmploymentInfo {...{ employeeId, setEmployeeId, position, setPosition, department, setDepartment, branch, setBranch, startDate, setStartDate, status, setStatus, supervisor, setSupervisor, profilePic, setProfilePic }} />;
       case 3:

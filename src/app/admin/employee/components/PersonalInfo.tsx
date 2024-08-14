@@ -1,5 +1,8 @@
 // components/PersonalInfo.tsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { ref, onValue, off } from 'firebase/database';
+import { rtdb } from '@/firebase';
+
 
 interface PersonalInfoProps {
   name: string;
@@ -30,11 +33,40 @@ interface PersonalInfoProps {
   setEmergencyContactPhone: (emergencyContactPhone: string) => void;
   emergencyContactAddress: string;
   setEmergencyContactAddress: (emergencyContactAddress: string) => void;
+  userIdRef: string;
+  setUserIdRef: (userIdRef: string) => void;
+}
+
+interface User {
+  cardno: string;
+  name: string;
+  role: string;
+  userid: string;
 }
 
 const PersonalInfo: React.FC<PersonalInfoProps> = ({
-  name, setName, nickname, setNickname, birthday, setBirthday, gender, setGender, maritalStatus, setMaritalStatus, nationality, setNationality, currentAddress, setCurrentAddress, permanentAddress, setPermanentAddress, isPermanentSameAsCurrent, setIsPermanentSameAsCurrent, phone, setPhone, email, setEmail, emergencyContactName, setEmergencyContactName, emergencyContactPhone, setEmergencyContactPhone, emergencyContactAddress, setEmergencyContactAddress
+  name, setName, nickname, setNickname, birthday, setBirthday, gender, setGender, maritalStatus, setMaritalStatus, nationality, setNationality, currentAddress, setCurrentAddress, permanentAddress, setPermanentAddress, isPermanentSameAsCurrent, setIsPermanentSameAsCurrent, phone, setPhone, email, setEmail, emergencyContactName, setEmergencyContactName, emergencyContactPhone, setEmergencyContactPhone, emergencyContactAddress, setEmergencyContactAddress,
+  userIdRef, setUserIdRef
 }) => {
+  const [users, setUsers] = useState<{ [key: string]: User }>({});
+
+  useEffect(() => {
+    const usersRef = ref(rtdb, 'users');
+    onValue(usersRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const usersData: { [key: string]: User } = {};
+        snapshot.forEach((childSnapshot) => {
+          usersData[childSnapshot.key!] = childSnapshot.val();
+        });
+        setUsers(usersData);
+      } else {
+        console.log('No users data found');
+      }
+    });
+    return () => {
+      off(usersRef);
+    };
+  }, []);
 
   useEffect(() => {
     if (isPermanentSameAsCurrent) {
@@ -49,6 +81,23 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
       <h2 className="text-xl font-bold mb-4 dark:text-white">Personal Information</h2>
 
       <div className="flex flex-wrap md:flex-nowrap space-x-0 md:space-x-4 space-y-4 md:space-y-0 mb-4">
+        <div className="w-full md:w-1/2">
+          <label htmlFor="selectedUser" className="text-sm text-gray-500 mb-1 block">User Reference</label>
+          <select
+            id="userIdRef"
+            onChange={(e) => setUserIdRef(e.target.value)}
+            value={userIdRef}
+            required
+            className="w-full p-2 border rounded dark:bg-zinc-200"
+          >
+            <option value="">Select User Reference</option>
+            {Object.values(users).map((user) => (
+              <option key={user.userid} value={user.userid}>
+                {user.name} (User ID: {user.userid})
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="w-full md:w-1/2">
           <label htmlFor="fullName" className="text-sm text-gray-500 mb-1 block">Full Name</label>
           <input
@@ -238,6 +287,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             className="w-full p-2 border rounded dark:bg-zinc-200"
           />
         </div>
+
       </div>
     </div>
 
