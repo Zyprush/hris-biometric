@@ -5,7 +5,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { EventClickArg, DateSelectArg } from '@fullcalendar/core';
 import { db } from '@/firebase';
-import { collection, addDoc, getDocs, deleteDoc, query, where } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { AdminRouteGuard } from '@/components/AdminRouteGuard';
 
 interface Holiday {
@@ -15,8 +15,16 @@ interface Holiday {
   color: string;
 }
 
+interface Attendee {
+  id?: string;
+  name: string;
+  date: string;
+}
+
 const Attendance: React.FC = () => {
   const [holidays, setHolidays] = useState<Holiday[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     fetchHolidays();
@@ -29,29 +37,17 @@ const Attendance: React.FC = () => {
     setHolidays(holidayList);
   };
 
-  const handleEventClick = async (clickInfo: EventClickArg) => {
-    const confirmDelete = window.confirm(`Do you want to delete the holiday: ${clickInfo.event.title}?`);
-    if (confirmDelete) {
-      try {
-        const holidaysCollection = collection(db, 'holidays');
-        const q = query(holidaysCollection, where("title", "==", clickInfo.event.title));
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-          deleteDoc(doc.ref);
-        });
-        await fetchHolidays();
-      } catch (error) {
-        console.error("Error deleting document: ", error);
-      }
-    }
+  const handleDateSelect = (selectInfo: DateSelectArg) => {
+    setSelectedDate(selectInfo.startStr);
+    setShowModal(true);
   };
 
-  const handleDateSelect = async (selectInfo: DateSelectArg) => {
+  const handleAddHoliday = async () => {
     const title = prompt('Enter holiday name:');
-    if (title) {
+    if (title && selectedDate) {
       const newHoliday: Holiday = {
         title,
-        date: selectInfo.startStr,
+        date: selectedDate,
         color: '#F44336'
       };
       try {
@@ -62,11 +58,21 @@ const Attendance: React.FC = () => {
         console.error("Error adding document: ", error);
       }
     }
+    setShowModal(false);
+  };
+
+  const handleViewAttendees = () => {
+    if (selectedDate) {
+      // Navigate to the attendees view page
+      // You'll need to implement this navigation logic
+      console.log(`Viewing attendees for ${selectedDate}`);
+    }
+    setShowModal(false);
   };
 
   return (
     <AdminRouteGuard>
-      <div className="w-full h-screen p-4 bg-gray-100">
+      <div className="w-full h-screen p-4">
         <div className="bg-white rounded-lg shadow-md p-4 h-[calc(100%-5rem)]">
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -77,12 +83,30 @@ const Attendance: React.FC = () => {
               right: 'dayGridMonth,timeGridWeek,timeGridDay'
             }}
             events={holidays}
-            eventClick={handleEventClick}
             selectable={true}
             select={handleDateSelect}
             height="100%"
           />
         </div>
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
+            <div className="bg-white p-4 rounded-lg">
+              <h2 className="text-lg font-bold mb-4">{selectedDate}</h2>
+              <button 
+                className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
+                onClick={handleViewAttendees}
+              >
+                View Attendees
+              </button>
+              <button 
+                className="bg-green-500 text-white px-4 py-2 rounded"
+                onClick={handleAddHoliday}
+              >
+                Add Holiday
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </AdminRouteGuard>
   );
