@@ -33,6 +33,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import LeaveTaken from "./LeaveTaken";
 
 ChartJS.register(
   CategoryScale,
@@ -313,33 +314,7 @@ export default function UserDashboard() {
               </div>
 
               {/* Leave/Day Off Balance */}
-              <div className="bg-white rounded-lg shadow p-6 dark:bg-gray-800">
-                <h2 className="text-xl font-semibold mb-4 text-neutral dark:text-white">
-                  Leave Taken
-                </h2>
-                <div className="stats flex dark:bg-gray-800">
-                  <div className="stat">
-                    {/* <div className="stat-title">{new Date().toLocaleString('default', { month: 'long' })}</div> */}
-                    <div className="stat-value text-primary  dark:text-white">
-                      12
-                    </div>
-                    <div className="stat-desc dark:text-zinc-300">
-                      {" "}
-                      Leave this month
-                    </div>
-                  </div>
-
-                  <div className="stat">
-                    {/* <div className="stat-title">{new Date().getFullYear()}</div> */}
-                    <div className="stat-value text-primary dark:text-white">
-                      24
-                    </div>
-                    <div className="stat-desc dark:text-zinc-300">
-                      Leave this year
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <LeaveTaken userData={userData}/>
 
               {/* Productivity Chart */}
               <div className="bg-white rounded-lg shadow p-6 col-span-full md:col-span-2 dark:bg-gray-800">

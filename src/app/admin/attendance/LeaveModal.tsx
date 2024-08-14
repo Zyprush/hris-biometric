@@ -14,13 +14,15 @@ import { ToastContainer } from "react-toastify";
 import { useHistoryStore } from "@/state/history";
 import { useUserStore } from "@/state/user";
 
+interface LeaveModalProps {
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
+  curRequest: any;
+}
+
 const LeaveModal = ({
   setShowModal,
   curRequest,
-}: {
-  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
-  curRequest: any;
-}) => {
+}: LeaveModalProps) => {
   const [reason, setReason] = useState<string>("");
   const [respond, setRespond] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
