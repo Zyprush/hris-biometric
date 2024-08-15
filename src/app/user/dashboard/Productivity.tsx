@@ -11,6 +11,7 @@ import {
 } from "chart.js";
 import { getDatabase, ref, get } from "firebase/database";
 import { format, subDays, parse, isBefore } from "date-fns";
+import { fetchOvertimeHours } from "./overtimeData";
 
 ChartJS.register(
   LineElement,
@@ -25,14 +26,16 @@ const Productivity: React.FC<{ userRefId: string }> = ({ userRefId }) => {
   const [dailyHours, setDailyHours] = useState<
     { date: string; hours: number }[]
   >([]);
-  // console.log("userRefId", userRefId);
+  const [overtimeData, setOvertimeData] = useState<
+    { date: string; hours: number }[]
+  >([]);
+
   useEffect(() => {
-    const fetchWorkingHours = async () => {
+    const fetchWorkingAndOvertimeHours = async () => {
       const db = getDatabase();
       const today = new Date();
       const daysAgo10 = subDays(today, 10);
       const formattedToday = format(today, "yyyy-MM-dd");
-      // const formattedDaysAgo10 = format(daysAgo10, "yyyy-MM-dd");
 
       const dailyHoursMap: { [key: string]: number } = {};
 
@@ -102,9 +105,16 @@ const Productivity: React.FC<{ userRefId: string }> = ({ userRefId }) => {
       }));
 
       setDailyHours(dailyHoursArray);
+
+      // Fetch overtime data
+      const overtimeArray = await fetchOvertimeHours(userRefId);
+      setOvertimeData(overtimeArray.map((item) => ({
+        date: item.date,
+        hours: item.overtimeHours,
+      })));
     };
 
-    fetchWorkingHours();
+    fetchWorkingAndOvertimeHours();
   }, [userRefId]);
 
   // Prepare data for the chart
@@ -116,6 +126,14 @@ const Productivity: React.FC<{ userRefId: string }> = ({ userRefId }) => {
         data: dailyHours.map((entry) => entry.hours),
         borderColor: "rgba(75, 192, 192, 1)",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
+        borderWidth: 1,
+        fill: true,
+      },
+      {
+        label: "Overtime Hours",
+        data: overtimeData.map((entry) => entry.hours),
+        borderColor: "rgba(255, 0, 0, 1)",
+        backgroundColor: "rgba(255, 0, 0, 0.2)",
         borderWidth: 1,
         fill: true,
       },
