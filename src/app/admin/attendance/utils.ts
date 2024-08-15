@@ -1,7 +1,6 @@
 import { ref, get } from 'firebase/database';
 import { rtdb } from '@/firebase';
 import { Attendee, AttendeeRecord } from './types';
-
 export const fetchAttendees = async (date: string): Promise<Attendee[]> => {
   const dateRef = ref(rtdb, `attendance/${date}`);
   const snapshot = await get(dateRef);
@@ -84,3 +83,9 @@ export const fetchDatesWithAttendance = async (year: number, month: number): Pro
   
   return datesWithAttendance;
 };
+
+export const countTotalAttendees = async (date: string): Promise<number> => {
+  const attendees = await fetchAttendees(date);
+  return attendees.length;
+};
+

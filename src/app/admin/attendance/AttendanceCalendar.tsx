@@ -5,9 +5,13 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { DateSelectArg, EventClickArg, EventInput } from '@fullcalendar/core';
 import { Holiday } from './types';
 
+interface DateWithAttendanceCount {
+    date: string;
+    count: number;
+  }
 interface AttendanceCalendarProps {
     holidays: Holiday[];
-    datesWithAttendance: string[];
+    datesWithAttendance: DateWithAttendanceCount[];
     onDateSelect: (date: string) => void;
   }
   
@@ -21,20 +25,20 @@ interface AttendanceCalendarProps {
     };
   
     const events: EventInput[] = [
-      ...holidays.map(holiday => ({
-        id: holiday.id,
-        title: holiday.title,
-        date: holiday.date,
-        color: holiday.color,
-        source: { id: 'holidays' }
-      })),
-      ...datesWithAttendance.map(date => ({
-        title: 'Total Attendees',
-        date,
-        color: '#4CAF50',
-        source: { id: 'attendance' }
-      }))
-    ];
+        ...holidays.map(holiday => ({
+          id: holiday.id,
+          title: holiday.title,
+          date: holiday.date,
+          color: holiday.color,
+          source: { id: 'holidays' }
+        })),
+        ...datesWithAttendance.map(({ date, count }) => ({
+          title: `Total Attendees: ${count}`,
+          date,
+          color: '#4CAF50',
+          source: { id: 'attendance' }
+        }))
+      ];
 
     return (
         <div className="bg-white rounded-lg shadow-md p-4 h-[calc(100%-5rem)]">

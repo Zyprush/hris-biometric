@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { AdminRouteGuard } from '@/components/AdminRouteGuard';
 import { Holiday, Attendee } from './types';
-import { fetchAttendees, fetchDatesWithAttendance } from './utils';
+import { fetchAttendees, fetchDatesWithAttendance, countTotalAttendees } from './utils';
 import AttendeeList from './AttendeeList';
 import AttendanceCalendar from './AttendanceCalendar';
 import AttendanceModal from './AttendanceModal';
 import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '@/firebase';
+
+interface DateWithAttendanceCount {
+  date: string;
+  count: number;
+}
 
 const Attendance: React.FC = () => {
   const [holidays, setHolidays] = useState<Holiday[]>([]);
@@ -14,7 +19,10 @@ const Attendance: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [view, setView] = useState<'calendar' | 'attendees'>('calendar');
-  const [datesWithAttendance, setDatesWithAttendance] = useState<string[]>([]);
+  const [datesWithAttendance, setDatesWithAttendance] = useState<DateWithAttendanceCount[]>([]);
+
+  const [totalAttendees, setTotalAttendees] = useState<number | null>(null);
+  
 
   useEffect(() => {
     fetchHolidays();
@@ -32,11 +40,21 @@ const Attendance: React.FC = () => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
     const dates = await fetchDatesWithAttendance(year, month);
-    setDatesWithAttendance(dates);
+
+    const datesWithCounts = await Promise.all(
+      dates.map(async (date) => ({
+        date,
+        count: await countTotalAttendees(date)
+      }))
+    );
+    
+    setDatesWithAttendance(datesWithCounts);
   };
 
-  const handleDateSelect = (date: string) => {
+  const handleDateSelect = async (date: string) => {
     setSelectedDate(date);
+    const count = await countTotalAttendees(date);
+    setTotalAttendees(count);
     setShowModal(true);
   };
 
@@ -105,6 +123,7 @@ const Attendance: React.FC = () => {
             onViewAttendees={handleViewAttendees}
             onAddHoliday={handleAddHoliday}
             onDeleteHoliday={handleDeleteHoliday}
+            totalAttendees={totalAttendees}
           />
         )}
       </div>
