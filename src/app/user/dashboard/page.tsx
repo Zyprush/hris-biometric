@@ -12,7 +12,6 @@ import {
 import Link from "next/link";
 import { UserRouteGuard } from "@/components/UserRouteGuard";
 import { useEffect, useMemo, useState } from "react";
-import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -47,6 +46,7 @@ interface UserData {
   department?: string;
   profilePicUrl?: string;
   attendanceStatus?: string;
+  userRefId?: string;
 }
 
 const calculateWorkingDays = (
@@ -111,6 +111,7 @@ export default function UserDashboard() {
 
   useEffect(() => {
     fetchUserData();
+    console.log('userData', userData)
   }, [fetchUserData]);
 
   const today = new Date();
@@ -229,7 +230,7 @@ export default function UserDashboard() {
               <LeaveTaken userData={userData} />
 
               {/* Productivity Chart */}
-              <Productivity userRefId={"3"} />
+              <Productivity userRefId={userData?.userRefId || ""} />
 
               {/* Team Status */}
               <TeamStatus userData={userData} />

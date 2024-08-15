@@ -1,14 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
-import { Chart as ChartJS, LineElement, Title, Tooltip, Legend, CategoryScale, LinearScale } from "chart.js";
+import {
+  Chart as ChartJS,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+} from "chart.js";
 import { getDatabase, ref, get } from "firebase/database";
 import { format, subDays, parse, isBefore } from "date-fns";
 
-ChartJS.register(LineElement, Title, Tooltip, Legend, CategoryScale, LinearScale);
+ChartJS.register(
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale
+);
 
 const Productivity: React.FC<{ userRefId: string }> = ({ userRefId }) => {
-  const [dailyHours, setDailyHours] = useState<{ date: string, hours: number }[]>([]);
-
+  const [dailyHours, setDailyHours] = useState<
+    { date: string; hours: number }[]
+  >([]);
+  // console.log("userRefId", userRefId);
   useEffect(() => {
     const fetchWorkingHours = async () => {
       const db = getDatabase();
@@ -31,7 +48,10 @@ const Productivity: React.FC<{ userRefId: string }> = ({ userRefId }) => {
 
       // Process each day's data
       for (const date in data) {
-        if (isBefore(parse(date, "yyyy-MM-dd", new Date()), daysAgo10) || date > formattedToday) {
+        if (
+          isBefore(parse(date, "yyyy-MM-dd", new Date()), daysAgo10) ||
+          date > formattedToday
+        ) {
           continue;
         }
 
@@ -64,7 +84,8 @@ const Productivity: React.FC<{ userRefId: string }> = ({ userRefId }) => {
 
           if (checkInTime && checkOutTime) {
             dailyHours +=
-              (checkOutTime.getTime() - checkInTime.getTime()) / (1000 * 60 * 60); // Convert milliseconds to hours
+              (checkOutTime.getTime() - checkInTime.getTime()) /
+              (1000 * 60 * 60); // Convert milliseconds to hours
           }
         }
 
@@ -72,8 +93,10 @@ const Productivity: React.FC<{ userRefId: string }> = ({ userRefId }) => {
       }
 
       // Create array of daily hours
-      const sortedDates = Array.from({ length: 10 }, (_, i) => format(subDays(today, 10 - i), "yyyy-MM-dd"));
-      const dailyHoursArray = sortedDates.map(date => ({
+      const sortedDates = Array.from({ length: 10 }, (_, i) =>
+        format(subDays(today, 10 - i), "yyyy-MM-dd")
+      );
+      const dailyHoursArray = sortedDates.map((date) => ({
         date,
         hours: dailyHoursMap[date] || 0,
       }));
@@ -86,13 +109,13 @@ const Productivity: React.FC<{ userRefId: string }> = ({ userRefId }) => {
 
   // Prepare data for the chart
   const chartData = {
-    labels: dailyHours.map(entry => entry.date),
+    labels: dailyHours.map((entry) => entry.date),
     datasets: [
       {
-        label: 'Working Hours',
-        data: dailyHours.map(entry => entry.hours),
-        borderColor: 'rgba(75, 192, 192, 1)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        label: "Working Hours",
+        data: dailyHours.map((entry) => entry.hours),
+        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
         borderWidth: 1,
         fill: true,
       },
@@ -105,13 +128,13 @@ const Productivity: React.FC<{ userRefId: string }> = ({ userRefId }) => {
       x: {
         title: {
           display: true,
-          text: 'Date',
+          text: "Date",
         },
       },
       y: {
         title: {
           display: true,
-          text: 'Hours',
+          text: "Hours",
         },
         beginAtZero: true,
       },
