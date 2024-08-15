@@ -111,7 +111,6 @@ export default function UserDashboard() {
 
   useEffect(() => {
     fetchUserData();
-    console.log('userData', userData)
   }, [fetchUserData]);
 
   const today = new Date();

@@ -32,7 +32,7 @@ const Productivity: React.FC<{ userRefId: string }> = ({ userRefId }) => {
       const today = new Date();
       const daysAgo10 = subDays(today, 10);
       const formattedToday = format(today, "yyyy-MM-dd");
-      const formattedDaysAgo10 = format(daysAgo10, "yyyy-MM-dd");
+      // const formattedDaysAgo10 = format(daysAgo10, "yyyy-MM-dd");
 
       const dailyHoursMap: { [key: string]: number } = {};
 
