@@ -11,7 +11,9 @@ interface DailyOvertime {
   overtimeHours: number;
 }
 
-export const fetchOvertimeHours = async (userId: string): Promise<DailyOvertime[]> => {
+export const fetchOvertimeHours = async (
+  userId: string
+): Promise<DailyOvertime[]> => {
   const overtimeData: DailyOvertime[] = [];
   const db = getDatabase();
 
@@ -30,7 +32,7 @@ export const fetchOvertimeHours = async (userId: string): Promise<DailyOvertime[
 
       for (const recordKey in records) {
         const record = records[recordKey];
-
+        //TODO: change this to "Overtime-in"
         if (record.type === "Check-in") {
           checkInTimes.push(new Date(`${date}T${record.time}`));
         } else if (record.type === "Overtime-out") {
@@ -40,7 +42,8 @@ export const fetchOvertimeHours = async (userId: string): Promise<DailyOvertime[
 
       if (overtimeOut && checkInTimes.length > 0) {
         const lastCheckIn = checkInTimes[checkInTimes.length - 1];
-        const overtimeHours = (overtimeOut.getTime() - lastCheckIn.getTime()) / (1000 * 60 * 60);
+        const overtimeHours =
+          (overtimeOut.getTime() - lastCheckIn.getTime()) / (1000 * 60 * 60);
         overtimeData.push({ date, overtimeHours });
       } else {
         overtimeData.push({ date, overtimeHours: 0 });
