@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import {
@@ -9,9 +10,8 @@ import {
   CategoryScale,
   LinearScale,
 } from "chart.js";
-import { getDatabase, ref, get } from "firebase/database";
-import { format, subDays, parse, isBefore } from "date-fns";
-import { fetchOvertimeHours } from "./overtimeData";
+import { getOvertimeData } from "./overtimeData";
+import { getWorkHours } from "./workHours";
 
 ChartJS.register(
   LineElement,
@@ -23,117 +23,39 @@ ChartJS.register(
 );
 
 const Productivity: React.FC<{ userRefId: string }> = ({ userRefId }) => {
-  const [dailyHours, setDailyHours] = useState<
-    { date: string; hours: number }[]
-  >([]);
   const [overtimeData, setOvertimeData] = useState<
     { date: string; hours: number }[]
   >([]);
-
+  const [workHoursData, setWorkHoursData] = useState<
+    { date: string; hours: number }[]
+  >([]);
   useEffect(() => {
-    const fetchWorkingAndOvertimeHours = async () => {
-      const db = getDatabase();
-      const today = new Date();
-      const daysAgo10 = subDays(today, 10);
-      const formattedToday = format(today, "yyyy-MM-dd");
-
-      const dailyHoursMap: { [key: string]: number } = {};
-
-      // Fetch data from Firebase
-      const snapshot = await get(ref(db, "attendance"));
-
-      if (!snapshot.exists()) {
-        console.log("No data available");
-        return;
-      }
-
-      const data = snapshot.val();
-
-      // Process each day's data
-      for (const date in data) {
-        if (
-          isBefore(parse(date, "yyyy-MM-dd", new Date()), daysAgo10) ||
-          date > formattedToday
-        ) {
-          continue;
-        }
-
-        const dailyData = data[date][`id_${userRefId}`];
-        if (!dailyData) continue;
-
-        const checkIns: Date[] = [];
-        const checkOuts: Date[] = [];
-
-        // Separate check-ins and check-outs
-        for (const key in dailyData) {
-          const entry = dailyData[key];
-          const entryTime = parse(entry.time, "HH:mm:ss", new Date());
-
-          if (entry.type === "Check-in") {
-            checkIns.push(entryTime);
-          } else if (entry.type === "Check-out") {
-            checkOuts.push(entryTime);
-          }
-        }
-
-        // Calculate working hours for the day
-        checkIns.sort();
-        checkOuts.sort();
-
-        let dailyHours = 0;
-        while (checkIns.length > 0 && checkOuts.length > 0) {
-          const checkInTime = checkIns.shift();
-          const checkOutTime = checkOuts.shift();
-
-          if (checkInTime && checkOutTime) {
-            dailyHours +=
-              (checkOutTime.getTime() - checkInTime.getTime()) /
-              (1000 * 60 * 60); // Convert milliseconds to hours
-          }
-        }
-
-        dailyHoursMap[date] = dailyHours;
-      }
-
-      // Create array of daily hours
-      const sortedDates = Array.from({ length: 10 }, (_, i) =>
-        format(subDays(today, 10 - i), "yyyy-MM-dd")
-      );
-      const dailyHoursArray = sortedDates.map((date) => ({
-        date,
-        hours: dailyHoursMap[date] || 0,
-      }));
-
-      setDailyHours(dailyHoursArray);
-
-      // Fetch overtime data
-      const overtimeArray = await fetchOvertimeHours(userRefId);
-      setOvertimeData(overtimeArray.map((item) => ({
-        date: item.date,
-        hours: item.overtimeHours,
-      })));
+    const fetchData = async () => {
+      const overtimedata = await getOvertimeData(userRefId);
+      setOvertimeData(overtimedata);
+      const workdata = await getWorkHours(userRefId);
+      setWorkHoursData(workdata);
     };
 
-    fetchWorkingAndOvertimeHours();
+    fetchData();
   }, [userRefId]);
 
-  // Prepare data for the chart
   const chartData = {
-    labels: dailyHours.map((entry) => entry.date),
+    labels: overtimeData.map((entry) => entry.date),
     datasets: [
-      {
-        label: "Working Hours",
-        data: dailyHours.map((entry) => entry.hours),
-        borderColor: "rgba(75, 192, 192, 1)",
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
-        borderWidth: 1,
-        fill: true,
-      },
       {
         label: "Overtime Hours",
         data: overtimeData.map((entry) => entry.hours),
         borderColor: "rgba(255, 0, 0, 1)",
         backgroundColor: "rgba(255, 0, 0, 0.2)",
+        borderWidth: 1,
+        fill: true,
+      },
+      {
+        label: "Working Hours",
+        data: workHoursData.map((entry) => entry.hours),
+        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
         borderWidth: 1,
         fill: true,
       },

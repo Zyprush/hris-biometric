@@ -1,57 +1,53 @@
-import { ref, get, getDatabase } from "firebase/database";
-import { format, subDays } from "date-fns";
+import { getDatabase, ref, get, child } from "firebase/database";
+import { differenceInMinutes, format, parse } from "date-fns";
 
 interface AttendanceRecord {
   time: string;
   type: string;
 }
 
-interface DailyOvertime {
-  date: string;
-  overtimeHours: number;
-}
-
-export const fetchOvertimeHours = async (
-  userId: string
-): Promise<DailyOvertime[]> => {
-  const overtimeData: DailyOvertime[] = [];
+export const getOvertimeData = async (userId: string): Promise<{ date: string; hours: number }[]> => {
   const db = getDatabase();
-
+  const attendanceRef = ref(db, "attendance");
   const today = new Date();
+  const dates = Array.from({ length: 10 }, (_, i) => format(today.setDate(today.getDate() - i), "yyyy-MM-dd"));
 
-  for (let i = 0; i < 10; i++) {
-    const date = format(subDays(today, i), "yyyy-MM-dd");
-    const dayRef = ref(db, `attendance/${date}/id_${userId}`);
-    const snapshot = await get(dayRef);
+  const overtimeData: { date: string; hours: number }[] = [];
 
+  for (const date of dates) {
+    const snapshot = await get(child(attendanceRef, `${date}/id_${userId}`));
     if (snapshot.exists()) {
       const records: Record<string, AttendanceRecord> = snapshot.val();
+      let lastCheckOut: string | null = null;
+      let overtimeIn: string | null = null;
+      let overtimeOut: string | null = null;
 
-      const checkInTimes: Date[] = [];
-      let overtimeOut: Date | null = null;
-
-      for (const recordKey in records) {
-        const record = records[recordKey];
-        //TODO: change this to "Overtime-in"
-        if (record.type === "Check-in") {
-          checkInTimes.push(new Date(`${date}T${record.time}`));
+      Object.values(records).forEach((record) => {
+        if (record.type === "Check-out") {
+          lastCheckOut = record.time;
+        } else if (record.type === "Overtime-in") {
+          overtimeIn = record.time;
         } else if (record.type === "Overtime-out") {
-          overtimeOut = new Date(`${date}T${record.time}`);
+          overtimeOut = record.time;
         }
+      });
+
+      if (!overtimeIn && lastCheckOut) {
+        overtimeIn = lastCheckOut;
       }
 
-      if (overtimeOut && checkInTimes.length > 0) {
-        const lastCheckIn = checkInTimes[checkInTimes.length - 1];
-        const overtimeHours =
-          (overtimeOut.getTime() - lastCheckIn.getTime()) / (1000 * 60 * 60);
-        overtimeData.push({ date, overtimeHours });
+      if (overtimeIn && overtimeOut) {
+        const start = parse(overtimeIn, "HH:mm:ss", new Date());
+        const end = parse(overtimeOut, "HH:mm:ss", new Date());
+        const overtimeMinutes = differenceInMinutes(end, start);
+        overtimeData.push({ date, hours: overtimeMinutes / 60 });
       } else {
-        overtimeData.push({ date, overtimeHours: 0 });
+        overtimeData.push({ date, hours: 0 });
       }
     } else {
-      overtimeData.push({ date, overtimeHours: 0 });
+      overtimeData.push({ date, hours: 0 });
     }
   }
 
-  return overtimeData;
+  return overtimeData.reverse(); // Reverse to have the oldest date first
 };
