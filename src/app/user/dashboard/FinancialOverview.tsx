@@ -97,7 +97,7 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
     };
 
     fetchDaysPresent();
-  }, [userRefId]);
+  }, [dailyRate, userRefId]);
 
   return (
     <>
