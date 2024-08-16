@@ -6,8 +6,6 @@ import {
   FaClipboardList,
   FaUserAlt,
   FaMoneyCheckAlt,
-  FaEye,
-  FaEyeSlash,
 } from "react-icons/fa";
 import Link from "next/link";
 import { UserRouteGuard } from "@/components/UserRouteGuard";
@@ -28,6 +26,7 @@ import { doc, getDoc } from "firebase/firestore";
 import LeaveTaken from "./LeaveTaken";
 import TeamStatus from "./TeamStatus";
 import Productivity from "./Productivity";
+import FinancialOverview from "./FinancialOverview";
 
 ChartJS.register(
   CategoryScale,
@@ -47,46 +46,10 @@ interface UserData {
   profilePicUrl?: string;
   attendanceStatus?: string;
   userRefId?: string;
+  dailyRate?: number;
 }
 
-const calculateWorkingDays = (
-  year: number,
-  month: number,
-  upToDate?: number
-): Date[] => {
-  const date = new Date(year, month, 1);
-  const days: Date[] = [];
-  while (
-    date.getMonth() === month &&
-    (!upToDate || date.getDate() <= upToDate)
-  ) {
-    const dayOfWeek = date.getDay();
-    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-      // 0 is Sunday, 6 is Saturday
-      days.push(new Date(date));
-    }
-    date.setDate(date.getDate() + 1);
-  }
-  return days;
-};
-
-const calculateProgress = (): number => {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
-  const currentDate = today.getDate();
-
-  const workingDaysThisMonth = calculateWorkingDays(year, month);
-  const workingDaysPassed = calculateWorkingDays(year, month, currentDate);
-
-  return Math.min(
-    100,
-    Math.floor((workingDaysPassed.length / workingDaysThisMonth.length) * 100)
-  );
-};
-
 export default function UserDashboard() {
-  const [showFinancials, setShowFinancials] = useState(true);
   const [user] = useAuthState(auth);
   const [userData, setUserData] = useState<UserData | null>(null);
 
@@ -113,16 +76,8 @@ export default function UserDashboard() {
     fetchUserData();
   }, [fetchUserData]);
 
-  const today = new Date();
-  const workingDaysPassed = calculateWorkingDays(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate()
-  );
-  const userDataExample = {
-    expectedMonthlyEarning: 350 * workingDaysPassed.length,
-    payPeriodProgress: calculateProgress(),
-  };
+
+
 
   const QuickActionButton = ({
     icon: Icon,
@@ -153,59 +108,7 @@ export default function UserDashboard() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Financial Information */}
-              <div className="bg-white rounded-lg shadow-lg p-6 dark:bg-gray-800">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold text-neutral dark:text-white">
-                    Financial Overview
-                  </h2>
-                  <button onClick={() => setShowFinancials(!showFinancials)}>
-                    {showFinancials ? <FaEyeSlash /> : <FaEye />}
-                  </button>
-                </div>
-                {showFinancials ? (
-                  <>
-                    <p className="text-2xl font-bold text-green-600 mb-2">
-                      ₱{userDataExample.expectedMonthlyEarning.toFixed(2)}
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-zinc-300 mb-2">
-                      Expected Monthly Salary
-                    </p>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2 dark:text-zinc-300">
-                      <div
-                        className="bg-blue-600 h-2.5 rounded-full"
-                        style={{
-                          width: `${userDataExample.payPeriodProgress}%`,
-                        }}
-                      ></div>
-                    </div>
-                    <p className="text-sm text-gray-600 dark:text-zinc-300">
-                      {userDataExample.payPeriodProgress}% of pay period
-                      complete
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-2xl font-bold text-green-600 mb-2">
-                      ₱****.**
-                    </p>
-                    <p className="text-sm text-gray-600 mb-2">
-                      Expected Monthly Salary
-                    </p>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
-                      <div
-                        className="bg-blue-600 h-2.5 rounded-full"
-                        style={{
-                          width: `${userDataExample.payPeriodProgress}%`,
-                        }}
-                      ></div>
-                    </div>
-                    <p className="text-sm text-gray-600">
-                      {userDataExample.payPeriodProgress}% of pay period
-                      complete
-                    </p>
-                  </>
-                )}
-              </div>
+             <FinancialOverview userRefId={userData?.userRefId || ""} dailyRate={userData?.dailyRate || 350}/>
 
               {/* Quick Actions */}
               <div className="bg-white rounded-lg shadow p-6 dark:bg-gray-800 ">
