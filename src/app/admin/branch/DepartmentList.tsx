@@ -102,7 +102,7 @@ const DepartmentList = () => {
           {departments.map((dept) => {
             return (
               <Fragment key={dept.id}>
-                <Department dept={dept} />
+                <Department dept={dept} selectedBranch={selectedBranch}/>
               </Fragment>
             );
           })}
