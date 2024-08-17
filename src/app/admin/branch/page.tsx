@@ -5,7 +5,7 @@ import AdminLayout from "@/components/AdminLayout";
 import { SignedIn } from "@/components/signed-in";
 import { useState } from "react";
 import { BsBuilding, BsBuildingFill } from "react-icons/bs";
-import Department from "./Department";
+import DepartmentList from "./DepartmentList";
 import Branch from "./Branch";
 
 const AdminBranch = () => {
@@ -14,11 +14,11 @@ const AdminBranch = () => {
   const renderContent = () => {
     switch (currentTab) {
       case "Department":
-        return <Department />;
+        return <DepartmentList />;
       case "Branch":
         return <Branch />;
       default:
-        return <Department />;
+        return <DepartmentList />;
     }
   };
 

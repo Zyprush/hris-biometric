@@ -9,13 +9,12 @@ interface Props {
 }
 
 interface UserData {
-  role: "user" | "admin";
   name: string;
   nickname?: string;
   department?: string;
   profilePicUrl?: string;
   userRefId?: string;
-  isPresent?: boolean; // Add this field to store presence status
+  isPresent?: boolean; 
 }
 
 const TeamStatus = ({ userData }: Props) => {

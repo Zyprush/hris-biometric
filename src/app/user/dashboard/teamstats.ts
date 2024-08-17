@@ -40,7 +40,3 @@ export const isUserPresent = async (userId: string): Promise<boolean> => {
   }
 };
 
-// Usage example:
-isUserPresent("3").then(isPresent => {
-  console.log(isPresent ? "User is present" : "User is not present");
-});

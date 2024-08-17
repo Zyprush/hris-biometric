@@ -1,208 +1,99 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { db } from '@/firebase';
-import { collection, getDocs, addDoc, query, where } from 'firebase/firestore';
-import { AdminRouteGuard } from '@/components/AdminRouteGuard';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Doughnut } from 'react-chartjs-2';
-
-ChartJS.register(ArcElement, Tooltip, Legend);
-
+import { isUserPresent } from "@/app/user/dashboard/teamstats";
+import { db } from "@/firebase";
+import { query, collection, where, getDocs } from "firebase/firestore";
+import React, { useEffect, useMemo, useState } from "react";
 interface Department {
-    id: string;
-    name: string;
-    totalEmployees: number;
+  id: string;
+  name: string;
+}
+interface UserData {
+  name: string;
+  nickname?: string;
+  department?: string;
+  profilePicUrl?: string;
+  userRefId?: string;
+  isPresent?: boolean;
 }
 
-interface Branch {
-    id: string;
-    name: string;
-}
+const Department: React.FC<{ dept: Department }> = ({ dept }) => {
+  const [teamData, setTeamData] = useState<UserData[]>([]);
 
-const DepartmentComponent = () => {
-    const [departments, setDepartments] = useState<Department[]>([]);
-    const [branches, setBranches] = useState<Branch[]>([]);
-    const [selectedBranch, setSelectedBranch] = useState<string>("Filter");
+  const fetchTeamData = useMemo(
+    () => async () => {
+      if (dept) {
+        try {
+          const teamQuery = query(
+            collection(db, "users"),
+            where("department", "==", dept.name)
+          );
+          const teamDocSnap = await getDocs(teamQuery);
+          const teamData = await Promise.all(
+            teamDocSnap.docs.map(async (doc) => {
+              const data = doc.data() as UserData;
 
-    useEffect(() => {
-        fetchBranches();
-    }, []);
+              // Check if the user is present
+              if (data.userRefId) {
+                const isPresent = await isUserPresent(data.userRefId);
+                data.isPresent = isPresent;
+              } else {
+                data.isPresent = false;
+              }
 
-    useEffect(() => {
-        fetchDepartments();
-    }, [selectedBranch]);
+              return data;
+            })
+          );
 
-    const fetchBranches = async () => {
-        const branchesCollection = collection(db, 'branches');
-        const branchesSnapshot = await getDocs(branchesCollection);
-        const branchesList = branchesSnapshot.docs.map(doc => ({
-            id: doc.id,
-            name: doc.data().name as string
-        }));
-        setBranches([{ id: 'Filter', name: 'Filter' }, ...branchesList]);
-    };
-
-    const fetchDepartments = async () => {
-        const departmentsCollection = collection(db, 'departments');
-        const departmentsSnapshot = await getDocs(departmentsCollection);
-        const departmentsList = await Promise.all(departmentsSnapshot.docs.map(async doc => {
-            const departmentData = doc.data() as { name: string };
-            const totalEmployees = await fetchTotalEmployees(departmentData.name);
-            return {
-                id: doc.id,
-                name: departmentData.name,
-                totalEmployees
-            };
-        }));
-        setDepartments(departmentsList);
-    };
-
-    const fetchTotalEmployees = async (departmentName: string): Promise<number> => {
-        const usersCollection = collection(db, 'users');
-        let q = query(usersCollection, where('department', '==', departmentName));
-
-        if (selectedBranch !== "Filter") {
-            q = query(q, where('branch', '==', selectedBranch));
+          // Set the updated team data with presence status
+          setTeamData(teamData);
+        } catch (error) {
+          console.error("Error fetching team data:", error);
         }
+      }
+    },
+    [dept]
+  );
 
-        const usersSnapshot = await getDocs(q);
-        return usersSnapshot.size;
-    };
+  useEffect(() => {
+    if (dept) {
+      fetchTeamData();
+    }
+  }, [dept, fetchTeamData]);
+  return (
+    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+      <h2 className="text-lg font-semibold text-primary mb-3 truncate text-center dark:text-secondary">
+        {dept.name}
+      </h2>
+      <div className="flex flex-col items-center">
+        <div className="w-full h-48 mb-4">
+          <ul className="space-y-4">
+            {teamData.map((member, index) => (
+              <li key={index} className="flex items-center overflow-scroll text-neutral gap-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={member?.profilePicUrl || "/img/profile-male.jpg"}
+                  alt={member?.name}
+                  className="rounded-full object-cover w-10 h-10 border-2 border-primary"
+                />
+                <span className="font-semibold text-sm flex flex-col items-start">
+                  <p className="dark:text-zinc-200 font-normal text-zinc-500 text-xs">
+                    {member.name}
+                  </p>
+                  <p
+                    className={`p-1 px-2 rounded-md text-white w-auto ${
+                      member.isPresent ? "bg-[#61a34a]" : "bg-neutral"
+                    }`}
+                  >
+                    {member.isPresent ? "present" : "absent"}
+                  </p>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-    const addDepartment = async () => {
-        const name = prompt('Enter department name:');
-        if (name) {
-            const departmentsCollection = collection(db, 'departments');
-            await addDoc(departmentsCollection, { name });
-            fetchDepartments();
-        }
-    };
-
-    const handleBranchChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedBranch(event.target.value);
-    };
-
-    const getChartData = (totalEmployees: number) => {
-        if (totalEmployees === 0) {
-            // Return placeholder data when there are no employees
-            return {
-                labels: ['No Data'],
-                datasets: [{
-                    data: [1],
-                    backgroundColor: ['rgba(200, 200, 200, 0.5)'],
-                    borderColor: ['rgba(200, 200, 200, 1)'],
-                    borderWidth: 1,
-                }]
-            };
-        }
-
-        const present = Math.floor(Math.random() * totalEmployees);
-        const absent = Math.floor(Math.random() * (totalEmployees - present));
-        const restDay = Math.floor(Math.random() * (totalEmployees - present - absent));
-        const leave = totalEmployees - present - absent - restDay;
-
-        return {
-            labels: ['Present', 'Absent', 'Rest Day', 'Leave'],
-            datasets: [
-                {
-                    data: [present, absent, restDay, leave],
-                    backgroundColor: [
-                        '#40ae75',  // Present
-                        '#1A7680',  // Absent
-                        '#238F99',  // Rest Day
-                        '#104A55',  // Leave
-                    ],
-                    hoverBackgroundColor: [
-                        '#238F99',  // Present hover
-                        '#238F99',  // Absent hover
-                        '#1A7680',  // Rest Day hover
-                        '#135D66',  // Leave hover
-                    ],
-                    borderColor: [
-                        '#40ae75',
-                        '#1A7680',
-                        '#238F99',
-                        '#104A55',
-                    ],
-                    borderWidth: 1,
-                },
-            ],
-        };
-    };
-
-
-    const chartOptions = {
-        plugins: {
-            legend: {
-                display: false,
-            },
-        },
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '70%',
-    };
-
-    return (
-        <AdminRouteGuard>
-            <div className="p-4 relative">
-                <div className="absolute top-4 right-4 flex space-x-4">
-                    <select
-                        value={selectedBranch}
-                        onChange={handleBranchChange}
-                        className="bg-white border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        {branches.map((branch) => (
-                            <option key={branch.id} value={branch.name}>
-                                {branch.name}
-                            </option>
-                        ))}
-                    </select>
-                    <button
-                        onClick={addDepartment}
-                        className="bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded"
-                    >
-                        Add Department
-                    </button>
-                </div>
-                <div className="mt-24 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                    {departments.map((dept) => {
-                        const chartData = getChartData(dept.totalEmployees);
-                        return (
-                            <div key={dept.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-                                <h2 className="text-lg font-semibold text-primary mb-3 truncate text-center dark:text-secondary">{dept.name}</h2>
-                                <div className="flex flex-col items-center">
-                                    <div className="w-full h-48 mb-4">
-                                        <Doughnut data={chartData} options={chartOptions} />
-                                    </div>
-                                    <div className="w-full grid grid-cols-2 gap-2 text-sm">
-                                        <p className="text-gray-700 dark:text-zinc-400 col-span-2 text-center mb-2">
-                                            <span className="font-medium">Total: {dept.totalEmployees}</span>
-                                        </p>
-                                        <p className="text-gray-700 dark:text-zinc-400 flex items-center">
-                                            <span className="w-3 h-3 rounded-full bg-[#40ae75] mr-2"></span>
-                                            <span className="font-medium">Present:</span> {chartData.datasets[0].data[0]}
-                                        </p>
-                                        <p className="text-gray-700 dark:text-zinc-400 flex items-center">
-                                            <span className="w-3 h-3 rounded-full bg-[#1A7680] mr-2"></span>
-                                            <span className="font-medium">Absent:</span> {chartData.datasets[0].data[1]}
-                                        </p>
-                                        <p className="text-gray-700 dark:text-zinc-400 flex items-center">
-                                            <span className="w-3 h-3 rounded-full bg-[#238F99] mr-2"></span>
-                                            <span className="font-medium">Rest Day:</span> {chartData.datasets[0].data[2]}
-                                        </p>
-                                        <p className="text-gray-700 dark:text-zinc-400 flex items-center">
-                                            <span className="w-3 h-3 rounded-full bg-[#104A55] mr-2"></span>
-                                            <span className="font-medium">Leave:</span> {chartData.datasets[0].data[3]}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-        </AdminRouteGuard>
-    )
-}
-
-export default DepartmentComponent;
+export default Department;
