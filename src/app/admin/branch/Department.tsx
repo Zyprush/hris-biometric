@@ -31,7 +31,6 @@ const Department: React.FC<{ dept: Department }> = ({ dept }) => {
           const teamData = await Promise.all(
             teamDocSnap.docs.map(async (doc) => {
               const data = doc.data() as UserData;
-
               // Check if the user is present
               if (data.userRefId) {
                 const isPresent = await isUserPresent(data.userRefId);
@@ -39,11 +38,9 @@ const Department: React.FC<{ dept: Department }> = ({ dept }) => {
               } else {
                 data.isPresent = false;
               }
-
               return data;
             })
           );
-
           // Set the updated team data with presence status
           setTeamData(teamData);
         } catch (error) {
@@ -59,16 +56,17 @@ const Department: React.FC<{ dept: Department }> = ({ dept }) => {
       fetchTeamData();
     }
   }, [dept, fetchTeamData]);
+  
   return (
-    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col h-full min-h-80">
       <h2 className="text-lg font-semibold text-primary mb-3 truncate text-center dark:text-secondary">
         {dept.name}
       </h2>
       <div className="flex flex-col items-center">
-        <div className="w-full h-48 mb-4">
-          <ul className="space-y-4">
+        <div className="w-full h-full mb-4">
+          <ul className="space-y-2">
             {teamData.map((member, index) => (
-              <li key={index} className="flex items-center overflow-scroll text-neutral gap-2">
+              <li key={index} className="flex items-center text-neutral gap-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={member?.profilePicUrl || "/img/profile-male.jpg"}
@@ -80,7 +78,7 @@ const Department: React.FC<{ dept: Department }> = ({ dept }) => {
                     {member.name}
                   </p>
                   <p
-                    className={`p-1 px-2 rounded-md text-white w-auto ${
+                    className={`p-1 flex items-center justify-center px-2 rounded-md text-white w-auto ${
                       member.isPresent ? "bg-[#61a34a]" : "bg-neutral"
                     }`}
                   >
