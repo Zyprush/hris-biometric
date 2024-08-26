@@ -1,18 +1,21 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { FaEyeSlash, FaEye } from "react-icons/fa6";
 import { getTotalDaysPresent } from "./daysPresent";
+import { ref, get } from "firebase/database";
+import { rtdb } from "@/firebase";
 
 interface UserData {
   payPeriodProgress: number;
 }
 
 interface FinancialOverviewProps {
-  userRefId: string;
+  userIdRef: string;
   dailyRate: number;
 }
 
-const FinancialOverview: React.FC<FinancialOverviewProps> = ({ userRefId, dailyRate }) => {
+const FinancialOverview: React.FC<FinancialOverviewProps> = ({ userIdRef, dailyRate }) => {
   const [showFinancials, setShowFinancials] = useState(true);
+  const [rtdbUserId, setRtdbUserId] = useState<string | null>(null);
 
   const calculateWorkingDays = (
     year: number,
@@ -39,19 +42,39 @@ const FinancialOverview: React.FC<FinancialOverviewProps> = ({ userRefId, dailyR
     const year = today.getFullYear();
     const month = today.getMonth();
     const currentDate = today.getDate();
-
     const workingDaysThisMonth = calculateWorkingDays(year, month);
     const workingDaysPassed = calculateWorkingDays(year, month, currentDate);
-
     const payPeriodProgress = Math.min(
       100,
       Math.floor((workingDaysPassed.length / workingDaysThisMonth.length) * 100)
     );
-
     return {
       payPeriodProgress,
     };
   }, []);
+
+  useEffect(() => {
+    const fetchRtdbUserId = async () => {
+      if (userIdRef) {
+        try {
+          const userRef = ref(rtdb, `users/${userIdRef}`);
+          const userSnapshot = await get(userRef);
+          const userData = userSnapshot.val();
+          if (userData && userData.userid) {
+            setRtdbUserId(userData.userid);
+          } else {
+            console.warn(`No valid RTDB data found for user with userIdRef: ${userIdRef}`);
+          }
+        } catch (error) {
+          console.error(`Error fetching RTDB data for user with userIdRef: ${userIdRef}:`, error);
+        }
+      } else {
+        console.warn(`No userIdRef provided`);
+      }
+    };
+
+    fetchRtdbUserId();
+  }, [userIdRef]);
 
   const toggleFinancials = () => setShowFinancials(!showFinancials);
 
@@ -69,7 +92,12 @@ const FinancialOverview: React.FC<FinancialOverviewProps> = ({ userRefId, dailyR
           )}
         </button>
       </div>
-      <FinancialDetails showFinancials={showFinancials} userData={userData} userRefId={userRefId} dailyRate={dailyRate}/>
+      <FinancialDetails 
+        showFinancials={showFinancials} 
+        userData={userData} 
+        rtdbUserId={rtdbUserId} 
+        dailyRate={dailyRate}
+      />
     </div>
   );
 };
@@ -77,14 +105,14 @@ const FinancialOverview: React.FC<FinancialOverviewProps> = ({ userRefId, dailyR
 interface FinancialDetailsProps {
   showFinancials: boolean;
   userData: UserData;
-  userRefId: string;
+  rtdbUserId: string | null;
   dailyRate: number;
 }
 
 const FinancialDetails: React.FC<FinancialDetailsProps> = ({
   showFinancials,
   userData,
-  userRefId,
+  rtdbUserId,
   dailyRate
 }) => {
   const { payPeriodProgress } = userData;
@@ -92,12 +120,14 @@ const FinancialDetails: React.FC<FinancialDetailsProps> = ({
 
   useEffect(() => {
     const fetchDaysPresent = async () => {
-      const daysPresent = await getTotalDaysPresent(userRefId);
-      setExpectedMonthlyEarning(daysPresent * dailyRate);
+      if (rtdbUserId) {
+        const daysPresent = await getTotalDaysPresent(rtdbUserId);
+        setExpectedMonthlyEarning(daysPresent * dailyRate);
+      }
     };
 
     fetchDaysPresent();
-  }, [dailyRate, userRefId]);
+  }, [dailyRate, rtdbUserId]);
 
   return (
     <>

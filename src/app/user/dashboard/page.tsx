@@ -45,7 +45,7 @@ interface UserData {
   department?: string;
   profilePicUrl?: string;
   attendanceStatus?: string;
-  userRefId?: string;
+  userIdRef?: string;
   dailyRate?: number;
 }
 
@@ -108,7 +108,7 @@ export default function UserDashboard() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Financial Information */}
-             <FinancialOverview userRefId={userData?.userRefId || ""} dailyRate={userData?.dailyRate || 350}/>
+             <FinancialOverview userIdRef={userData?.userIdRef || ""} dailyRate={userData?.dailyRate || 350}/>
 
               {/* Quick Actions */}
               <div className="bg-white rounded-lg shadow p-6 dark:bg-gray-800 ">
@@ -132,7 +132,7 @@ export default function UserDashboard() {
               <LeaveTaken userData={userData} />
 
               {/* Productivity Chart */}
-              <Productivity userRefId={userData?.userRefId || ""} />
+              <Productivity userIdRef={userData?.userIdRef || ""} />
 
               {/* Team Status */}
               <TeamStatus userData={userData} />
