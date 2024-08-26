@@ -1,12 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { collection, getDocs, DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
-import { db } from "@/firebase";
+import { db, rtdb } from "@/firebase";
 import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import { toast } from "react-toastify";
 import { BsSearch } from "react-icons/bs";
 import Modal from "./components/payrollModal"; // You'll need to create this component
 import PayslipContent from "./components/payslip"; // You'll need to create this component
+import { get, ref } from "firebase/database";
 
 interface Employee {
   id: string;
@@ -28,6 +29,8 @@ interface Employee {
 const Payroll: React.FC = () => {
   const [selectAll, setSelectAll] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
@@ -41,52 +44,104 @@ const Payroll: React.FC = () => {
     fetchEmployees();
   }, []);
 
+  const calculateDaysOfWork = async (rtdbUserId: string) => {
+    const today = new Date();
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    let daysWorked = 0;
+
+    try {
+      for (let day = firstDayOfMonth; day <= today; day.setDate(day.getDate() + 1)) {
+        const dateString = day.toISOString().split('T')[0];
+        const attendanceRef = ref(rtdb, `attendance/${dateString}/id_${rtdbUserId}`);
+        const attendanceSnapshot = await get(attendanceRef);
+
+        if (attendanceSnapshot.exists()) {
+          const checkIns = Object.values(attendanceSnapshot.val()).filter(
+            (entry: any) => entry && entry.type === "Check-in"
+          );
+          if (checkIns.length > 0) {
+            daysWorked++;
+          }
+        }
+      }
+    } catch (error) {
+      console.error(`Error calculating days of work for user ${rtdbUserId}:`, error);
+    }
+
+    return daysWorked;
+  };
+
   const fetchEmployees = async () => {
+    setIsLoading(true);
     try {
       const querySnapshot = await getDocs(collection(db, "users"));
-      const fetchedEmployees: Employee[] = querySnapshot.docs
-        .map((doc: QueryDocumentSnapshot<DocumentData>) => {
-          const data = doc.data();
-          const rate = 520; // Fixed rate
-          const daysOfWork = data.daysOfWork || 0;
-          const overtime = data.overtime || 0;
-          const holiday = data.holiday || 0;
+      const fetchedEmployees: Employee[] = await Promise.all(
+        querySnapshot.docs
+          .filter((doc) => doc.data().name !== "Admin")
+          .map(async (doc: QueryDocumentSnapshot<DocumentData>) => {
+            const data = doc.data();
+            const userIdRef = data.userIdRef;
 
-          const totalRegularWage = rate * daysOfWork;
-          const totalAmount = totalRegularWage + overtime + holiday;
+            let daysOfWork = 0;
+            if (userIdRef) {
+              try {
+                const userRef = ref(rtdb, `users/${userIdRef}`);
+                const userSnapshot = await get(userRef);
+                const userData = userSnapshot.val();
+                if (userData && userData.userid) {
+                  daysOfWork = await calculateDaysOfWork(userData.userid);
+                } else {
+                  console.warn(`No valid RTDB data found for user ${data.name} (ID: ${doc.id})`);
+                }
+              } catch (error) {
+                console.error(`Error fetching RTDB data for user ${data.name} (ID: ${doc.id}):`, error);
+              }
+            } else {
+              console.warn(`No userIdRef found for user ${data.name} (ID: ${doc.id})`);
+            }
 
-          const sssDeduction = data.sssDeduction || 0;
-          const philhealthDeduction = data.philhealthDeduction || 0;
-          const pagibigDeduction = data.pagibigDeduction || 0;
-          const cashAdvance = data.cashAdvance || 0;
+            const rate = 520; // Fixed rate
+            const overtime = data.overtime || 0;
+            const holiday = data.holiday || 0;
 
-          const totalDeductions = sssDeduction + philhealthDeduction + pagibigDeduction + cashAdvance;
+            const totalRegularWage = rate * daysOfWork;
+            const totalAmount = totalRegularWage + overtime + holiday;
 
-          return {
-            id: doc.id,
-            name: data.name || "",
-            rate,
-            daysOfWork,
-            totalRegularWage,
-            overtime,
-            holiday,
-            totalAmount,
-            sssDeduction,
-            philhealthDeduction,
-            pagibigDeduction,
-            cashAdvance,
-            totalDeductions,
-            totalNetAmount: totalAmount - totalDeductions,
-          };
-        })
-        .filter((employee: Employee) => employee.name !== "Admin");
+            const sssDeduction = data.sssDeduction || 0;
+            const philhealthDeduction = data.philhealthDeduction || 0;
+            const pagibigDeduction = data.pagibigDeduction || 0;
+            const cashAdvance = data.cashAdvance || 0;
+
+            const totalDeductions = sssDeduction + philhealthDeduction + pagibigDeduction + cashAdvance;
+
+            return {
+              id: doc.id,
+              name: data.name || "",
+              rate,
+              daysOfWork,
+              totalRegularWage,
+              overtime,
+              holiday,
+              totalAmount,
+              sssDeduction,
+              philhealthDeduction,
+              pagibigDeduction,
+              cashAdvance,
+              totalDeductions,
+              totalNetAmount: totalAmount - totalDeductions,
+            };
+          })
+      );
       setEmployees(fetchedEmployees);
       setFilteredEmployees(fetchedEmployees);
     } catch (error) {
       console.error("Error fetching employees: ", error);
       toast.error("Failed to fetch employees");
+    } finally {
+      setIsLoading(false);
     }
   };
+
 
 
   const handleSearch = () => {
@@ -318,7 +373,13 @@ const Payroll: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white">
-                {currentItems.length < 1 ? (
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={14} className="text-center py-4">
+                      Loading...
+                    </td>
+                  </tr>
+                ) : currentItems.length < 1 ? (
                   <tr>
                     <td colSpan={14} className="text-red-500 text-xs border border-gray-300 px-2 py-1">
                       No results
@@ -342,7 +403,7 @@ const Payroll: React.FC = () => {
                       </td>
                       <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.name}</td>
                       <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.rate.toFixed(2)}</td>
-                      <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.daysOfWork.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.daysOfWork}</td>
                       <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.totalRegularWage.toFixed(2)}</td>
                       <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.overtime.toFixed(2)}</td>
                       <td className="px-4 py-2 text-xs border border-b dark:border-gray-500">{employee.holiday.toFixed(2)}</td>
