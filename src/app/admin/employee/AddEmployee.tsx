@@ -45,6 +45,7 @@ const AddEmployee = () => {
   const [startDate, setStartDate] = useState<string>("");
   const [status, setStatus] = useState<string>("");
   const [supervisor, setSupervisor] = useState<string>("");
+  const [rate, setRate] = useState<string>("");
 
   // Legal Compliance and Documents
   const [sss, setSss] = useState<string>("");
@@ -97,7 +98,8 @@ const AddEmployee = () => {
         profilePic,
         formData: {
           name, nickname, gender, maritalStatus, nationality, currentAddress, permanentAddress, isPermanentSameAsCurrent, email, phone, birthday, emergencyContactName, emergencyContactPhone, emergencyContactAddress, position, department, startDate, employeeId,
-          sss, philHealthNumber, pagIbigNumber, tinNumber, role, status, supervisor, branch, userIdRef
+          sss, philHealthNumber, pagIbigNumber, tinNumber, role, status, supervisor, branch, userIdRef,
+          rate
         }
       });
       // add to history
@@ -125,7 +127,7 @@ const AddEmployee = () => {
       case 1:
         return <PersonalInfo {...{ name, setName, nickname, setNickname, birthday, setBirthday, gender, setGender, maritalStatus, setMaritalStatus, nationality, setNationality, currentAddress, setCurrentAddress, permanentAddress, setPermanentAddress, isPermanentSameAsCurrent, setIsPermanentSameAsCurrent, phone, setPhone, email, setEmail, emergencyContactName, setEmergencyContactName, emergencyContactPhone, setEmergencyContactPhone, emergencyContactAddress, setEmergencyContactAddress, userIdRef, setUserIdRef }} />;
       case 2:
-        return <EmploymentInfo {...{ employeeId, setEmployeeId, position, setPosition, department, setDepartment, branch, setBranch, startDate, setStartDate, status, setStatus, supervisor, setSupervisor, profilePic, setProfilePic }} />;
+        return <EmploymentInfo {...{ employeeId, setEmployeeId, rate, setRate, position, setPosition, department, setDepartment, branch, setBranch, startDate, setStartDate, status, setStatus, supervisor, setSupervisor, profilePic, setProfilePic }} />;
       case 3:
         return <LegalDocuments {...{ sss, setSss, philHealthNumber, setPhilHealthNumber, pagIbigNumber, setPagIbigNumber, tinNumber, setTinNumber, documents, setDocuments }} />;
       case 4:

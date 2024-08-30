@@ -6,6 +6,8 @@ import { collection, getDocs } from 'firebase/firestore';
 interface EmploymentInfoProps {
   employeeId: string;
   setEmployeeId: (employeeId: string) => void;
+  rate: string;
+  setRate: (rate: string) => void;
   position: string;
   setPosition: (position: string) => void;
   department: string;
@@ -23,7 +25,7 @@ interface EmploymentInfoProps {
 }
 
 const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
-  employeeId, setEmployeeId, position, setPosition, department, setDepartment, branch, setBranch, startDate, setStartDate, status, setStatus, supervisor, setSupervisor, profilePic, setProfilePic
+  employeeId, setEmployeeId, position, setPosition, department, setDepartment, branch, setBranch, startDate, setStartDate, status, setStatus, supervisor, setSupervisor, profilePic, setProfilePic, rate, setRate
 }) => {
   const [departments, setDepartments] = useState<string[]>([]);
   const [branches, setBranches] = useState<string[]>([]);
@@ -57,7 +59,7 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
     <div>
       <h2 className="text-xl font-bold mb-4">Employment Info</h2>
       <div className="flex flex-wrap -mx-2">
-        <div className="w-full md:w-1/2 px-2 mb-4">
+        <div className="w-full px-2 mb-4">
           <label htmlFor="profilePic" className="text-sm text-gray-500 mb-1">Choose Profile (optional)</label>
           <input
             type="file"
@@ -75,6 +77,18 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
             onChange={(e) => setEmployeeId(e.target.value)}
             value={employeeId}
             placeholder="Employee ID"
+            required
+            className="w-full p-2 border rounded dark:bg-zinc-200"
+          />
+        </div>
+        <div className="w-full md:w-1/2 px-2 mb-4">
+          <label htmlFor="rate" className="text-sm text-gray-500 mb-1">Rate</label>
+          <input
+            type="number"
+            id="rate"
+            onChange={(e) => setRate(e.target.value)}
+            value={rate}
+            placeholder="Rate/day"
             required
             className="w-full p-2 border rounded dark:bg-zinc-200"
           />
@@ -144,7 +158,6 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
             <option value="">Select Status</option>
             <option value="Permanent">Permanent</option>
             <option value="Contract">Contract</option>
-            <option value="Intern">Intern</option>
           </select>
         </div>
         <div className="w-full md:w-1/2 px-2 mb-4">

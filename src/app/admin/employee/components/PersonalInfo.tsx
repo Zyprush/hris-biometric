@@ -1,7 +1,8 @@
 // components/PersonalInfo.tsx
 import React, { useEffect, useState } from 'react';
 import { ref, onValue, off } from 'firebase/database';
-import { rtdb } from '@/firebase';
+import { db, rtdb } from '@/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 
 interface PersonalInfoProps {
@@ -35,6 +36,7 @@ interface PersonalInfoProps {
   setEmergencyContactAddress: (emergencyContactAddress: string) => void;
   userIdRef: string;
   setUserIdRef: (userIdRef: string) => void;
+  
 }
 
 interface User {
@@ -46,9 +48,10 @@ interface User {
 
 const PersonalInfo: React.FC<PersonalInfoProps> = ({
   name, setName, nickname, setNickname, birthday, setBirthday, gender, setGender, maritalStatus, setMaritalStatus, nationality, setNationality, currentAddress, setCurrentAddress, permanentAddress, setPermanentAddress, isPermanentSameAsCurrent, setIsPermanentSameAsCurrent, phone, setPhone, email, setEmail, emergencyContactName, setEmergencyContactName, emergencyContactPhone, setEmergencyContactPhone, emergencyContactAddress, setEmergencyContactAddress,
-  userIdRef, setUserIdRef
+  userIdRef, setUserIdRef, 
 }) => {
   const [users, setUsers] = useState<{ [key: string]: User }>({});
+  const [usedUserIdRefs, setUsedUserIdRefs] = useState<string[]>([]);
 
   useEffect(() => {
     const usersRef = ref(rtdb, 'users');
@@ -63,10 +66,25 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
         console.log('No users data found');
       }
     });
+
+    // Fetch used userIdRefs from Firestore
+    const fetchUsedUserIdRefs = async () => {
+      const usersCollection = collection(db, 'users');
+      const userDocs = await getDocs(usersCollection);
+      const usedRefs = userDocs.docs
+        .map(doc => doc.data().userIdRef)
+        .filter(Boolean); // Filter out any undefined or null values
+      setUsedUserIdRefs(usedRefs);
+    };
+
+    fetchUsedUserIdRefs();
+    
     return () => {
       off(usersRef);
     };
   }, []);
+
+  const availableUsers = Object.values(users).filter(user => !usedUserIdRefs.includes(user.userid));
 
   useEffect(() => {
     if (isPermanentSameAsCurrent) {
@@ -75,6 +93,8 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
       setPermanentAddress('');
     }
   }, [isPermanentSameAsCurrent, currentAddress, setPermanentAddress]);
+
+
 
   return (
     <div>
@@ -91,7 +111,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             className="w-full p-2 border rounded dark:bg-zinc-200"
           >
             <option value="">Select User Reference</option>
-            {Object.values(users).map((user) => (
+            {availableUsers.map((user) => (
               <option key={user.userid} value={user.userid}>
                 {user.name} (User ID: {user.userid})
               </option>
