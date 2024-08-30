@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function NotFound() {
@@ -18,10 +19,17 @@ export default function NotFound() {
         </p>
         <button
           onClick={handleGoBack}
-          className="mt-8 px-4 py-2 bg-primary text-white rounded hover:bg-neutral"
+          className="mt-8 px-4 py-2 bg-primary text-xs text-white rounded hover:bg-neutral"
         >
           Go back
         </button>
+        <Link
+          className="mt-8 px-4 py-2 bg-primary text-white rounded hover:bg-neutral text-xs"
+          href={"/"}
+        >
+          Home
+        </Link>
+        
       </div>
     </div>
   );
