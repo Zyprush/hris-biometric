@@ -22,4 +22,5 @@ export interface UserDatainterface {
     cashAdvance: number;
     pagIbigDeduction: number;
     philhealthDeduction: number;
+    userIdRef?: string;
   }

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { collection, getDocs, DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
+import { collection, getDocs, DocumentData, QueryDocumentSnapshot, doc, setDoc, getDoc } from "firebase/firestore";
 import { db, rtdb } from "@/firebase";
 import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import { toast } from "react-toastify";
@@ -28,9 +28,7 @@ interface Employee {
 
 const Payroll: React.FC = () => {
   const [selectAll, setSelectAll] = useState(false);
-
   const [isLoading, setIsLoading] = useState(true);
-
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
@@ -38,102 +36,155 @@ const Payroll: React.FC = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
+  const [selectedMonth, setSelectedMonth] = useState<string>("");
+  const [availableMonths, setAvailableMonths] = useState<string[]>([]);
   const itemsPerPage = 10;
 
   useEffect(() => {
-    fetchEmployees();
+    fetchAvailableMonths();
   }, []);
+
+  useEffect(() => {
+    if (selectedMonth) {
+      fetchEmployees(selectedMonth);
+    }
+  }, [selectedMonth]);
+
+  const fetchAvailableMonths = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "payroll"));
+      const months = querySnapshot.docs.map(doc => doc.id).sort((a, b) => b.localeCompare(a));
+      setAvailableMonths(months);
+
+      const currentDate = new Date();
+      const currentMonth = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
+
+      if (!months.includes(currentMonth)) {
+        months.unshift(currentMonth);
+      }
+
+      setSelectedMonth(currentMonth);
+    } catch (error) {
+      console.error("Error fetching available months: ", error);
+      toast.error("Failed to fetch available months");
+    }
+  };
 
   const calculateDaysOfWork = async (rtdbUserId: string) => {
     const today = new Date();
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     let daysWorked = 0;
 
-    try {
-      for (let day = firstDayOfMonth; day <= today; day.setDate(day.getDate() + 1)) {
-        const dateString = day.toISOString().split('T')[0];
-        const attendanceRef = ref(rtdb, `attendance/${dateString}/id_${rtdbUserId}`);
-        const attendanceSnapshot = await get(attendanceRef);
+    for (let day = firstDayOfMonth; day <= today; day.setDate(day.getDate() + 1)) {
+      const dateString = day.toISOString().split('T')[0];
+      const attendanceRef = ref(rtdb, `attendance/${dateString}/id_${rtdbUserId}`);
+      const attendanceSnapshot = await get(attendanceRef);
 
-        if (attendanceSnapshot.exists()) {
-          const checkIns = Object.values(attendanceSnapshot.val()).filter(
-            (entry: any) => entry && entry.type === "Check-in"
-          );
-          if (checkIns.length > 0) {
-            daysWorked++;
-          }
+      if (attendanceSnapshot.exists()) {
+        const checkIns = Object.values(attendanceSnapshot.val()).filter(
+          (entry: any) => entry && entry.type === "Check-in"
+        );
+        if (checkIns.length > 0) {
+          daysWorked++;
         }
       }
-    } catch (error) {
-      console.error(`Error calculating days of work for user ${rtdbUserId}:`, error);
     }
 
     return daysWorked;
   };
 
-  const fetchEmployees = async () => {
+  const fetchEmployees = async (month: string) => {
     setIsLoading(true);
     try {
-      const querySnapshot = await getDocs(collection(db, "users"));
-      const fetchedEmployees: Employee[] = await Promise.all(
-        querySnapshot.docs
-          .filter((doc) => doc.data().name !== "Admin")
-          .map(async (doc: QueryDocumentSnapshot<DocumentData>) => {
-            const data = doc.data();
-            const userIdRef = data.userIdRef;
+      const currentDate = new Date();
+      const currentMonth = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
 
-            let daysOfWork = 0;
-            if (userIdRef) {
-              try {
-                const userRef = ref(rtdb, `users/${userIdRef}`);
-                const userSnapshot = await get(userRef);
-                const userData = userSnapshot.val();
-                if (userData && userData.userid) {
-                  daysOfWork = await calculateDaysOfWork(userData.userid);
-                } else {
-                  console.warn(`No valid RTDB data found for user ${data.name} (ID: ${doc.id})`);
+      if (month === currentMonth) {
+        // Fetch and calculate current month's data
+        const querySnapshot = await getDocs(collection(db, "users"));
+        const fetchedEmployees: Employee[] = await Promise.all(
+          querySnapshot.docs
+            .filter((doc) => doc.data().name !== "Admin")
+            .map(async (doc: QueryDocumentSnapshot<DocumentData>) => {
+              const data = doc.data();
+              const userIdRef = data.userIdRef;
+
+              let daysOfWork = 0;
+              let userId = "";
+              if (userIdRef) {
+                try {
+                  const userRef = ref(rtdb, `users/${userIdRef}`);
+                  const userSnapshot = await get(userRef);
+                  const userData = userSnapshot.val();
+                  if (userData && userData.userid) {
+                    daysOfWork = await calculateDaysOfWork(userData.userid);
+                    userId = userData.userid;
+                  }
+                } catch (error) {
+                  console.error(`Error fetching RTDB data for user ${data.name} (ID: ${doc.id}):`, error);
                 }
-              } catch (error) {
-                console.error(`Error fetching RTDB data for user ${data.name} (ID: ${doc.id}):`, error);
               }
-            } else {
-              console.warn(`No userIdRef found for user ${data.name} (ID: ${doc.id})`);
-            }
 
-            const rate = 520; // Fixed rate
-            const overtime = data.overtime || 0;
-            const holiday = data.holiday || 0;
+              const rate = 520; // Fixed rate
+              const overtime = data.overtime || 0;
+              const holiday = data.holiday || 0;
 
-            const totalRegularWage = rate * daysOfWork;
-            const totalAmount = totalRegularWage + overtime + holiday;
+              const totalRegularWage = rate * daysOfWork;
+              const totalAmount = totalRegularWage + overtime + holiday;
 
-            const sssDeduction = data.sssDeduction || 0;
-            const philhealthDeduction = data.philhealthDeduction || 0;
-            const pagibigDeduction = data.pagibigDeduction || 0;
-            const cashAdvance = data.cashAdvance || 0;
+              const sssDeduction = data.sssDeduction || 0;
+              const philhealthDeduction = data.philhealthDeduction || 0;
+              const pagibigDeduction = data.pagibigDeduction || 0;
+              const cashAdvance = data.cashAdvance || 0;
 
-            const totalDeductions = sssDeduction + philhealthDeduction + pagibigDeduction + cashAdvance;
+              const totalDeductions = sssDeduction + philhealthDeduction + pagibigDeduction + cashAdvance;
 
-            return {
-              id: doc.id,
-              name: data.name || "",
-              rate,
-              daysOfWork,
-              totalRegularWage,
-              overtime,
-              holiday,
-              totalAmount,
-              sssDeduction,
-              philhealthDeduction,
-              pagibigDeduction,
-              cashAdvance,
-              totalDeductions,
-              totalNetAmount: totalAmount - totalDeductions,
-            };
-          })
-      );
-      setEmployees(fetchedEmployees);
-      setFilteredEmployees(fetchedEmployees);
+              return {
+                id: userId, // Use userId instead of doc.id
+                name: data.name || "",
+                rate,
+                daysOfWork,
+                totalRegularWage,
+                overtime,
+                holiday,
+                totalAmount,
+                sssDeduction,
+                philhealthDeduction,
+                pagibigDeduction,
+                cashAdvance,
+                totalDeductions,
+                totalNetAmount: totalAmount - totalDeductions,
+              };
+            })
+        );
+
+        // Save current month's data
+        const payrollData = fetchedEmployees.reduce((acc, employee) => {
+          acc[employee.id] = employee;
+          return acc;
+        }, {} as Record<string, Employee>);
+
+        await setDoc(doc(db, "payroll", currentMonth), payrollData);
+
+        setEmployees(fetchedEmployees);
+        setFilteredEmployees(fetchedEmployees);
+      } else {
+        // Fetch historical data
+        const payrollDoc = await getDoc(doc(db, "payroll", month));
+        if (payrollDoc.exists()) {
+          const payrollData = payrollDoc.data();
+          const fetchedEmployees: Employee[] = Object.entries(payrollData).map(([id, data]: [string, any]) => ({
+            id,
+            ...data,
+          }));
+          setEmployees(fetchedEmployees);
+          setFilteredEmployees(fetchedEmployees);
+        } else {
+          setEmployees([]);
+          setFilteredEmployees([]);
+          toast.error("No payroll data found for the selected month");
+        }
+      }
     } catch (error) {
       console.error("Error fetching employees: ", error);
       toast.error("Failed to fetch employees");
@@ -141,8 +192,6 @@ const Payroll: React.FC = () => {
       setIsLoading(false);
     }
   };
-
-
 
   const handleSearch = () => {
     const filtered = employees.filter(
@@ -308,16 +357,23 @@ const Payroll: React.FC = () => {
     return pageNumbers;
   };
 
-  useEffect(() => {
-    fetchEmployees();
-    setSelectAll(false);
-  }, []);
 
   return (
     <AdminRouteGuard>
       <div className="container mx-auto p-4 h-full">
         <div className="grid grid-cols-1 gap-4">
           <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="select select-sm select-bordered rounded-sm w-full sm:w-64"
+            >
+              {availableMonths.map((month) => (
+                <option key={month} value={month}>
+                  {new Date(month).toLocaleString('default', { month: 'long', year: 'numeric' })}
+                </option>
+              ))}
+            </select>
             <input
               type="text"
               placeholder="Search by name"

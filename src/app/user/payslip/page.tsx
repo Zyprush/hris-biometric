@@ -2,18 +2,37 @@
 import { UserRouteGuard } from "@/components/UserRouteGuard";
 import UserLayout from "@/components/UserLayout";
 import { SignedIn } from "@/components/signed-in";
-import React, { useEffect, useRef } from "react";
-import { auth, db } from "@/firebase";
+import React, { useEffect, useRef, useState } from "react";
+import { auth, db, rtdb } from "@/firebase";
 import { UserDatainterface } from "@/state/interface";
 import { useUserStore } from "@/state/user";
 import { doc, getDoc } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import ReactToPrint from "react-to-print";
+import { get, ref } from "firebase/database";
+
+interface PayrollData {
+  name: string;
+  rate: number;
+  daysOfWork: number;
+  totalRegularWage: number;
+  overtime: number;
+  holiday: number;
+  totalAmount: number;
+  sssDeduction: number;
+  philhealthDeduction: number;
+  pagibigDeduction: number;
+  cashAdvance: number;
+  totalDeductions: number;
+  totalNetAmount: number;
+}
 
 const Payslip = () => {
   const componentRef = useRef<HTMLTableElement>(null);
   const [user, loading] = useAuthState(auth);
   const { setUserData, setUser, userData } = useUserStore();
+  const [rtdbUserId, setRtdbUserId] = useState<string>("");
+  const [payrollData, setPayrollData] = useState<PayrollData | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -21,14 +40,54 @@ const Payslip = () => {
         const userDocRef = doc(db, "users", user.uid);
         const userDocSnap = await getDoc(userDocRef);
         if (userDocSnap.exists()) {
-          setUserData(userDocSnap.data() as UserDatainterface);
+          const fetchedUserData = userDocSnap.data() as UserDatainterface;
+          setUserData(fetchedUserData);
           setUser(user);
+
+          // Fetch RTDB userId
+          if (fetchedUserData.userIdRef) {
+            try {
+              const userRef = ref(rtdb, `users/${fetchedUserData.userIdRef}`);
+              const userSnapshot = await get(userRef);
+              const rtdbUserData = userSnapshot.val();
+              if (rtdbUserData && rtdbUserData.userid) {
+                setRtdbUserId(rtdbUserData.userid);
+              }
+            } catch (error) {
+              console.error(`Error fetching RTDB data:`, error);
+            }
+          }
         }
       }
     };
     fetchUserData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, setUser]);
+  }, [user, setUser, setUserData]);
+
+  useEffect(() => {
+    const fetchPayrollData = async () => {
+      if (rtdbUserId) {
+        const currentDate = new Date();
+        const currentMonth = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
+        const payrollRef = doc(db, "payroll", currentMonth);
+        const payrollSnap = await getDoc(payrollRef);
+        
+        if (payrollSnap.exists()) {
+          const allPayrollData = payrollSnap.data();
+          if (allPayrollData[rtdbUserId]) {
+            setPayrollData(allPayrollData[rtdbUserId] as PayrollData);
+          } else {
+            console.warn(`No payroll data found for user with ID: ${rtdbUserId}`);
+          }
+        } else {
+          console.warn(`No payroll data found for the current month: ${currentMonth}`);
+        }
+      }
+    };
+    fetchPayrollData();
+  }, [rtdbUserId]);
+
+  if (loading) return <div>Loading...</div>;
+
   return (
     <UserRouteGuard>
       <SignedIn>
@@ -61,13 +120,13 @@ const Payslip = () => {
                         NAME
                       </td>
                       <td className="p-2 border border-gray-300 align-middle">
-                      {userData?.name  || "Name"}
+                        {payrollData?.name || userData?.name || "Name"}
                       </td>
                       <td
                         className="text-right font-bold p-2 border border-gray-300 align-middle"
                         colSpan={2}
                       >
-                        3,017.50
+                        {payrollData?.totalAmount.toFixed(2) || "0.00"}
                       </td>
                     </tr>
                     <tr>
@@ -75,48 +134,50 @@ const Payslip = () => {
                         DATE
                       </td>
                       <td className="p-2 border border-gray-300 align-middle">
-                        MAY 1-15, 2023
+                        {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                       </td>
                       <td className="text-center p-2 border border-gray-300 align-middle">
                         OT
                       </td>
-                      <td className="text-center p-2 border border-gray-300 align-middle"></td>
+                      <td className="text-center p-2 border border-gray-300 align-middle">
+                        {payrollData?.overtime.toFixed(2) || "0.00"}
+                      </td>
                     </tr>
                     <tr>
                       <td className="font-semibold p-2 border border-gray-300 align-middle">
                         DOW
                       </td>
                       <td className="p-2 border border-gray-300 align-middle">
-                        8.5 DAYS
+                        {payrollData?.daysOfWork || "0"} DAYS
                       </td>
                       <td className="text-center p-2 border border-gray-300 align-middle">
-                        30%
+                        Holiday
                       </td>
-                      <td className="text-center p-2 border border-gray-300 align-middle"></td>
+                      <td className="text-center p-2 border border-gray-300 align-middle">
+                        {payrollData?.holiday.toFixed(2) || "0.00"}
+                      </td>
                     </tr>
                     <tr>
                       <td className="font-semibold p-2 border border-gray-300 align-middle">
-                        VALE
+                        RATE
                       </td>
-                      <td className="p-2 border border-gray-300 align-middle"></td>
+                      <td className="p-2 border border-gray-300 align-middle">
+                        {payrollData?.rate.toFixed(2) || "0.00"}
+                      </td>
                       <td className="text-center p-2 border border-gray-300 align-middle">
-                        HP
+                        Total Regular Wage
                       </td>
-                      <td className="text-center p-2 border border-gray-300 align-middle"></td>
+                      <td className="text-center p-2 border border-gray-300 align-middle">
+                        {payrollData?.totalRegularWage.toFixed(2) || "0.00"}
+                      </td>
                     </tr>
                     <tr>
                       <td className="font-semibold p-2 border border-gray-300 align-middle">
                         CASH ADVANCE
                       </td>
-                      <td className="p-2 border border-gray-300 align-middle">{userData?.cashAdvance || "0"}</td>
-                      <td className="p-2 border border-gray-300 align-middle"></td>
-                      <td className="p-2 border border-gray-300 align-middle"></td>
-                    </tr>
-                    <tr>
-                      <td className="font-semibold p-2 border border-gray-300 align-middle">
-                        LATE
+                      <td className="p-2 border border-gray-300 align-middle">
+                        {payrollData?.cashAdvance.toFixed(2) || "0.00"}
                       </td>
-                      <td className="p-2 border border-gray-300 align-middle"></td>
                       <td className="p-2 border border-gray-300 align-middle"></td>
                       <td className="p-2 border border-gray-300 align-middle"></td>
                     </tr>
@@ -125,7 +186,7 @@ const Payslip = () => {
                         SSS
                       </td>
                       <td className="p-2 border border-gray-300 align-middle">
-                        {userData?.sssDeduction || "0"}
+                        {payrollData?.sssDeduction.toFixed(2) || "0.00"}
                       </td>
                       <td className="p-2 border border-gray-300 align-middle"></td>
                       <td className="p-2 border border-gray-300 align-middle"></td>
@@ -134,22 +195,33 @@ const Payslip = () => {
                       <td className="font-semibold p-2 border border-gray-300 align-middle">
                         PHILHEALTH
                       </td>
-                      <td className="p-2 border border-gray-300 align-middle"></td>
                       <td className="p-2 border border-gray-300 align-middle">
-                        Total Deduction
+                        {payrollData?.philhealthDeduction.toFixed(2) || "0.00"}
                       </td>
+                      <td className="p-2 border border-gray-300 align-middle"></td>
                       <td className="p-2 border border-gray-300 align-middle"></td>
                     </tr>
                     <tr>
                       <td className="font-semibold p-2 border border-gray-300 align-middle">
                         PAG IBIG
                       </td>
-                      <td className="p-2 border border-gray-300 align-middle">{userData?.philhealthDeduction  || "0"}</td>
+                      <td className="p-2 border border-gray-300 align-middle">
+                        {payrollData?.pagibigDeduction.toFixed(2) || "0.00"}
+                      </td>
+                      <td className="text-right font-bold p-2 border border-gray-300 align-middle">
+                        Total Deductions
+                      </td>
+                      <td className="text-right font-bold p-2 border border-gray-300 align-middle">
+                        {payrollData?.totalDeductions.toFixed(2) || "0.00"}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="font-semibold p-2 border border-gray-300 align-middle" colSpan={2}></td>
                       <td className="text-right font-bold p-2 border border-gray-300 align-middle">
                         NET PAY
                       </td>
                       <td className="text-right font-bold p-2 border border-gray-300 align-middle">
-                        3,017.50
+                        {payrollData?.totalNetAmount.toFixed(2) || "0.00"}
                       </td>
                     </tr>
                   </tbody>
