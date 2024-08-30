@@ -45,7 +45,7 @@ const AddEmployee = () => {
   const [startDate, setStartDate] = useState<string>("");
   const [status, setStatus] = useState<string>("");
   const [supervisor, setSupervisor] = useState<string>("");
-  const [rate, setRate] = useState<string>("");
+  const [rate, setRate] = useState<number>(0);
 
   // Legal Compliance and Documents
   const [sss, setSss] = useState<string>("");

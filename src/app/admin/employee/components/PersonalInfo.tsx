@@ -36,7 +36,7 @@ interface PersonalInfoProps {
   setEmergencyContactAddress: (emergencyContactAddress: string) => void;
   userIdRef: string;
   setUserIdRef: (userIdRef: string) => void;
-  
+
 }
 
 interface User {
@@ -48,7 +48,7 @@ interface User {
 
 const PersonalInfo: React.FC<PersonalInfoProps> = ({
   name, setName, nickname, setNickname, birthday, setBirthday, gender, setGender, maritalStatus, setMaritalStatus, nationality, setNationality, currentAddress, setCurrentAddress, permanentAddress, setPermanentAddress, isPermanentSameAsCurrent, setIsPermanentSameAsCurrent, phone, setPhone, email, setEmail, emergencyContactName, setEmergencyContactName, emergencyContactPhone, setEmergencyContactPhone, emergencyContactAddress, setEmergencyContactAddress,
-  userIdRef, setUserIdRef, 
+  userIdRef, setUserIdRef,
 }) => {
   const [users, setUsers] = useState<{ [key: string]: User }>({});
   const [usedUserIdRefs, setUsedUserIdRefs] = useState<string[]>([]);
@@ -78,13 +78,13 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
     };
 
     fetchUsedUserIdRefs();
-    
+
     return () => {
       off(usersRef);
     };
   }, []);
 
-  const availableUsers = Object.values(users).filter(user => !usedUserIdRefs.includes(user.userid));
+  const availableUsers = Object.entries(users).filter(([key, _]) => !usedUserIdRefs.includes(key));
 
   useEffect(() => {
     if (isPermanentSameAsCurrent) {
@@ -111,9 +111,9 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             className="w-full p-2 border rounded dark:bg-zinc-200"
           >
             <option value="">Select User Reference</option>
-            {availableUsers.map((user) => (
-              <option key={user.userid} value={user.userid}>
-                {user.name} (User ID: {user.userid})
+            {availableUsers.map(([key, user]) => (
+              <option key={key} value={key}>
+                {key}. {user.name} 
               </option>
             ))}
           </select>

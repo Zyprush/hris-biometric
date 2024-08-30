@@ -92,7 +92,7 @@ export const validateStep = (step: number, formData: any): ValidationResult => {
       return { isValid: true };
 
     case 3: // Legal Compliance and Documents
-      if (formData.sss === "" || formData.sss === "N/A") {
+      if (formData.sss === "" || formData.sss === "N/A" || formData.sss === "n/a") {
         if (formData.sss === "") {
           return { isValid: false, errorMessage: "SSS number is required." };
         }
@@ -105,7 +105,8 @@ export const validateStep = (step: number, formData: any): ValidationResult => {
 
       if (
         formData.philHealthNumber === "" ||
-        formData.philHealthNumber === "N/A"
+        formData.philHealthNumber === "N/A" ||
+        formData.philHealthNumber === "n/a"
       ) {
         if (formData.philHealthNumber === "") {
           return {
@@ -120,7 +121,7 @@ export const validateStep = (step: number, formData: any): ValidationResult => {
         };
       }
 
-      if (formData.pagIbigNumber === "" || formData.pagIbigNumber === "N/A") {
+      if (formData.pagIbigNumber === "" || formData.pagIbigNumber === "N/A" || formData.pagIbigNumber === "n/a") {
         if (formData.pagIbigNumber === "") {
           return {
             isValid: false,
@@ -134,7 +135,7 @@ export const validateStep = (step: number, formData: any): ValidationResult => {
         };
       }
 
-      if (formData.tinNumber === "" || formData.tinNumber === "N/A") {
+      if (formData.tinNumber === "" || formData.tinNumber === "N/A" || formData.tinNumber === "n/a") {
         if (formData.tinNumber === "") {
           return { isValid: false, errorMessage: "TIN is required." };
         }

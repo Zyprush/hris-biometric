@@ -6,8 +6,8 @@ import { collection, getDocs } from 'firebase/firestore';
 interface EmploymentInfoProps {
   employeeId: string;
   setEmployeeId: (employeeId: string) => void;
-  rate: string;
-  setRate: (rate: string) => void;
+  rate: number;
+  setRate: (rate: number) => void;
   position: string;
   setPosition: (position: string) => void;
   department: string;
@@ -86,7 +86,7 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
           <input
             type="number"
             id="rate"
-            onChange={(e) => setRate(e.target.value)}
+            onChange={(e) => setRate(parseFloat(e.target.value))}
             value={rate}
             placeholder="Rate/day"
             required

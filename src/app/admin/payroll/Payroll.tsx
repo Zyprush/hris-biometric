@@ -125,7 +125,7 @@ const Payroll: React.FC = () => {
                 }
               }
 
-              const rate = 520; // Fixed rate
+              const rate = data.rate || 520; // Fixed rate
               const overtime = data.overtime || 0;
               const holiday = data.holiday || 0;
 

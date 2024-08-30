@@ -38,7 +38,7 @@ interface SubmitParams {
     tinNumber: string;
     status: string;
     supervisor: string;
-    rate: string;
+    rate: number;
     role: "user" | "admin";
   };
 }
