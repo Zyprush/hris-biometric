@@ -8,7 +8,6 @@ import { UserDatainterface } from "@/state/interface";
 import { useUserStore } from "@/state/user";
 import { doc, getDoc } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
-import ReactToPrint from "react-to-print";
 import { get, ref } from "firebase/database";
 
 interface PayrollData {
@@ -97,18 +96,6 @@ const Payslip = () => {
             ref={componentRef}
           >
             <div className="p-4 mx-auto mt-10">
-              <ReactToPrint
-                trigger={() => (
-                  <button
-                    data-tip="Save or Print DTR"
-                    className="p-4 text-xs md:text-sm rounded-md tooltip tooltip-top text-white font-[600] bg-neutral fixed bottom-4 right-4"
-                  >
-                    Download Payslip
-                  </button>
-                )}
-                content={() => componentRef.current}
-                pageStyle={"flex justify-start items-start p-20"}
-              />
               <div className="bg-white border border-gray-300 shadow-md">
                 <h1 className="text-xl font-bold p-2 bg-primary border-b border-gray-300 text-white">
                   PAYSLIP
