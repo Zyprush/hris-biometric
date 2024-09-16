@@ -13,8 +13,29 @@ import { doc, getDoc } from "firebase/firestore";
 import { SignedOut } from "@/components/signed-out";
 import { SignedIn } from "@/components/signed-in";
 import { RoleBasedRedirect } from "@/components/RoleBasedRedirect";
+import { motion } from "framer-motion";
+import { text } from "stream/consumers";
+import { getPath } from "../page";
 
 const SignInPage = () => {
+  const text = "SMART HR";
+
+  const pathVariants = {
+    hidden: { pathLength: 0, opacity: 0 },
+    visible: (i: number) => ({
+      pathLength: 1,
+      opacity: 1,
+      transition: {
+        pathLength: {
+          delay: i * 0.5,
+          type: "spring",
+          duration: 1.5,
+          bounce: 0,
+        },
+        opacity: { delay: i * 0.5, duration: 0.01 },
+      },
+    }),
+  };
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,7 +69,7 @@ const SignInPage = () => {
           userId: user.uid,
           time: currentDate,
           login: true,
-          type: "login"
+          type: "login",
         });
         router.push(role === "admin" ? "/admin/dashboard" : "/user/dashboard");
       } else {
@@ -90,8 +111,40 @@ const SignInPage = () => {
     <AuroraBackground>
       <SignedOut>
         <ToastContainer />
-        <div className="flex flex-col items-center justify-center h-screen dark w-full px-4 bg-black">
-          <div className="w-full max-w-lg bg-gray-800 bg-opacity-30 backdrop-blur-sm rounded-lg shadow-md p-6 z-10 relative">
+        <div className="flex md:flex-row flex-col-reverse gap-8 items-center justify-center h-screen dark w-full px-4 bg-black">
+          <div className="text-zinc-700 dark:text-zinc-400 text-xs w-[20rem] text-justify">
+            <div className="grid grid-cols-1 pl-8 p-3 bg-zinc-950 bg-opacity-70 rounded-lg">
+              <motion.svg
+                width="300"
+                height="100"
+                viewBox="0 0 300 100"
+                initial="hidden"
+                animate="visible"
+              >
+                {text.split("").map((char, index) => (
+                  <motion.path
+                    key={index}
+                    d={getPath(char, index)}
+                    fill="transparent"
+                    strokeWidth="4"
+                    stroke="white"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    variants={pathVariants}
+                    custom={index}
+                  />
+                ))}
+              </motion.svg>
+            </div>
+            The system is a comprehensive HRIS Biometric web application
+            designed to streamline employee management and attendance tracking.
+            It features user authentication, role-based access control, and a
+            dashboard that provides insights into attendance, leave requests,
+            and financial overviews. Additionally, the application integrates
+            with Firebase for real-time data management and notifications,
+            ensuring a seamless user experience.
+          </div>
+          <div className="w-full max-w-md bg-gray-800 bg-opacity-40 backdrop-blur-sm rounded-lg shadow-md p-6 py-14 z-10 relative">
             <h1 className="text-2xl text-white font-bold mb-6">Sign in</h1>
             <div className="flex flex-col" onKeyDown={handleKeyDown}>
               <input
@@ -170,10 +223,10 @@ const SignInPage = () => {
                 onClick={handleSignIn}
                 disabled={loading}
               >
-                  <span className="flex gap-2 text-center">
-                    <span className="loading loading-spinner loading-sm"></span>
-                    Signing in...
-                  </span>
+                <span className="flex gap-2 text-center">
+                  <span className="loading loading-spinner loading-sm"></span>
+                  Signing in...
+                </span>
               </button>
             </div>
           </div>

@@ -111,7 +111,7 @@ export default function Home() {
   );
 }
 
-function getPath(char: string, index: number): string {
+export function getPath(char: string, index: number): string {
   const baseX = 30 + index * 30;
   const baseY = 50;
   
