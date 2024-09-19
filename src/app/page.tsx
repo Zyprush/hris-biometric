@@ -111,7 +111,8 @@ export default function Home() {
   );
 }
 
-export function getPath(char: string, index: number): string {
+// Explicitly define the type for getPath
+function getPath(char: string, index: number): string {
   const baseX = 30 + index * 30;
   const baseY = 50;
   
