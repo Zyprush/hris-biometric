@@ -107,7 +107,7 @@ export default function Home() {
           </>
         </motion.div>
       </AuroraBackground>
-    </main>
+    </main>  
   );
 }
 
