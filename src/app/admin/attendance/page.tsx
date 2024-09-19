@@ -4,7 +4,7 @@ import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import AdminLayout from "@/components/AdminLayout";
 import { SignedIn } from "@/components/signed-in";
 import { useState } from "react";
-import Attendance from "./Attendance";
+import Attendance from "./AttendanceNew";
 import Leave from "./Leave";
 import Logs from "./Logs";
 import { FaFileCircleQuestion, FaClipboardUser } from "react-icons/fa6";
