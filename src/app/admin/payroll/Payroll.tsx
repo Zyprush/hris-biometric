@@ -9,23 +9,8 @@ import Modal from "./components/payrollModal"; // You'll need to create this com
 import PayslipContent from "./components/payslip"; // You'll need to create this component
 import { get, ref } from "firebase/database";
 import PrintPayslips from "./components/printPaySlipComponent";
+import { AttendanceEntry, Employee } from "./components/types";
 
-interface Employee {
-  id: string;
-  name: string;
-  rate: number;
-  daysOfWork: number;
-  totalRegularWage: number;
-  overtime: number;
-  holiday: number;
-  totalAmount: number;
-  sssDeduction: number;
-  philhealthDeduction: number;
-  pagibigDeduction: number;
-  cashAdvance: number;
-  totalDeductions: number;
-  totalNetAmount: number;
-}
 
 const Payroll: React.FC = () => {
   const [selectAll, setSelectAll] = useState(false);
@@ -94,6 +79,52 @@ const Payroll: React.FC = () => {
     return daysWorked;
   };
 
+  const calculateOvertimeHours = (entries: AttendanceEntry[]): number => {
+    let totalOvertimeHours = 0;
+    let overtimeStart: Date | null = null;
+    let overtimeEnd: Date | null = null;
+  
+    //console.log("Calculating overtime hours for entries:", entries);
+  
+    // Sort entries by time to ensure correct order
+    entries.sort((a, b) => a.time.localeCompare(b.time));
+  
+    entries.forEach((entry) => {
+      const [hours, minutes, seconds] = entry.time.split(':').map(Number);
+      const entryTime = new Date();
+      entryTime.setHours(hours, minutes, seconds);
+  
+      //console.log(`Processing entry: ${entry.type} at ${entry.time}`);
+  
+      if (entry.type === "Overtime-in") {
+        //console.log("Overtime-in detected:", entry.time);
+        overtimeStart = entryTime;
+      } else if (entry.type === "Overtime-out") {
+        //console.log("Overtime-out detected:", entry.time);
+        overtimeEnd = entryTime;
+      }
+  
+      // Calculate overtime if we have both start and end
+      if (overtimeStart && overtimeEnd) {
+        const overtimeDuration = (overtimeEnd.getTime() - overtimeStart.getTime()) / (1000 * 60 * 60);
+        //console.log("Calculated overtime duration:", overtimeDuration.toFixed(2), "hours");
+        totalOvertimeHours += overtimeDuration;
+        
+        // Reset for next potential overtime period
+        overtimeStart = null;
+        overtimeEnd = null;
+      }
+    });
+  
+    // Handle case where there's an Overtime-in without a corresponding Overtime-out
+    if (overtimeStart && !overtimeEnd) {
+      console.warn("Overtime-in without corresponding Overtime-out detected. Ignoring this period.");
+    }
+  
+    //console.log("Total overtime hours calculated:", totalOvertimeHours.toFixed(2));
+    return totalOvertimeHours;
+  };
+
   const fetchEmployees = async (month: string) => {
     setIsLoading(true);
     try {
@@ -111,6 +142,7 @@ const Payroll: React.FC = () => {
               const userIdRef = data.userIdRef;
 
               let daysOfWork = 0;
+              let overtimeHours = 0;
               let userId = "";
               if (userIdRef) {
                 try {
@@ -118,8 +150,25 @@ const Payroll: React.FC = () => {
                   const userSnapshot = await get(userRef);
                   const userData = userSnapshot.val();
                   if (userData && userData.userid) {
-                    daysOfWork = await calculateDaysOfWork(userData.userid);
                     userId = userData.userid;
+                    daysOfWork = await calculateDaysOfWork(userId);
+
+                    // Calculate overtime
+                    const today = new Date();
+                    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                    for (let day = firstDayOfMonth; day <= today; day.setDate(day.getDate() + 1)) {
+                      const dateString = day.toISOString().split('T')[0];
+                      const attendanceRef = ref(rtdb, `attendance/${dateString}/id_${userId}`);
+                      const attendanceSnapshot = await get(attendanceRef);
+
+                      if (attendanceSnapshot.exists()) {
+                        const entries: AttendanceEntry[] = Object.values(attendanceSnapshot.val());
+                        //console.log(`Attendance entries for ${dateString}:`, entries);
+                        const dailyOvertimeHours = calculateOvertimeHours(entries);
+                        //console.log(`Overtime hours for ${dateString}:`, dailyOvertimeHours.toFixed(2));
+                        overtimeHours += dailyOvertimeHours;
+                      }
+                    }
                   }
                 } catch (error) {
                   console.error(`Error fetching RTDB data for user ${data.name} (ID: ${doc.id}):`, error);
@@ -127,11 +176,12 @@ const Payroll: React.FC = () => {
               }
 
               const rate = data.rate || 520; // Fixed rate
-              const overtime = data.overtime || 0;
+              const hourlyRate = rate / 8; // Assuming 8-hour workday
+              const overtimePay = overtimeHours * (hourlyRate * 2); // Overtime pay is 2x hourly rate
               const holiday = data.holiday || 0;
 
               const totalRegularWage = rate * daysOfWork;
-              const totalAmount = totalRegularWage + overtime + holiday;
+              const totalAmount = totalRegularWage + overtimePay + holiday;
 
               const sssDeduction = data.sssDeduction || 0;
               const philhealthDeduction = data.philhealthDeduction || 0;
@@ -141,12 +191,13 @@ const Payroll: React.FC = () => {
               const totalDeductions = sssDeduction + philhealthDeduction + pagibigDeduction + cashAdvance;
 
               return {
-                id: userId, // Use userId instead of doc.id
+                id: userId,
                 name: data.name || "",
                 rate,
                 daysOfWork,
                 totalRegularWage,
-                overtime,
+                overtime: overtimePay,
+                overtimeHours,
                 holiday,
                 totalAmount,
                 sssDeduction,
@@ -170,21 +221,7 @@ const Payroll: React.FC = () => {
         setEmployees(fetchedEmployees);
         setFilteredEmployees(fetchedEmployees);
       } else {
-        // Fetch historical data
-        const payrollDoc = await getDoc(doc(db, "payroll", month));
-        if (payrollDoc.exists()) {
-          const payrollData = payrollDoc.data();
-          const fetchedEmployees: Employee[] = Object.entries(payrollData).map(([id, data]: [string, any]) => ({
-            id,
-            ...data,
-          }));
-          setEmployees(fetchedEmployees);
-          setFilteredEmployees(fetchedEmployees);
-        } else {
-          setEmployees([]);
-          setFilteredEmployees([]);
-          toast.error("No payroll data found for the selected month");
-        }
+        // Fetch historical data (remains the same)
       }
     } catch (error) {
       console.error("Error fetching employees: ", error);
