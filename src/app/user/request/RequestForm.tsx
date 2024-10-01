@@ -127,14 +127,17 @@ const RequestForm = ({
                       className="p-2 mb-2 border text-sm rounded bg-zinc-200 text-zinc-500 md:w-40 w-36"
                     />
                   </div>
-                  <textarea
+                  <select
                     value={reason}
-                    placeholder="Reason"
                     onChange={(e) => setReason(e.target.value)}
                     className="w-full p-2 text-sm mb-2 border rounded bg-zinc-200"
-                    rows={5}
-                    style={{ resize: "none" }}
-                  />
+                  >
+                    <option value="">Reason</option>
+                    <option value="Maternity Leave">Maternity Leave</option>
+                    <option value="Sick Leave">Sick Leave</option>
+                    <option value="Vacation Leave">Vacation Leave</option>
+                    <option value="Burial Leave">Burial Leave</option>
+                  </select>
                 </div>
                 <div className="relative">
                   <button
