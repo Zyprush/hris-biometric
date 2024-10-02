@@ -84,12 +84,22 @@ const EmploymentCert: React.FC<{ params: { id: string } }> = ({ params }) => {
 
               <p className="mt-10">
                 This is to certify that <b>{userData?.name}</b> is a bonafide employee
-                of <b>Beper Shopping Center</b> holding the position of {userData?.position} from {userData?.startDate && format(new Date(userData?.startDate), "MMM dd, yyyy")} up to the present.
+                of <b>Beper Shopping Center</b> holding the position of &nbsp;{userData?.position} from {userData?.startDate && format(new Date(userData?.startDate), "MMM dd, yyyy")} up to the present.
               </p>
 
               <p>
-                This certification is being issued upon the request of
+                This certification is being issued upon the request of&nbsp;
                 {userData?.name} for any purpose it may serve.
+              </p>
+
+              <p className="mt-10">
+                Issued by:
+              </p>
+
+              <p className="mt-4">
+                <b>Eduard C. Ong</b>
+                <br />
+                Manager
               </p>
 
               <p className="mt-10">

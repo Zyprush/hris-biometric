@@ -98,12 +98,13 @@ const Modal: React.FC<ModalProps> = ({
       await onEdit(editedEmployee, newProfilePic);
       const currentDate = new Date().toISOString();
       console.log('userData', userData)
-      await addHistory({
+     const history = await addHistory({
         text: `An admin edited ${editedEmployee.name} account`,
         time: currentDate,
         userId: editedEmployee?.id,
         type: "admin",
       });
+      console.log('history', history)
       setIsEditing(false);
 
       // Update the local state to reflect changes
@@ -429,7 +430,7 @@ const Modal: React.FC<ModalProps> = ({
               type="button"
               href={`/admin/employee/completion-cert/${employee.id}`}
             >
-              <MdEditDocument className="mr-2" /> Certification
+              <MdEditDocument className="mr-2" /> COE
             </Link>
             {isEditing ? (
               <button

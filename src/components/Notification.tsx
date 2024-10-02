@@ -56,7 +56,7 @@ const Notification: React.FC<NotificationsProps> = ({
   return (
     <ul
       tabIndex={0}
-      className="mt-3 z-[1] dropdown-content w-60 bg-gray-900 text-white p-4 rounded-lg shadow-2xl border"
+      className="mt-3 z-50 dropdown-content w-60 bg-gray-900 text-white p-4 rounded-lg shadow-2xl border"
     >
       <h2 className="text-xl font-bold flex mb-4">Notifications</h2>{" "}
       {/* Title */}

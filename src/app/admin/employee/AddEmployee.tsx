@@ -104,12 +104,13 @@ const AddEmployee = () => {
       });
       // add to history
       const currentDate = new Date().toISOString();
-      addHistory({
+      const history = addHistory({
         adminId: userData?.id,
-        text: `${userData?.name} created ${name} account`,
+        text: `Admin created ${name} account`,
         time: currentDate,
         type: "admin"
       });
+      console.log('history', history)
       successToast("User created successfully.");
       // Set a short timeout before reloading to ensure the success toast is visible
       setTimeout(() => {
@@ -143,7 +144,7 @@ const AddEmployee = () => {
         <ToastContainer />
         <div className="w-full max-w-6xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
           <div className="p-8">
-            <div className="uppercase tracking-wide text-sm text-primary font-semibold mb-4">
+            <div className="uppercase tracking-wide text-sm text-primary dark:text-white font-semibold mb-4">
               Add Employee - Step {step} of 4
             </div>
             <form onSubmit={onSubmit}>
