@@ -13,15 +13,30 @@ import {
   BarElement,
   Title,
 } from "chart.js";
-import { FaUsers, FaUserMinus, FaBuilding, FaUserPlus, FaBirthdayCake } from 'react-icons/fa';
+import {
+  FaUsers,
+  FaUserMinus,
+  FaBuilding,
+  FaUserPlus,
+  FaBirthdayCake,
+} from "react-icons/fa";
 import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import { ToastContainer } from "react-toastify";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase";
 import CardComponent from "@/components/CardComponents";
+import EmployeeCount from "./EmployeeCount";
 
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title
+);
 
 const AdminDashboard = () => {
   const setAuthChecked = (isChecked: boolean) => {
@@ -41,21 +56,21 @@ const AdminDashboard = () => {
 
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-      oneWeekAgo.setHours(0, 0, 0, 0);  // Set to beginning of the day
+      oneWeekAgo.setHours(0, 0, 0, 0); // Set to beginning of the day
 
       let recentHiresCount = 0;
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         if (data.startDate) {
           let startDate;
-          if (typeof data.startDate === 'string') {
+          if (typeof data.startDate === "string") {
             // If startDate is stored as a string
             startDate = new Date(data.startDate);
           } else if (data.startDate.toDate) {
             // If startDate is a Firestore Timestamp
             startDate = data.startDate.toDate();
           } else {
-            console.error('Unexpected startDate format:', data.startDate);
+            console.error("Unexpected startDate format:", data.startDate);
             return;
           }
 
@@ -64,12 +79,17 @@ const AdminDashboard = () => {
 
           if (startDate >= oneWeekAgo) {
             recentHiresCount++;
-            console.log('Recent hire found:', data.name, 'Start date:', startDate);  // Debugging log
+            console.log(
+              "Recent hire found:",
+              data.name,
+              "Start date:",
+              startDate
+            ); // Debugging log
           }
         }
       });
       setRecentHires(recentHiresCount);
-      console.log('Total recent hires:', recentHiresCount);  // Debugging log
+      console.log("Total recent hires:", recentHiresCount); // Debugging log
     } catch (error) {
       console.error("Error fetching total employees: ", error);
     }
@@ -91,7 +111,7 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error("Error fetching former employees: ", error);
     }
-  }
+  };
   const fetchUpcomingBirthdays = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "users"));
@@ -103,20 +123,24 @@ const AdminDashboard = () => {
         const data = doc.data();
         if (data.birthday) {
           let birthdate;
-          if (typeof data.birthday === 'string') {
+          if (typeof data.birthday === "string") {
             // If birthday is stored as a string
             birthdate = new Date(data.birthday);
           } else if (data.birthday.toDate) {
             // If birthday is a Firestore Timestamp
             birthdate = data.birthday.toDate();
           } else {
-            console.error('Unexpected birthday format:', data.birthday);
+            console.error("Unexpected birthday format:", data.birthday);
             return;
           }
 
           // Ensure birthdate is set to the beginning of the day for fair comparison
           birthdate.setHours(0, 0, 0, 0);
-          const thisBirthday = new Date(today.getFullYear(), birthdate.getMonth(), birthdate.getDate());
+          const thisBirthday = new Date(
+            today.getFullYear(),
+            birthdate.getMonth(),
+            birthdate.getDate()
+          );
 
           if (thisBirthday >= today && thisBirthday <= oneWeekLater) {
             birthdaysCount++;
@@ -129,13 +153,11 @@ const AdminDashboard = () => {
     }
   };
 
-
   useEffect(() => {
     fetchTotalEmployees();
     fetchFormerEmployees();
     fetchUpcomingBirthdays();
     fetchTotalBraches();
-
   }, []);
 
   const doughnutData = {
@@ -186,9 +208,12 @@ const AdminDashboard = () => {
     { title: "Total Branches", icon: FaBuilding, value: totalBraches },
     { title: "Recent Hires", icon: FaUserPlus, value: recentHires },
     { title: "Former Employees", icon: FaUserMinus, value: formerEmployees },
-    { title: "Upcoming Birthdays", icon: FaBirthdayCake, value: upcomingBirthdays },
+    {
+      title: "Upcoming Birthdays",
+      icon: FaBirthdayCake,
+      value: upcomingBirthdays,
+    },
   ];
-
 
   return (
     <AdminRouteGuard>
@@ -199,19 +224,12 @@ const AdminDashboard = () => {
             <CardComponent cardData={cardData} />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 border dark:border-zinc-800">
-                <h2 className="text-lg font-semibold mb-2">Attendance Summary</h2>
+                <h2 className="text-lg font-semibold mb-2">
+                  Attendance Summary
+                </h2>
                 <Doughnut data={doughnutData} />
               </div>
-              <div className="grid grid-cols-1 gap-4">
-                <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 border dark:border-zinc-800">
-                  <h2 className="text-lg font-semibold mb-2">Main Branch</h2>
-                  <Bar data={branch1} />
-                </div>
-                <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 border dark:border-zinc-800">
-                  <h2 className="text-lg font-semibold mb-2">Branch 1</h2>
-                  <Bar data={branch2} />
-                </div>
-              </div>
+                <EmployeeCount />
             </div>
           </div>
         </AdminLayout>
