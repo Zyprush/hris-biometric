@@ -135,6 +135,8 @@ const Attendance: React.FC = () => {
               const totalMinutes = amMinutes + pmMinutes;
               const totalHours = totalMinutes / 60;
 
+              console.log(`Total hours: ${totalHours.toFixed(2)}`);
+
               // Calculate OT hours
               const otHours = overtimeEntries.reduce((total, entry) => {
                 if (entry.type === "Overtime-in") {
