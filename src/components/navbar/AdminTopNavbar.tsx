@@ -22,6 +22,7 @@ import Loading from "../Loading";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getDoc } from "firebase/firestore";
 import Notification from "../Notification";
+import NavTitle from "./NavTitle";
 
 interface NavbarProps {
   children: ReactNode;
