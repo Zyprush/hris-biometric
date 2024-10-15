@@ -278,31 +278,31 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             id="emergencyContactName"
             onChange={(e) => setEmergencyContactName(e.target.value)}
             value={emergencyContactName}
-            placeholder="Emergency Contact Name"
+            placeholder="Contact Name"
             required
             className="w-full p-2 border rounded dark:bg-zinc-200"
           />
         </div>
         <div className="w-full md:w-1/3">
-          <label htmlFor="emergencyContactPhone" className="text-sm text-gray-500 mb-1 block">Emergency Contact Phone</label>
+          <label htmlFor="emergencyContactPhone" className="text-sm text-gray-500 mb-1 block">Contact Phone</label>
           <input
             type="tel"
             id="emergencyContactPhone"
             onChange={(e) => setEmergencyContactPhone(e.target.value)}
             value={emergencyContactPhone}
-            placeholder="Emergency Contact Phone"
+            placeholder="Contact Phone"
             required
             className="w-full p-2 border rounded dark:bg-zinc-200"
           />
         </div>
         <div className="w-full md:w-1/3">
-          <label htmlFor="emergencyContactAddress" className="text-sm text-gray-500 mb-1 block">Emergency Contact Address</label>
+          <label htmlFor="emergencyContactAddress" className="text-sm text-gray-500 mb-1 block">Contact Address</label>
           <input
             type="text"
             id="emergencyContactAddress"
             onChange={(e) => setEmergencyContactAddress(e.target.value)}
             value={emergencyContactAddress}
-            placeholder="Emergency Contact Address"
+            placeholder="Contact Address"
             required
             className="w-full p-2 border rounded dark:bg-zinc-200"
           />

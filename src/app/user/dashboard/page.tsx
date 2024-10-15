@@ -2,11 +2,7 @@
 "use client";
 import { SignedIn } from "@/components/signed-in";
 import Userlayout from "@/components/UserLayout";
-import {
-  FaClipboardList,
-  FaUserAlt,
-  FaMoneyCheckAlt,
-} from "react-icons/fa";
+import { FaClipboardList, FaUserAlt, FaMoneyCheckAlt } from "react-icons/fa";
 import Link from "next/link";
 import { UserRouteGuard } from "@/components/UserRouteGuard";
 import { useEffect, useMemo, useState } from "react";
@@ -76,9 +72,6 @@ export default function UserDashboard() {
     fetchUserData();
   }, [fetchUserData]);
 
-
-
-
   const QuickActionButton = ({
     icon: Icon,
     label,
@@ -89,7 +82,7 @@ export default function UserDashboard() {
     onClick?: () => void;
   }) => (
     <button
-      className="flex items-center justify-center gap-2 bg-primary text-white py-2 px-4 rounded-lg hover:bg-neutral transition-colors"
+      className="flex items-center justify-center gap-2 bg-primary text-white py-2 px-4 hover:bg-neutral transition-colors text-sm"
       onClick={onClick}
     >
       <Icon />
@@ -108,7 +101,10 @@ export default function UserDashboard() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Financial Information */}
-             <FinancialOverview userIdRef={userData?.userIdRef || ""} dailyRate={userData?.dailyRate || 350}/>
+              <FinancialOverview
+                userIdRef={userData?.userIdRef || ""}
+                dailyRate={userData?.dailyRate || 350}
+              />
 
               {/* Quick Actions */}
               <div className="bg-white rounded-lg shadow p-6 dark:bg-gray-800 ">
@@ -116,6 +112,12 @@ export default function UserDashboard() {
                   Quick Actions
                 </h2>
                 <div className="flex flex-wrap gap-2">
+                  <Link href="/user/attendance">
+                    <QuickActionButton
+                      icon={FaClipboardList}
+                      label="View Attendance"
+                    />
+                  </Link>
                   <Link href="/user/request">
                     <QuickActionButton icon={FaUserAlt} label="Leave Request" />
                   </Link>
@@ -137,58 +139,9 @@ export default function UserDashboard() {
               {/* Team Status */}
               <TeamStatus userData={userData} />
             </div>
-
-            {/* Original Dashboard Links */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-              <DashboardLink
-                href="/user/attendance"
-                icon={FaClipboardList}
-                title="Attendance"
-                description="Track your daily attendance records and monitor your punctuality over time here."
-              />
-              <DashboardLink
-                href="/user/request"
-                icon={FaUserAlt}
-                title="Leave Request"
-                description="Submit your leave requests and check the status of your previous requests here."
-              />
-              <DashboardLink
-                href="/user/payslip"
-                icon={FaMoneyCheckAlt}
-                title="View Pay Slip"
-                description="Access your monthly pay slips and review your salary and bonus details here."
-              />
-            </div>
           </div>
         </Userlayout>
       </SignedIn>
     </UserRouteGuard>
   );
 }
-
-interface DashboardLinkProps {
-  href: string;
-  icon: React.ElementType;
-  title: string;
-  description: string;
-}
-
-const DashboardLink: React.FC<DashboardLinkProps> = ({
-  href,
-  icon: Icon,
-  title,
-  description,
-}) => (
-  <Link
-    href={href}
-    className="bg-white text-zinc-700 rounded-lg dark:bg-gray-800 dark:border-gray-800 p-8 gap-3 flex flex-col border hover:bg-neutral hover:text-white group transition-colors dark:hover:bg-neutral "
-  >
-    <span className="flex gap-3">
-      <Icon className="text-3xl dark:text-zinc-200" />
-      <p className="text-2xl font-bold dark:text-zinc-300">{title}</p>
-    </span>
-    <p className="text-sm text-zinc-500 group-hover:text-zinc-200 dark:text-zinc-300">
-      {description}
-    </p>
-  </Link>
-);
