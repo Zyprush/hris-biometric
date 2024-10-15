@@ -16,10 +16,7 @@ import {
 } from "firebase/firestore";
 import React, { useEffect, useState, useCallback } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import {
-  FaCommentAlt,
-  FaQuestion,
-} from "react-icons/fa";
+import { FaCommentAlt, FaQuestion } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { ToastContainer } from "react-toastify";
 import { format } from "date-fns";
@@ -169,7 +166,7 @@ const Request = () => {
                                 {request.remarks && (
                                   <div className="text-xs text-zinc-500 leading-5 ml-1 mt-2 items-start flex flex-col">
                                     <span className="font-semibold text-zinc-700 flex items-center">
-                                      Rejected{" "}
+                                      Rejected
                                       <FaQuestion className="text-sm" />
                                     </span>
                                     {request.remarks}
@@ -202,7 +199,7 @@ const Request = () => {
               onClick={toggleRequestForm}
               className={`fixed p-4 btn bg-neutral text-white bottom-4 right-4 text-xs rounded`}
             >
-            Submit
+              Request Leave
             </button>
           </div>
         </UserLayout>

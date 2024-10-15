@@ -18,6 +18,7 @@ import { useTheme } from "next-themes";
 // import { IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
 import Notification from "../Notification";
 import { IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
+import NavTitle from "./NavTitle";
 interface NavbarProps {
   children: ReactNode;
 }
@@ -105,6 +106,7 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
   return (
     <div className="h-screen w-full flex flex-col">
       <span className="w-full h-14 bg-gradient-to-r from-gray-100 to-gray-300 dark:from-gray-800 dark:to-gray-900 custom-shadow justify-between px-5 items-center border-b border-zinc-300 dark:border-zinc-700 hidden md:flex">
+      <NavTitle title="Store Name" name="storeName" />
         <span className="flex items-center text-white font-semibold rounded-md gap-2">
           <Image
             width={50}

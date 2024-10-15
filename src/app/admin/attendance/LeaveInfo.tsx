@@ -32,7 +32,7 @@ const LeaveInfo = ({
           {curRequest?.reason && (
             <div className="text-sm text-zinc-500 leading-5 ml-1 mt-2 items-start flex flex-col">
               <span className="font-bold text-neutral flex items-center">
-                Reason of leave?
+                Reason of Leave
               </span>
               {curRequest?.reason}
             </div>
@@ -40,9 +40,9 @@ const LeaveInfo = ({
           {curRequest?.remarks && (
             <div className="text-sm text-zinc-500 leading-5 ml-1 mt-2 items-start flex flex-col">
               <span className="font-bold text-neutral flex items-center">
-                Declined because?
+                Reason for Decline
               </span>
-              {curRequest?.remarks}
+              <p className="">{curRequest?.remarks}</p>
             </div>
           )}
         </div>
