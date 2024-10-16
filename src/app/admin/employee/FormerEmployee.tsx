@@ -58,6 +58,7 @@ const FormerEmployee = () => {
           tinNumber: data.tinNumber || '',
           role: data.role || '',
           documentUrls: data.documentUrls || [],
+          remarks: data.remarks || 'no remarks',
         } as EmployeeDetails;
       }).filter((employee) => employee.email !== ADMIN_EMAIL);
       setEmployees(fetchedEmployees);
@@ -265,7 +266,7 @@ const handleRestore = async (employeeId: string) => {
                         {employee.name}
                       </td>
                       <td className="px-4 py-2 text-xs text-left">
-                        {employee.status}
+                        {employee?.remarks}
                       </td>
                       <td className="px-4 py-2 text-xs text-left">
                         <button

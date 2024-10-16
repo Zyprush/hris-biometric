@@ -33,15 +33,11 @@ const EmployeeList = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 10;
-  const [deleteReason, setDeleteReason] = useState<string>("");
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-
 
   const ADMIN_EMAIL = "hrisbiometric@gmail.com";
 
   useEffect(() => {
     fetchEmployees();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -177,45 +173,59 @@ const EmployeeList = () => {
     [employees, filteredEmployees, handleProfilePicUpload]
   );
 
-  const handleDelete = useCallback(
-    async (employeeId: string, documentUrls: string[]) => {
-      try {
-        const employeeDoc = await getDoc(doc(db, "users", employeeId));
-        if (employeeDoc.exists()) {
-          const employeeData = employeeDoc.data();
+const handleDelete = useCallback(
+  async (employeeId: string, documentUrls: string[]) => {
+    try {
+      // Prompt the admin for a reason
+      const reason = window.prompt(
+        "Please provide the reason for archiving or deleting this employee (e.g., AWOL):"
+      );
 
-          await setDoc(doc(db, "former_employees", employeeId), {
-            ...employeeData,
-            documentUrls: documentUrls,
-            deletedAt: new Date(),
-          });
-
-          await deleteDoc(doc(db, "users", employeeId));
-          const currentDate = new Date().toISOString();
-          await addHistory({
-            adminId: userData?.id,
-            text: `${userData?.name} deleted ${employeeData?.name} account`,
-            userId: employeeData?.id,
-            time: currentDate,
-            addedBy: "admin",
-            type: "admin",
-          });
-          setEmployees(employees.filter((emp) => emp.id !== employeeId));
-          setFilteredEmployees(
-            filteredEmployees.filter((emp) => emp.id !== employeeId)
-          );
-
-          toast.success("Employee moved to former employees successfully");
-        } else {
-          toast.error("Employee not found");
-        }
-      } catch (error) {
-        console.error("Error moving employee to former employees: ", error);
-        toast.error("Failed to move employee to former employees");
+      if (!reason) {
+        toast.error("Action canceled. You must provide a reason.");
+        return;
       }
-    },
-    [addHistory, employees, filteredEmployees, userData]
-  );
+
+      const employeeDoc = await getDoc(doc(db, "users", employeeId));
+      if (employeeDoc.exists()) {
+        const employeeData = employeeDoc.data();
+
+        // Save the reason along with the employee data
+        await setDoc(doc(db, "former_employees", employeeId), {
+          ...employeeData,
+          documentUrls: documentUrls,
+          remarks: reason, // Save the reason here
+          deletedAt: new Date(),
+        });
+
+        await deleteDoc(doc(db, "users", employeeId));
+        const currentDate = new Date().toISOString();
+        await addHistory({
+          adminId: userData?.id,
+          text: `${userData?.name} deleted ${employeeData?.name}'s account with reason: ${reason}`,
+          userId: employeeData?.id,
+          time: currentDate,
+          addedBy: "admin",
+          type: "admin",
+        });
+
+        setEmployees(employees.filter((emp) => emp.id !== employeeId));
+        setFilteredEmployees(
+          filteredEmployees.filter((emp) => emp.id !== employeeId)
+        );
+
+        toast.success("Employee moved to former employees successfully");
+      } else {
+        toast.error("Employee not found");
+      }
+    } catch (error) {
+      console.error("Error moving employee to former employees: ", error);
+      toast.error("Failed to move employee to former employees");
+    }
+  },
+  [addHistory, employees, filteredEmployees, userData]
+);
+
 
   const handlePageClick = (pageNumber: number) => {
     setCurrentPage(pageNumber);
