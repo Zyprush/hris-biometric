@@ -67,6 +67,40 @@ const FormerEmployee = () => {
       toast.error("Failed to fetch employees");
     }
   };
+const handleRestore = async (employeeId: string) => {
+  const confirmation = window.confirm(
+    "Are you sure you want to restore this employee?"
+  );
+  if (!confirmation) return;
+
+  try {
+    const employeeDoc = await getDoc(doc(db, "former_employees", employeeId));
+    if (employeeDoc.exists()) {
+      const employeeData = employeeDoc.data();
+
+      // Move the employee data back to the "users" collection
+      await setDoc(doc(db, "users", employeeId), {
+        ...employeeData,
+        restoredAt: new Date(),
+      });
+
+      // Delete from "former_employees" collection
+      await deleteDoc(doc(db, "former_employees", employeeId));
+
+      // Update local state
+      setEmployees(employees.filter((emp) => emp.id !== employeeId));
+      setFilteredEmployees(
+        filteredEmployees.filter((emp) => emp.id !== employeeId)
+      );
+      toast.success("Employee restored to users successfully");
+    } else {
+      toast.error("Employee not found in former employees");
+    }
+  } catch (error) {
+    console.error("Error restoring employee: ", error);
+    toast.error("Failed to restore employee");
+  }
+};
 
   const handleSearch = () => {
     const filtered = employees.filter(
@@ -187,8 +221,9 @@ const FormerEmployee = () => {
               </button>
               <button
                 onClick={handleViewDetails}
-                className={`btn btn-sm rounded-md text-white flex-1 sm:flex-none ${selectedEmployee ? "btn-primary" : "btn-disabled"
-                  }`}
+                className={`btn btn-sm rounded-md text-white flex-1 sm:flex-none ${
+                  selectedEmployee ? "btn-primary" : "btn-disabled"
+                }`}
                 disabled={!selectedEmployee}
               >
                 <span className="text-xs sm:text-sm">View Details</span>
@@ -202,6 +237,7 @@ const FormerEmployee = () => {
                   <th className="px-6 py-3 text-left">Employee ID</th>
                   <th className="px-6 py-3 text-left">Name</th>
                   <th className="px-6 py-3 text-left">Remarks</th>
+                  <th className="px-6 py-3 text-left">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800">
@@ -216,17 +252,28 @@ const FormerEmployee = () => {
                     <tr
                       key={employee.id}
                       onClick={() => handleRowClick(employee)}
-                      className={`cursor-pointer dark:text-white dark:border-zinc-600 ${selectedEmployee?.id === employee.id
-                        ? "bg-teal-700 text-white hover:bg-teal-600"
-                        : "hover:bg-gray-100 dark:hover:text-zinc-800"
-                        }`}
+                      className={`cursor-pointer dark:text-white dark:border-zinc-600 ${
+                        selectedEmployee?.id === employee.id
+                          ? "bg-teal-700 text-white hover:bg-teal-600"
+                          : "hover:bg-gray-100 dark:hover:text-zinc-800"
+                      }`}
                     >
-                      <td className="px-4 py-2 text-xs text-left">{employee.employeeId}</td>
+                      <td className="px-4 py-2 text-xs text-left">
+                        {employee.employeeId}
+                      </td>
                       <td className="px-4 py-2 text-xs text-left">
                         {employee.name}
                       </td>
                       <td className="px-4 py-2 text-xs text-left">
                         {employee.status}
+                      </td>
+                      <td className="px-4 py-2 text-xs text-left">
+                        <button
+                          onClick={() => handleRestore(employee.id)}
+                          className="btn btn-sm font-normal text-white btn-success"
+                        >
+                          Restore
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -236,7 +283,9 @@ const FormerEmployee = () => {
             {filteredEmployees.length > itemsPerPage && (
               <div className="flex justify-between items-center mt-4">
                 <button
-                  className={`px-4 bg-primary text-white rounded-lg btn-sm text-sm ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+                  className={`px-4 bg-primary text-white rounded-lg btn-sm text-sm ${
+                    currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                   onClick={handlePreviousPage}
                   disabled={currentPage === 1}
                 >
@@ -244,7 +293,11 @@ const FormerEmployee = () => {
                 </button>
                 <div>{renderPageNumbers()}</div>
                 <button
-                  className={`px-4 bg-primary text-white rounded-lg btn-sm text-sm ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
+                  className={`px-4 bg-primary text-white rounded-lg btn-sm text-sm ${
+                    currentPage === totalPages
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
                 >
@@ -252,7 +305,6 @@ const FormerEmployee = () => {
                 </button>
               </div>
             )}
-
           </div>
         </div>
 
@@ -260,7 +312,9 @@ const FormerEmployee = () => {
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           onEdit={handleEdit}
-          onDelete={(employeeId) => handleDelete(employeeId, selectedEmployee?.documentUrls || [])}
+          onDelete={(employeeId) =>
+            handleDelete(employeeId, selectedEmployee?.documentUrls || [])
+          }
           employee={selectedEmployee}
         />
       </div>

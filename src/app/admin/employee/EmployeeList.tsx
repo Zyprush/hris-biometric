@@ -33,11 +33,15 @@ const EmployeeList = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 10;
+  const [deleteReason, setDeleteReason] = useState<string>("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+
 
   const ADMIN_EMAIL = "hrisbiometric@gmail.com";
 
   useEffect(() => {
     fetchEmployees();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
