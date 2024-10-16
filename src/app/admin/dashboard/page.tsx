@@ -212,7 +212,7 @@ const AdminDashboard = () => {
       title: "Upcoming Birthdays",
       icon: FaBirthdayCake,
       value: upcomingBirthdays,
-    },
+    }, 
   ];
 
   return (
