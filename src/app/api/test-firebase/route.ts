@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     }
 
     console.log('Sending request to PHP API with IP:', ip);
-    const response = await axios.post('http://localhost/zk-bio-api/zk_api.php', { ip });
+    const response = await axios.post('https://chocolate-tapir-277497.hostingersite.com/zk_api.php', { ip });
     
     console.log('PHP API Response:', response.data);
 
