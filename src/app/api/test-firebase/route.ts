@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import axios from 'axios';
 
 export async function POST(request: Request) {
-  try {
+  try {  
     const { ip } = await request.json();
 
     if (!ip) {
