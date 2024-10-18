@@ -54,9 +54,19 @@ const DepartmentList = () => {
     const departmentsList = await Promise.all(
       departmentsSnapshot.docs.map(async (doc) => {
         const departmentData = doc.data() as { name: string };
+        let employeeCount = 0;
+
+        const usersQuery = selectedBranch === "Filter"
+          ? query(collection(db, "users"), where("department", "==", departmentData.name))
+          : query(collection(db, "users"), where("department", "==", departmentData.name), where("branch", "==", selectedBranch));
+
+        const usersSnapshot = await getDocs(usersQuery);
+        employeeCount = usersSnapshot.size;
+
         return {
           id: doc.id,
           name: departmentData.name,
+          employeeCount: employeeCount,
         };
       })
     );
@@ -99,13 +109,11 @@ const DepartmentList = () => {
           </button>
         </div>
         <div className="mt-24 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {departments.map((dept) => {
-            return (
-              <Fragment key={dept.id}>
-                <Department dept={dept} selectedBranch={selectedBranch}/>
-              </Fragment>
-            );
-          })}
+          {departments.map((dept) => (
+            <Fragment key={dept.id}>
+              <Department dept={dept} selectedBranch={selectedBranch} />
+            </Fragment>
+          ))}
         </div>
       </div>
     </AdminRouteGuard>

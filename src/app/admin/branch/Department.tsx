@@ -75,7 +75,7 @@ const Department: React.FC<DepartmentProps> = ({
   return (
     <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col h-full min-h-80">
       <h2 className="text-lg font-semibold text-primary mb-3 truncate text-center dark:text-secondary">
-        {dept.name}
+        {dept.name} ({dept.employeeCount})
       </h2>
       <div className="flex flex-col items-center">
         <div className="w-full h-full mb-4">
