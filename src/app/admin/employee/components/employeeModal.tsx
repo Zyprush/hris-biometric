@@ -43,6 +43,7 @@ interface EmployeeDetails {
   role: string;
   documentUrls?: string[];
   profilePicUrl?: string;
+  remarks?: string;
 }
 
 interface ModalProps {
