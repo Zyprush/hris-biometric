@@ -54,17 +54,50 @@ const Attendance: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const formatTo12Hour = (time: string): string => {
+    if (!time) return "N/A";
     const [hours, minutes] = time.split(':');
     const hour = parseInt(hours, 10);
     const ampm = hour >= 12 ? 'PM' : 'AM';
     const formattedHour = hour % 12 || 12;
-    return `${formattedHour}:${minutes}`;
+    return `${formattedHour}:${minutes} ${ampm}`;
   };
 
   const calculateTimeDifference = (start: string, end: string): number => {
     const startDate = parseISO(`2000-01-01T${start}`);
     const endDate = parseISO(`2000-01-01T${end}`);
     return differenceInMinutes(endDate, startDate);
+  };
+
+  const assignTimeEntries = (checkIns: string[], checkOuts: string[]): { amIn: string, amOut: string, pmIn: string, pmOut: string } => {
+    let amIn = "", amOut = "", pmIn = "", pmOut = "";
+
+    if (checkIns.length === 2 && checkOuts.length === 2) {
+      // If 2 check-ins and 2 check-outs
+      amIn = checkIns[1] || "";
+      amOut = checkOuts[1] || "";
+      pmIn = checkIns[0] || "";
+      pmOut = checkOuts[0] || "";
+    } else if (checkIns.length === 1 && checkOuts.length === 1) {
+      // If 1 check-in and 1 check-out
+      amIn = checkIns[0] || "";
+      amOut = checkOuts[0] || "";
+      pmIn = "";
+      pmOut = "";
+    } else if (checkIns.length === 2 && checkOuts.length === 1) {
+      // If 2 check-ins and 1 check-out
+      amIn = checkIns[1] || "";
+      amOut = checkOuts[0] || "";
+      pmIn = checkIns[0] || "";
+      pmOut = "";
+    } else {
+      // Handle other cases (e.g., 1 check-in and 2 check-outs, or more than 2 of either)
+      amIn = checkIns[0] || "";
+      amOut = checkOuts[0] || "";
+      pmIn = checkIns[1] || "";
+      pmOut = checkOuts[1] || "";
+    }
+
+    return { amIn, amOut, pmIn, pmOut };
   };
 
   useEffect(() => {
@@ -124,10 +157,7 @@ const Attendance: React.FC = () => {
               const checkOuts = attendanceEntries.filter(entry => entry.type === "Check-out").map(entry => entry.time);
               const overtimeEntries = attendanceEntries.filter(entry => entry.type.startsWith("Overtime"));
 
-              const amIn = checkIns[0] || "";
-              const amOut = checkOuts[0] || "";
-              const pmIn = checkIns[1] || "";
-              const pmOut = checkOuts[1] || "";
+              const { amIn, amOut, pmIn, pmOut } = assignTimeEntries(checkIns, checkOuts);
 
               // Calculate total hours
               const amMinutes = calculateTimeDifference(amIn, amOut);
