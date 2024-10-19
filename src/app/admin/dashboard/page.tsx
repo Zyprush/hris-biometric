@@ -24,7 +24,7 @@ import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import { ToastContainer } from "react-toastify";
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "@/firebase";
+import { db, rtdb } from "@/firebase";
 import CardComponent from "@/components/CardComponents";
 import EmployeeCount from "./EmployeeCount";
 import { get, ref } from "firebase/database";
@@ -49,8 +49,12 @@ const AdminDashboard = () => {
   const [formerEmployees, setFormerEmployees] = useState(0);
   const [recentHires, setRecentHires] = useState(0);
   const [upcomingBirthdays, setUpcomingBirthdays] = useState(0);
-  const [presentEmployees, setPresentEmployees] = useState(0);
-  const [absentEmployees, setAbsentEmployees] = useState(0);
+  const [attendanceSummary, setAttendanceSummary] = useState({
+    present: 0,
+    absent: 0,
+    leave: 0,
+    restday: 0,
+  });
 
   const fetchTotalEmployees = async () => {
     try {
@@ -209,28 +213,19 @@ const AdminDashboard = () => {
   }, []);
 
   const doughnutData = {
-    labels: ["Present", "Absent"],
+    labels: ["Present", "Absent", "Leave", "Restday"],
     datasets: [
       {
-        data: [presentEmployees, absentEmployees],
-        backgroundColor: ["#40ae75", "#1A7680"],
-        hoverBackgroundColor: ["#238F99", "#135D66"],
+        data: [
+          attendanceSummary.present,
+          attendanceSummary.absent,
+          attendanceSummary.leave,
+          attendanceSummary.restday,
+        ],
+        backgroundColor: ["#40ae75", "#1A7680", "#238F99", "#104A55"],
+        hoverBackgroundColor: ["#238F99", "#238F99", "#1A7680", "#135D66"],
       },
     ],
-  };
-
-  const options = {
-    plugins: {
-      legend: {
-        position: 'bottom' as const,
-      },
-      title: {
-        display: true,
-        // text: 'Employee Attendance',
-      },
-    },
-    responsive: true,
-    maintainAspectRatio: false,
   };
 
   const cardData = [
@@ -254,14 +249,10 @@ const AdminDashboard = () => {
             <CardComponent cardData={cardData} />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 border dark:border-zinc-800">
-                <h2 className="text-lg font-semibold mb-2">
-                  Attendance Summary
-                </h2>
-                <div className="h-[300px]">
-                  <Doughnut data={doughnutData} options={options} />
-                </div>
+                <h2 className="text-lg font-semibold mb-2">Attendance Summary</h2>
+                <Doughnut data={doughnutData} />
               </div>
-                <EmployeeCount />
+              <EmployeeCount />
             </div>
           </div>
         </AdminLayout>
