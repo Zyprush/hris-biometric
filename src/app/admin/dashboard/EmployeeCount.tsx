@@ -1,9 +1,27 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { db } from "@/firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { AdminRouteGuard } from "@/components/AdminRouteGuard";
-import { Chart, ChartConfiguration } from "chart.js/auto";
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 interface Depart {
   id: string;
@@ -31,9 +49,7 @@ interface UserData {
 const EmployeeCount = () => {
   const [departments, setDepartments] = useState<Depart[]>([]);
   const [branches, setBranches] = useState<Branch[]>([]);
-  const [selectedBranch, setSelectedBranch] = useState<string>("Filter");
-  const chartRef = useRef<HTMLCanvasElement | null>(null);
-  const chartInstance = useRef<Chart | null>(null);
+  const [selectedBranch, setSelectedBranch] = useState<string>("All Branches");
 
   useEffect(() => {
     fetchBranches();
@@ -41,15 +57,7 @@ const EmployeeCount = () => {
 
   useEffect(() => {
     fetchDepartments();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedBranch]);
-
-  useEffect(() => {
-    if (departments.length > 0) {
-      updateChart();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [departments]);
 
   const fetchBranches = async () => {
     const branchesCollection = collection(db, "branches");
@@ -58,7 +66,7 @@ const EmployeeCount = () => {
       id: doc.id,
       name: doc.data().name as string,
     }));
-    setBranches([{ id: "Filter", name: "Filter" }, ...branchesList]);
+    setBranches([{ id: "All Branches", name: "All Branches" }, ...branchesList]);
   };
 
   const fetchDepartments = async () => {
@@ -80,16 +88,16 @@ const EmployeeCount = () => {
   };
 
   const fetchEmployeeStats = async (departmentName: string) => {
-    const usersQuery = selectedBranch === "Filter"
+    const usersQuery = selectedBranch === "All Branches"
       ? query(
-          collection(db, "users"),
-          where("department", "==", departmentName)
-        )
+        collection(db, "users"),
+        where("department", "==", departmentName)
+      )
       : query(
-          collection(db, "users"),
-          where("department", "==", departmentName),
-          where("branch", "==", selectedBranch)
-        );
+        collection(db, "users"),
+        where("department", "==", departmentName),
+        where("branch", "==", selectedBranch)
+      );
 
     const usersSnapshot = await getDocs(usersQuery);
     const users = await Promise.all(
@@ -120,64 +128,51 @@ const EmployeeCount = () => {
     setSelectedBranch(event.target.value);
   };
 
-  const updateChart = () => {
-    if (chartRef.current) {
-      if (chartInstance.current) {
-        chartInstance.current.destroy();
-      }
+  const chartData = {
+    labels: departments.map((dept) => dept.name),
+    datasets: [
+      {
+        label: "Present Employees",
+        data: departments.map((dept) => dept.presentCount),
+        backgroundColor: "#40ae75",
+        hoverBackgroundColor: "#238F99",
+      },
+      {
+        label: "Total Employees",
+        data: departments.map((dept) => dept.totalCount),
+        backgroundColor: "#1A7680",
+        hoverBackgroundColor: "#135D66",
+      },
+    ],
+  };
 
-      const ctx = chartRef.current.getContext('2d');
-      if (ctx) {
-        const config: ChartConfiguration = {
-          type: 'bar',
-          data: {
-            labels: departments.map(dept => dept.name),
-            datasets: [
-              {
-                label: 'Present Employees',
-                data: departments.map(dept => dept.presentCount),
-                backgroundColor: 'rgba(75, 192, 192, 0.6)',
-              },
-              {
-                label: 'Total Employees',
-                data: departments.map(dept => dept.totalCount),
-                backgroundColor: 'rgba(153, 102, 255, 0.6)',
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            scales: {
-              y: {
-                beginAtZero: true,
-                title: {
-                  display: true,
-                  text: 'Number of Employees'
-                }
-              },
-              x: {
-                title: {
-                  display: true,
-                  text: 'Departments'
-                }
-              }
-            }
-          },
-        };
-
-        chartInstance.current = new Chart(ctx, config);
-      }
-    }
+  const chartOptions = {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Number of Employees",
+        },
+      },
+      x: {
+        title: {
+          display: true,
+          text: "Departments",
+        },
+      },
+    },
   };
 
   return (
     <AdminRouteGuard>
-      <div className="border border-gray-200 shadow-md dark:border-gray-700 relative bg-white p-8 rounded-lg dark:bg-gray-800 dark:text-white h-full flex flex-col justify-center items-center">
+      <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 border dark:border-zinc-800 relative">
         <div className="absolute top-4 right-4">
           <select
             value={selectedBranch}
             onChange={handleBranchChange}
-            className="bg-white dark:bg-gray-700 border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+            className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-zinc-700 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
           >
             {branches.map((branch) => (
               <option key={branch.id} value={branch.name}>
@@ -186,8 +181,9 @@ const EmployeeCount = () => {
             ))}
           </select>
         </div>
-        <div className="h-full flex flex-col justify-center items-center">
-          <canvas ref={chartRef} className="w-full h-full"/>
+        <h2 className="text-lg font-semibold mb-4">Employee Count Summary</h2>
+        <div className="flex justify-center items-center">
+          <Bar data={chartData} options={chartOptions} />
         </div>
       </div>
     </AdminRouteGuard>

@@ -23,10 +23,11 @@ import {
 import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import { ToastContainer } from "react-toastify";
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/firebase";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db, rtdb } from "@/firebase";
 import CardComponent from "@/components/CardComponents";
 import EmployeeCount from "./EmployeeCount";
+import { get, ref } from "firebase/database";
 
 ChartJS.register(
   ArcElement,
@@ -48,6 +49,12 @@ const AdminDashboard = () => {
   const [formerEmployees, setFormerEmployees] = useState(0);
   const [recentHires, setRecentHires] = useState(0);
   const [upcomingBirthdays, setUpcomingBirthdays] = useState(0);
+  const [attendanceSummary, setAttendanceSummary] = useState({
+    present: 0,
+    absent: 0,
+    leave: 0,
+    restday: 0,
+  });
 
   const fetchTotalEmployees = async () => {
     try {
@@ -153,7 +160,52 @@ const AdminDashboard = () => {
     }
   };
 
+  const fetchAttendanceSummary = async () => {
+    try {
+      // Fetch all users except admin
+      const usersQuery = query(collection(db, "users"), where("role", "!=", "admin"));
+      const usersSnapshot = await getDocs(usersQuery);
+      const totalUsers = usersSnapshot.size;
+
+      let presentCount = 0;
+      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
+      for (const userDoc of usersSnapshot.docs) {
+        const userData = userDoc.data();
+        const userIdRef = userData.userIdRef;
+
+        if (userIdRef) {
+          // Get user ID from RTDB
+          const userIdSnapshot = await get(ref(rtdb, `users/${userIdRef}/userid`));
+          const userId = userIdSnapshot.val();
+
+          if (userId) {
+            // Check attendance for the current date
+            const attendanceSnapshot = await get(ref(rtdb, `attendance/${currentDate}/id_${userId}`));
+            if (attendanceSnapshot.exists()) {
+              presentCount++;
+            }
+          }
+        }
+      }
+
+      const absentCount = totalUsers - presentCount;
+
+      setAttendanceSummary({
+        present: presentCount,
+        absent: absentCount,
+        leave: 0, // TODO: Implement leave logic
+        restday: 0, // TODO: Implement restday logic
+      });
+
+      setTotalEmployees(totalUsers);
+    } catch (error) {
+      console.error("Error fetching attendance summary: ", error);
+    }
+  };
+
   useEffect(() => {
+    fetchAttendanceSummary();
     fetchTotalEmployees();
     fetchFormerEmployees();
     fetchUpcomingBirthdays();
@@ -161,44 +213,17 @@ const AdminDashboard = () => {
   }, []);
 
   const doughnutData = {
-    labels: ["Present", "Absent", "Leaved", "Restday"],
+    labels: ["Present", "Absent", "Leave", "Restday"],
     datasets: [
       {
-        data: [50, 10, 5, 20],
+        data: [
+          attendanceSummary.present,
+          attendanceSummary.absent,
+          attendanceSummary.leave,
+          attendanceSummary.restday,
+        ],
         backgroundColor: ["#40ae75", "#1A7680", "#238F99", "#104A55"],
         hoverBackgroundColor: ["#238F99", "#238F99", "#1A7680", "#135D66"],
-      },
-    ],
-  };
-
-  const branch1 = {
-    labels: ["January", "February", "March", "April", "May", "June"],
-    datasets: [
-      {
-        label: "Understaff",
-        data: [30, 20, 10, 15, 25, 35],
-        backgroundColor: "#1A7680",
-      },
-      {
-        label: "Stable",
-        data: [70, 80, 90, 85, 75, 65],
-        backgroundColor: "#40ae75",
-      },
-    ],
-  };
-
-  const branch2 = {
-    labels: ["January", "February", "March", "April", "May", "June"],
-    datasets: [
-      {
-        label: "Understaff",
-        data: [30, 20, 10, 15, 25, 35],
-        backgroundColor: "#1A7680",
-      },
-      {
-        label: "Stable",
-        data: [70, 80, 90, 85, 75, 65],
-        backgroundColor: "#40ae75",
       },
     ],
   };
@@ -218,18 +243,16 @@ const AdminDashboard = () => {
   return (
     <AdminRouteGuard>
       <SignedIn>
-        <AdminLayout>
+      <AdminLayout>
           <div className="container h-full mx-auto p-4 dark:text-zinc-200">
             <ToastContainer />
             <CardComponent cardData={cardData} />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 border dark:border-zinc-800">
-                <h2 className="text-lg font-semibold mb-2">
-                  Attendance Summary
-                </h2>
+                <h2 className="text-lg font-semibold mb-2">Attendance Summary</h2>
                 <Doughnut data={doughnutData} />
               </div>
-                <EmployeeCount />
+              <EmployeeCount />
             </div>
           </div>
         </AdminLayout>
