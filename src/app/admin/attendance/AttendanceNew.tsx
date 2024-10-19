@@ -262,7 +262,7 @@ const Attendance: React.FC = () => {
           onToDateChange={handleToDateChange}
           onSearchChange={handleSearch}
           onDepartmentChange={handleDepartmentChange}
-        />
+        />  
 
         {isLoading ? (
           <div className="text-center py-4">Loading...</div>
