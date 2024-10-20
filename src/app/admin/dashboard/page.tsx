@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useEffect, useState } from 'react';
 import AdminLayout from "@/components/AdminLayout";
 import { SignedIn } from "@/components/signed-in";
 import { Doughnut, Bar } from "react-chartjs-2";
@@ -12,6 +13,8 @@ import {
   LinearScale,
   BarElement,
   Title,
+  ChartData,
+  ChartOptions
 } from "chart.js";
 import {
   FaUsers,
@@ -22,12 +25,10 @@ import {
 } from "react-icons/fa";
 import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import { ToastContainer } from "react-toastify";
-import { useEffect, useState } from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where, QuerySnapshot, DocumentData } from "firebase/firestore";
 import { db, rtdb } from "@/firebase";
 import CardComponent from "@/components/CardComponents";
-import EmployeeCount from "./EmployeeCount";
-import { get, ref } from "firebase/database";
+import { get, ref, DataSnapshot } from "firebase/database";
 
 ChartJS.register(
   ArcElement,
@@ -39,79 +40,89 @@ ChartJS.register(
   Title
 );
 
-const AdminDashboard = () => {
-  const setAuthChecked = (isChecked: boolean) => {
-    console.log("Auth checked:", isChecked);
-  };
+interface AttendanceSummary {
+  present: number;
+  absent: number;
+  leave: number;
+  restday: number;
+}
 
-  const [totalEmployees, setTotalEmployees] = useState(0);
-  const [totalBraches, setTotalBraches] = useState(0);
-  const [formerEmployees, setFormerEmployees] = useState(0);
-  const [recentHires, setRecentHires] = useState(0);
-  const [upcomingBirthdays, setUpcomingBirthdays] = useState(0);
-  const [attendanceSummary, setAttendanceSummary] = useState({
+interface Branch {
+  id: string;
+  name: string;
+}
+
+interface StaffData {
+  [branch: string]: {
+    [department: string]: {
+      total: number;
+      present: number;
+    };
+  };
+}
+
+const AdminDashboard: React.FC = () => {
+  const [totalEmployees, setTotalEmployees] = useState<number>(0);
+  const [totalBranches, setTotalBranches] = useState<number>(0);
+  const [formerEmployees, setFormerEmployees] = useState<number>(0);
+  const [recentHires, setRecentHires] = useState<number>(0);
+  const [upcomingBirthdays, setUpcomingBirthdays] = useState<number>(0);
+  const [attendanceSummary, setAttendanceSummary] = useState<AttendanceSummary>({
     present: 0,
     absent: 0,
     leave: 0,
     restday: 0,
   });
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [departments, setDepartments] = useState<string[]>([]);
+  const [staffData, setStaffData] = useState<StaffData>({});
 
-  const fetchTotalEmployees = async () => {
+  const fetchTotalEmployees = async (): Promise<void> => {
     try {
       const querySnapshot = await getDocs(collection(db, "users"));
       setTotalEmployees(querySnapshot.size);
 
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-      oneWeekAgo.setHours(0, 0, 0, 0); // Set to beginning of the day
+      oneWeekAgo.setHours(0, 0, 0, 0);
 
       let recentHiresCount = 0;
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         if (data.startDate) {
-          let startDate;
+          let startDate: Date;
           if (typeof data.startDate === "string") {
-            // If startDate is stored as a string
             startDate = new Date(data.startDate);
           } else if (data.startDate.toDate) {
-            // If startDate is a Firestore Timestamp
             startDate = data.startDate.toDate();
           } else {
             console.error("Unexpected startDate format:", data.startDate);
             return;
           }
 
-          // Set startDate to beginning of the day for fair comparison
           startDate.setHours(0, 0, 0, 0);
 
           if (startDate >= oneWeekAgo) {
             recentHiresCount++;
-            console.log(
-              "Recent hire found:",
-              data.name,
-              "Start date:",
-              startDate
-            ); // Debugging log
           }
         }
       });
       setRecentHires(recentHiresCount);
-      console.log("Total recent hires:", recentHiresCount); // Debugging log
     } catch (error) {
       console.error("Error fetching total employees: ", error);
     }
   };
 
-  const fetchTotalBraches = async () => {
+  const fetchTotalBranches = async (): Promise<void> => {
     try {
       const querySnapshot = await getDocs(collection(db, "branches"));
-      setTotalBraches(querySnapshot.size);
+      setTotalBranches(querySnapshot.size);
     } catch (error) {
       console.error("Error fetching total branches: ", error);
     }
   };
 
-  const fetchFormerEmployees = async () => {
+  const fetchFormerEmployees = async (): Promise<void> => {
     try {
       const querySnapshot = await getDocs(collection(db, "former_employees"));
       setFormerEmployees(querySnapshot.size);
@@ -119,7 +130,8 @@ const AdminDashboard = () => {
       console.error("Error fetching former employees: ", error);
     }
   };
-  const fetchUpcomingBirthdays = async () => {
+
+  const fetchUpcomingBirthdays = async (): Promise<void> => {
     try {
       const querySnapshot = await getDocs(collection(db, "users"));
       const today = new Date();
@@ -129,19 +141,16 @@ const AdminDashboard = () => {
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         if (data.birthday) {
-          let birthdate;
+          let birthdate: Date;
           if (typeof data.birthday === "string") {
-            // If birthday is stored as a string
             birthdate = new Date(data.birthday);
           } else if (data.birthday.toDate) {
-            // If birthday is a Firestore Timestamp
             birthdate = data.birthday.toDate();
           } else {
             console.error("Unexpected birthday format:", data.birthday);
             return;
           }
 
-          // Ensure birthdate is set to the beginning of the day for fair comparison
           birthdate.setHours(0, 0, 0, 0);
           const thisBirthday = new Date(
             today.getFullYear(),
@@ -160,27 +169,24 @@ const AdminDashboard = () => {
     }
   };
 
-  const fetchAttendanceSummary = async () => {
+  const fetchAttendanceSummary = async (): Promise<void> => {
     try {
-      // Fetch all users except admin
       const usersQuery = query(collection(db, "users"), where("role", "!=", "admin"));
       const usersSnapshot = await getDocs(usersQuery);
       const totalUsers = usersSnapshot.size;
 
       let presentCount = 0;
-      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      const currentDate = new Date().toISOString().split('T')[0];
 
       for (const userDoc of usersSnapshot.docs) {
         const userData = userDoc.data();
         const userIdRef = userData.userIdRef;
 
         if (userIdRef) {
-          // Get user ID from RTDB
           const userIdSnapshot = await get(ref(rtdb, `users/${userIdRef}/userid`));
           const userId = userIdSnapshot.val();
 
           if (userId) {
-            // Check attendance for the current date
             const attendanceSnapshot = await get(ref(rtdb, `attendance/${currentDate}/id_${userId}`));
             if (attendanceSnapshot.exists()) {
               presentCount++;
@@ -194,8 +200,8 @@ const AdminDashboard = () => {
       setAttendanceSummary({
         present: presentCount,
         absent: absentCount,
-        leave: 0, // TODO: Implement leave logic
-        restday: 0, // TODO: Implement restday logic
+        leave: 0,
+        restday: 0,
       });
 
       setTotalEmployees(totalUsers);
@@ -204,15 +210,78 @@ const AdminDashboard = () => {
     }
   };
 
+  const fetchBranches = async (): Promise<void> => {
+    try {
+      const branchesSnapshot = await getDocs(collection(db, "branches"));
+      const branchesData = branchesSnapshot.docs.map(doc => ({ id: doc.id, name: doc.data().name }));
+      setBranches(branchesData);
+    } catch (error) {
+      console.error("Error fetching branches: ", error);
+    }
+  };
+
+  const fetchDepartments = async (): Promise<void> => {
+    try {
+      const departmentsSnapshot = await getDocs(collection(db, "departments"));
+      const departmentsData = departmentsSnapshot.docs.map(doc => doc.data().name);
+      setDepartments(departmentsData);
+    } catch (error) {
+      console.error("Error fetching departments: ", error);
+    }
+  };
+
+  const fetchStaffData = async (): Promise<void> => {
+    try {
+      const usersQuery = query(collection(db, "users"), where("role", "!=", "admin"));
+      const usersSnapshot = await getDocs(usersQuery);
+      const currentDate = new Date().toISOString().split('T')[0];
+
+      const staffCounts: StaffData = {};
+
+      for (const userDoc of usersSnapshot.docs) {
+        const userData = userDoc.data();
+        const { branch, department, userIdRef } = userData;
+
+        if (!staffCounts[branch]) {
+          staffCounts[branch] = {};
+        }
+        if (!staffCounts[branch][department]) {
+          staffCounts[branch][department] = { total: 0, present: 0 };
+        }
+
+        staffCounts[branch][department].total++;
+
+        if (userIdRef) {
+          const userIdSnapshot = await get(ref(rtdb, `users/${userIdRef}/userid`));
+          const userId = userIdSnapshot.val();
+
+          if (userId) {
+            const attendanceSnapshot = await get(ref(rtdb, `attendance/${currentDate}/id_${userId}`));
+            if (attendanceSnapshot.exists()) {
+              staffCounts[branch][department].present++;
+            }
+          }
+        }
+      }
+
+      setStaffData(staffCounts);
+    } catch (error) {
+      console.error("Error fetching staff data: ", error);
+    }
+  };
+
   useEffect(() => {
     fetchAttendanceSummary();
     fetchTotalEmployees();
     fetchFormerEmployees();
     fetchUpcomingBirthdays();
-    fetchTotalBraches();
+    fetchTotalBranches();
+    fetchDepartments();
+    fetchBranches();
+    fetchStaffData();
   }, []);
 
-  const doughnutData = {
+  const doughnutData: ChartData<"doughnut"> = {
     labels: ["Present", "Absent", "Leave", "Restday"],
     datasets: [
       {
@@ -222,28 +291,71 @@ const AdminDashboard = () => {
           attendanceSummary.leave,
           attendanceSummary.restday,
         ],
-        backgroundColor: ["#40ae75", "#1A7680", "#238F99", "#104A55"],
-        hoverBackgroundColor: ["#238F99", "#238F99", "#1A7680", "#135D66"],
+        backgroundColor: ["#40ae75", "#E57373", "#238F99", "#104A55"],
+        hoverBackgroundColor: ["#238F99", "#E57372", "#1A7680", "#135D66"],
       },
     ],
   };
 
   const cardData = [
     { title: "Total Employees", icon: FaUsers, value: totalEmployees - 1 },
-    { title: "Total Branches", icon: FaBuilding, value: totalBraches },
+    { title: "Total Branches", icon: FaBuilding, value: totalBranches },
     { title: "Recent Hires", icon: FaUserPlus, value: recentHires },
     { title: "Former Employees", icon: FaUserMinus, value: formerEmployees },
-    {
-      title: "Upcoming Birthdays",
-      icon: FaBirthdayCake,
-      value: upcomingBirthdays,
-    }, 
+    { title: "Upcoming Birthdays", icon: FaBirthdayCake, value: upcomingBirthdays },
   ];
+
+  const options: ChartOptions<"bar"> = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      title: {
+        display: false,
+      },
+    },
+  };
+
+  const generateChartData = (branchName: string): ChartData<"bar"> => {
+    const branchData = staffData[branchName] || {};
+    const stableData: number[] = [];
+    const understaffData: number[] = [];
+
+    departments.forEach(dept => {
+      const deptData = branchData[dept] || { total: 0, present: 0 };
+      const { total, present } = deptData;
+
+      if (present >= total / 2) {
+        stableData.push(present);
+        understaffData.push(0);
+      } else {
+        stableData.push(0);
+        understaffData.push(total - present);
+      }
+    });
+
+    return {
+      labels: departments,
+      datasets: [
+        {
+          label: 'Stable',
+          data: stableData,
+          backgroundColor: '#135D66',
+        },
+        {
+          label: 'UnderStaff',
+          data: understaffData,
+          backgroundColor: '#E57373',
+        },
+      ],
+    };
+  };
 
   return (
     <AdminRouteGuard>
       <SignedIn>
-      <AdminLayout>
+        <AdminLayout>
           <div className="container h-full mx-auto p-4 dark:text-zinc-200">
             <ToastContainer />
             <CardComponent cardData={cardData} />
@@ -252,7 +364,14 @@ const AdminDashboard = () => {
                 <h2 className="text-lg font-semibold mb-2">Attendance Summary</h2>
                 <Doughnut data={doughnutData} />
               </div>
-              <EmployeeCount />
+              <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 border dark:border-zinc-800">
+                {branches.map((branch) => (
+                  <div key={branch.id} className="border p-1 mb-4">
+                    <h3 className="text-md font-semibold mb-2">{branch.name} Staff Headcounts</h3>
+                    <Bar options={options} data={generateChartData(branch.name)} />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </AdminLayout>
