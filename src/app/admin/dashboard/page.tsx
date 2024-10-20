@@ -326,7 +326,7 @@ const AdminDashboard: React.FC = () => {
       const deptData = branchData[dept] || { total: 0, present: 0 };
       const { total, present } = deptData;
 
-      if (present >= total / 2) {
+      if (present >= total / 2.5) {
         stableData.push(present);
         understaffData.push(0);
       } else {
