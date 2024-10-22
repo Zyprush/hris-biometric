@@ -298,7 +298,7 @@ const AdminDashboard: React.FC = () => {
   };
 
   const cardData = [
-    { title: "Total Employees", icon: FaUsers, value: totalEmployees - 1 },
+    { title: "Total Employees", icon: FaUsers, value: totalEmployees },
     { title: "Total Branches", icon: FaBuilding, value: totalBranches },
     { title: "Recent Hires", icon: FaUserPlus, value: recentHires },
     { title: "Former Employees", icon: FaUserMinus, value: formerEmployees },
