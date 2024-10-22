@@ -15,7 +15,7 @@ const LeaveTaken = ({ userData }: Props) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData]);
   return (
-    <div className="bg-white rounded-lg shadow p-6 dark:bg-gray-800">
+    <div className="bg-white rounded-lg md:col-span-2 shadow p-6 dark:bg-gray-800">
       <h2 className="text-xl font-semibold mb-4 text-neutral dark:text-white">
         Leave Taken
       </h2>

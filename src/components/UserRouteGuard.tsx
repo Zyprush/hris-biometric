@@ -5,7 +5,6 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase";
-import { warnToast } from "@/components/toast";
 import Loading from "./Loading";
 
 interface UserRouteGuardProps {
@@ -53,9 +52,10 @@ export function UserRouteGuard ({ children }: UserRouteGuardProps) {
         console.log("User not authenticated. Redirecting to sign-in page...");
         router.push("/sign-in");
       } else if (user && !user.emailVerified) {
-        warnToast(
-          "Your email is not verified. Please check your inbox for a verification email."
-        );
+        console.log("user email not verified.");
+        // warnToast(
+        //   "Your email is not verified. Please check your inbox for a verification email."
+        // );
       }
     }
   }, [user, userData, loading, userDataLoading, router]);
