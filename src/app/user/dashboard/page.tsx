@@ -20,7 +20,6 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import LeaveTaken from "./LeaveTaken";
-import TeamStatus from "./TeamStatus";
 import Productivity from "./Productivity";
 import FinancialOverview from "./FinancialOverview";
 
@@ -101,10 +100,10 @@ export default function UserDashboard() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Financial Information */}
-              <FinancialOverview
+              {/* <FinancialOverview
                 userIdRef={userData?.userIdRef || ""}
                 dailyRate={userData?.dailyRate || 350}
-              />
+              /> */}
 
               {/* Quick Actions */}
               <div className="bg-white rounded-lg shadow p-6 dark:bg-gray-800 ">
@@ -136,8 +135,6 @@ export default function UserDashboard() {
               {/* Productivity Chart */}
               <Productivity userIdRef={userData?.userIdRef || ""} />
 
-              {/* Team Status */}
-              <TeamStatus userData={userData} />
             </div>
           </div>
         </Userlayout>

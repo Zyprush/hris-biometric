@@ -179,7 +179,7 @@ const Productivity: React.FC<ProductivityProps> = ({ userIdRef }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-6 col-span-full md:col-span-2 dark:bg-gray-800">
+    <div className="bg-white rounded-lg shadow p-6 col-span-full md:col-span-3 dark:bg-gray-800">
       <h2 className="text-xl font-semibold mb-4 text-neutral dark:text-white">
         Attendance and Overtime
       </h2>
