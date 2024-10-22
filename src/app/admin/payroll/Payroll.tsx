@@ -59,7 +59,23 @@ const Payroll: React.FC = () => {
   const calculateDaysOfWork = async (rtdbUserId: string) => {
     const today = new Date();
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    let daysWorked = 0;
+    let totalWorkDays = 0;
+
+    const calculateHoursBetween = (checkIn: string, checkOut: string) => {
+      const [inHours, inMinutes] = checkIn.split(':').map(Number);
+      const [outHours, outMinutes] = checkOut.split(':').map(Number);
+
+      const checkInDate = new Date();
+      checkInDate.setHours(inHours, inMinutes, 0);
+
+      const checkOutDate = new Date();
+      checkOutDate.setHours(outHours, outMinutes, 0);
+
+      const diffMs = checkOutDate.getTime() - checkInDate.getTime();
+      const diffHours = diffMs / (1000 * 60 * 60);
+
+      return diffHours;
+    };
 
     for (let day = firstDayOfMonth; day <= today; day.setDate(day.getDate() + 1)) {
       const dateString = day.toISOString().split('T')[0];
@@ -67,35 +83,53 @@ const Payroll: React.FC = () => {
       const attendanceSnapshot = await get(attendanceRef);
 
       if (attendanceSnapshot.exists()) {
-        const checkIns = Object.values(attendanceSnapshot.val()).filter(
-          (entry: any) => entry && entry.type === "Check-in"
-        );
-        if (checkIns.length > 0) {
-          daysWorked++;
+        const entries = Object.values(attendanceSnapshot.val())
+          .sort((a: any, b: any) => a.time.localeCompare(b.time));
+
+        let dailyHours = 0;
+        let lastCheckIn: string | null = null;
+
+        // Process each entry pair (check-in/check-out)
+        entries.forEach((entry: any) => {
+          if (entry.type === "Check-in") {
+            lastCheckIn = entry.time;
+          } else if (entry.type === "Check-out" && lastCheckIn) {
+            // Calculate hours between this pair
+            const hoursWorked = calculateHoursBetween(lastCheckIn, entry.time);
+            dailyHours += hoursWorked;
+            lastCheckIn = null;
+          }
+        });
+
+        // Convert hours to days (8 hours = 1 day)
+        if (dailyHours >= 8) {
+          totalWorkDays += 1;
+        } else if (dailyHours > 0) {
+          totalWorkDays += dailyHours / 8;
         }
       }
     }
 
-    return daysWorked;
+    return Number(totalWorkDays.toFixed(2));
   };
 
   const calculateOvertimeHours = (entries: AttendanceEntry[]): number => {
     let totalOvertimeHours = 0;
     let overtimeStart: Date | null = null;
     let overtimeEnd: Date | null = null;
-  
+
     //console.log("Calculating overtime hours for entries:", entries);
-  
+
     // Sort entries by time to ensure correct order
     entries.sort((a, b) => a.time.localeCompare(b.time));
-  
+
     entries.forEach((entry) => {
       const [hours, minutes, seconds] = entry.time.split(':').map(Number);
       const entryTime = new Date();
       entryTime.setHours(hours, minutes, seconds);
-  
+
       //console.log(`Processing entry: ${entry.type} at ${entry.time}`);
-  
+
       if (entry.type === "Overtime-in") {
         //console.log("Overtime-in detected:", entry.time);
         overtimeStart = entryTime;
@@ -103,24 +137,24 @@ const Payroll: React.FC = () => {
         //console.log("Overtime-out detected:", entry.time);
         overtimeEnd = entryTime;
       }
-  
+
       // Calculate overtime if we have both start and end
       if (overtimeStart && overtimeEnd) {
         const overtimeDuration = (overtimeEnd.getTime() - overtimeStart.getTime()) / (1000 * 60 * 60);
         //console.log("Calculated overtime duration:", overtimeDuration.toFixed(2), "hours");
         totalOvertimeHours += overtimeDuration;
-        
+
         // Reset for next potential overtime period
         overtimeStart = null;
         overtimeEnd = null;
       }
     });
-  
+
     // Handle case where there's an Overtime-in without a corresponding Overtime-out
     if (overtimeStart && !overtimeEnd) {
       console.warn("Overtime-in without corresponding Overtime-out detected. Ignoring this period.");
     }
-  
+
     //console.log("Total overtime hours calculated:", totalOvertimeHours.toFixed(2));
     return totalOvertimeHours;
   };
@@ -175,12 +209,13 @@ const Payroll: React.FC = () => {
                 }
               }
 
-              const rate = data.rate || 520; // Fixed rate
+              const rate = data.rate || 350; // Fixed rate
               const hourlyRate = rate / 8; // Assuming 8-hour workday
               const overtimePay = overtimeHours * (hourlyRate * 2); // Overtime pay is 2x hourly rate
               const holiday = data.holiday || 0;
 
-              const totalRegularWage = rate * daysOfWork;
+              const totalRegularWage = rate * Math.floor(daysOfWork) +
+                (hourlyRate * 8 * (daysOfWork % 1));
               const totalAmount = totalRegularWage + overtimePay + holiday;
 
               const sssDeduction = data.sssDeduction || 0;
