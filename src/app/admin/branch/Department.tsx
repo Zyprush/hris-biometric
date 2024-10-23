@@ -1,7 +1,8 @@
 "use client";
-import { isUserPresent } from "@/app/user/dashboard/teamstats";
 import { db } from "@/firebase";
 import { query, collection, where, getDocs } from "firebase/firestore";
+import { ref, get } from "firebase/database";
+import { rtdb } from "@/firebase";
 import React, { useEffect, useMemo, useState } from "react";
 
 interface UserData {
@@ -9,23 +10,60 @@ interface UserData {
   nickname?: string;
   department?: string;
   profilePicUrl?: string;
-  userRefId?: string;
+  userIdRef?: string;
   isPresent?: boolean;
 }
-interface Department {
-  name: string;
-  selectedBranch: string;
-}
+
 interface DepartmentProps {
   dept: any;
   selectedBranch: string;
 }
 
-const Department: React.FC<DepartmentProps> = ({
-  dept,
-  selectedBranch
-}) => {
+const Department: React.FC<DepartmentProps> = ({ dept, selectedBranch }) => {
   const [teamData, setTeamData] = useState<UserData[]>([]);
+
+  const getCurrentDate = () => {
+    const date = new Date();
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    //return `2024-10-22`; //this is for testing
+  };
+
+  const checkUserPresence = async (userIdRef: string): Promise<boolean> => {
+    try {
+      // Get the user data from RTDB
+      const userRef = ref(rtdb, `users/${userIdRef}`);
+      const userSnapshot = await get(userRef);
+      
+      if (!userSnapshot.exists()) {
+        console.log(`No user found for userRefId: ${userIdRef}`);
+        return false;
+      }
+
+      const userData = userSnapshot.val();
+      const userId = userData.userid;
+
+      if (!userId) {
+        console.log(`No userid found for userRefId: ${userIdRef}`);
+        return false;
+      }
+
+      // Check attendance/currentDate/id_{userId}
+      const currentDate = getCurrentDate();
+      const attendanceRef = ref(rtdb, `attendance/${currentDate}`);
+      const attendanceSnapshot = await get(attendanceRef);
+
+      // Check if there's any entry with id_{userId}
+      if (attendanceSnapshot.exists()) {
+        const attendanceData = attendanceSnapshot.val();
+        return Object.keys(attendanceData).some(key => key === `id_${userId}`);
+      }
+
+      return false;
+    } catch (error) {
+      console.error(`Error checking presence for userRefId ${userIdRef}:`, error);
+      return false;
+    }
+  };
 
   const fetchTeamData = useMemo(
     () => async () => {
@@ -42,13 +80,14 @@ const Department: React.FC<DepartmentProps> = ({
                   where("department", "==", dept.name),
                   where("branch", "==", selectedBranch)
                 );
+
           const teamDocSnap = await getDocs(teamQuery);
           const teamData = await Promise.all(
             teamDocSnap.docs.map(async (doc) => {
               const data = doc.data() as UserData;
-              // Check if the user is present
-              if (data.userRefId) {
-                const isPresent = await isUserPresent(data.userRefId);
+              // Check if the user is present using the new logic
+              if (data.userIdRef) {
+                const isPresent = await checkUserPresence(data.userIdRef);
                 data.isPresent = isPresent;
               } else {
                 data.isPresent = false;
@@ -56,7 +95,7 @@ const Department: React.FC<DepartmentProps> = ({
               return data;
             })
           );
-          // Set the updated team data with presence status
+          
           setTeamData(teamData);
         } catch (error) {
           console.error("Error fetching team data:", error);
@@ -82,7 +121,6 @@ const Department: React.FC<DepartmentProps> = ({
           <ul className="space-y-2">
             {teamData.map((member, index) => (
               <li key={index} className="flex items-center text-neutral gap-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={member?.profilePicUrl || "/img/profile-male.jpg"}
                   alt={member?.name}

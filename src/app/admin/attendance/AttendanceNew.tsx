@@ -68,33 +68,93 @@ const Attendance: React.FC = () => {
     return differenceInMinutes(endDate, startDate);
   };
 
+  // Helper function to determine if a time is AM or PM
+  const isAMTime = (time: string): boolean => {
+    if (!time) return false;
+    const [hours] = time.split(':');
+    const hour = parseInt(hours, 10);
+    // Consider times between 5:00 and 12:59 as AM
+    return hour >= 5 && hour < 13;
+  };
+
+  // Helper function to determine if a time difference suggests missing middle entries
+  const hasLargeTimeDifference = (checkIn: string, checkOut: string): boolean => {
+    if (!checkIn || !checkOut) return false;
+    const startDate = parseISO(`2000-01-01T${checkIn}`);
+    const endDate = parseISO(`2000-01-01T${checkOut}`);
+    const diffInHours = differenceInMinutes(endDate, startDate) / 60;
+    // If difference is more than 5 hours, likely missing middle entries
+    return diffInHours > 5;
+  };
+
   const assignTimeEntries = (checkIns: string[], checkOuts: string[]): { amIn: string, amOut: string, pmIn: string, pmOut: string } => {
     let amIn = "", amOut = "", pmIn = "", pmOut = "";
 
+    // Sort times chronologically
+    checkIns.sort();
+    checkOuts.sort();
+
     if (checkIns.length === 2 && checkOuts.length === 2) {
-      // If 2 check-ins and 2 check-outs
-      amIn = checkIns[1] || "";
-      amOut = checkOuts[1] || "";
-      pmIn = checkIns[0] || "";
-      pmOut = checkOuts[0] || "";
+      // Full day scenario with 2 check-ins and 2 check-outs
+      const firstCheckIn = checkIns[0];
+      const secondCheckIn = checkIns[1];
+      const firstCheckOut = checkOuts[0];
+      const secondCheckOut = checkOuts[1];
+
+      if (isAMTime(firstCheckIn)) {
+        amIn = firstCheckIn;
+        amOut = firstCheckOut;
+        pmIn = secondCheckIn;
+        pmOut = secondCheckOut;
+      } else {
+        pmIn = firstCheckIn;
+        pmOut = firstCheckOut;
+        amIn = secondCheckIn;
+        amOut = secondCheckOut;
+      }
     } else if (checkIns.length === 1 && checkOuts.length === 1) {
-      // If 1 check-in and 1 check-out
-      amIn = checkIns[0] || "";
-      amOut = checkOuts[0] || "";
-      pmIn = "";
-      pmOut = "";
+      const checkIn = checkIns[0];
+      const checkOut = checkOuts[0];
+
+      if (isAMTime(checkIn)) {
+        // Check if there's a large time gap suggesting missing middle entries
+        if (hasLargeTimeDifference(checkIn, checkOut)) {
+          // Case where employee checked in AM and checked out PM, missing middle entries
+          amIn = checkIn;
+          pmOut = checkOut;
+        } else {
+          // Normal half-day morning scenario
+          amIn = checkIn;
+          amOut = checkOut;
+        }
+      } else {
+        // Afternoon half-day
+        pmIn = checkIn;
+        pmOut = checkOut;
+      }
     } else if (checkIns.length === 2 && checkOuts.length === 1) {
-      // If 2 check-ins and 1 check-out
-      amIn = checkIns[1] || "";
-      amOut = checkOuts[0] || "";
-      pmIn = checkIns[0] || "";
-      pmOut = "";
-    } else {
-      // Handle other cases (e.g., 1 check-in and 2 check-outs, or more than 2 of either)
-      amIn = checkIns[0] || "";
-      amOut = checkOuts[0] || "";
-      pmIn = checkIns[1] || "";
-      pmOut = checkOuts[1] || "";
+      // Special case: 2 check-ins but only 1 check-out
+      const firstCheckIn = checkIns[0];
+      const secondCheckIn = checkIns[1];
+      const checkOut = checkOuts[0];
+
+      if (isAMTime(firstCheckIn)) {
+        amIn = firstCheckIn;
+        if (isAMTime(secondCheckIn)) {
+          amOut = checkOut;
+        } else {
+          pmIn = secondCheckIn;
+          pmOut = checkOut;
+        }
+      } else {
+        pmIn = firstCheckIn;
+        if (isAMTime(secondCheckIn)) {
+          amIn = secondCheckIn;
+          amOut = checkOut;
+        } else {
+          pmOut = checkOut;
+        }
+      }
     }
 
     return { amIn, amOut, pmIn, pmOut };
@@ -187,9 +247,9 @@ const Attendance: React.FC = () => {
                 employeeId: user.employeeId,
                 employeeName: user.name,
                 department: user.department,
-                amIn: formatTo12Hour(amIn) ,
-                amOut: formatTo12Hour(amOut) ,
-                pmIn: formatTo12Hour(pmIn) ,
+                amIn: formatTo12Hour(amIn),
+                amOut: formatTo12Hour(amOut),
+                pmIn: formatTo12Hour(pmIn),
                 pmOut: formatTo12Hour(pmOut),
                 otHours: otHours.toFixed(2),
                 underTime: underTime.toFixed(2),
@@ -262,7 +322,7 @@ const Attendance: React.FC = () => {
           onToDateChange={handleToDateChange}
           onSearchChange={handleSearch}
           onDepartmentChange={handleDepartmentChange}
-        />  
+        />
 
         {isLoading ? (
           <div className="text-center py-4">Loading...</div>

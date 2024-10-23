@@ -209,8 +209,9 @@ const Payroll: React.FC = () => {
                 }
               }
 
-              const rate = data.rate || 350; // Fixed rate
+              const rate = data.rate || 520; // Fixed rate
               const hourlyRate = rate / 8; // Assuming 8-hour workday
+              //const daysOfWork = await calculateDaysOfWork(userId);
               const overtimePay = overtimeHours * (hourlyRate * 2); // Overtime pay is 2x hourly rate
               const holiday = data.holiday || 0;
 
