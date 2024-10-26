@@ -71,13 +71,22 @@ const Payroll: React.FC = () => {
       const checkOutDate = new Date();
       checkOutDate.setHours(outHours, outMinutes, 0);
 
+      // Handle cases where checkout is on the next day
+      if (outHours < inHours) {
+        checkOutDate.setDate(checkOutDate.getDate() + 1);
+      }
+
       const diffMs = checkOutDate.getTime() - checkInDate.getTime();
       const diffHours = diffMs / (1000 * 60 * 60);
 
       return diffHours;
     };
 
-    for (let day = firstDayOfMonth; day <= today; day.setDate(day.getDate() + 1)) {
+    // Include today in the loop by adding 1 to today's date
+    const endDate = new Date(today);
+    endDate.setDate(today.getDate() + 1);
+
+    for (let day = firstDayOfMonth; day < endDate; day.setDate(day.getDate() + 1)) {
       const dateString = day.toISOString().split('T')[0];
       const attendanceRef = ref(rtdb, `attendance/${dateString}/id_${rtdbUserId}`);
       const attendanceSnapshot = await get(attendanceRef);
@@ -100,6 +109,14 @@ const Payroll: React.FC = () => {
             lastCheckIn = null;
           }
         });
+
+        // For today's incomplete entries (if there's a check-in without check-out)
+        if (dateString === today.toISOString().split('T')[0] && lastCheckIn) {
+          const currentTime = new Date();
+          const currentTimeString = `${currentTime.getHours().toString().padStart(2, '0')}:${currentTime.getMinutes().toString().padStart(2, '0')}`;
+          const hoursWorked = calculateHoursBetween(lastCheckIn, currentTimeString);
+          dailyHours += hoursWorked;
+        }
 
         // Convert hours to days (8 hours = 1 day)
         if (dailyHours >= 8) {
