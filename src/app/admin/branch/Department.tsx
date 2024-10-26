@@ -132,7 +132,7 @@ const Department: React.FC<DepartmentProps> = ({ dept, selectedBranch }) => {
                   </p>
                   <p
                     className={`p-1 flex items-center justify-center px-2 rounded-md text-white w-auto ${
-                      member.isPresent ? "bg-[#61a34a]" : "bg-neutral"
+                      member.isPresent ? "bg-[#61a34a]" : "bg-red-500"
                     }`}
                   >
                     {member.isPresent ? "present" : "absent"}
