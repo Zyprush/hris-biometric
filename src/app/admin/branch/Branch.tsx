@@ -201,6 +201,7 @@ const BranchComponent = () => {
                 <button
                   onClick={() => handleDelete(branch)}
                   className="bg-error hover:bg-red-600 text-white font-semibold py-1 px-3 rounded-md transition duration-200"
+                  hidden
                 >
                   Delete
                 </button>
@@ -227,7 +228,7 @@ const BranchComponent = () => {
                     value={newBranch.name}
                     onChange={handleInputChange}
                     className="w-full border rounded px-2 py-1 bg-zinc-300"
-                    required
+                    readOnly
                   />
                 </div>
                 <div>
@@ -240,7 +241,7 @@ const BranchComponent = () => {
                     name="location"
                     value={newBranch.location}
                     onChange={handleInputChange}
-                    className="w-full border rounded px-2 py-1 bg-zinc-300"
+                    className="w-full border rounded px-2 py-1 "
                     required
                   />
                 </div>
