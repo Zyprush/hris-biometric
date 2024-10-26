@@ -25,10 +25,11 @@ import {
 } from "react-icons/fa";
 import { AdminRouteGuard } from "@/components/AdminRouteGuard";
 import { ToastContainer } from "react-toastify";
-import { collection, getDocs, query, where, QuerySnapshot, DocumentData } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db, rtdb } from "@/firebase";
 import CardComponent from "@/components/CardComponents";
-import { get, ref, DataSnapshot } from "firebase/database";
+import { get, ref } from "firebase/database";
+import Loading from '@/components/Loading';
 
 ChartJS.register(
   ArcElement,
@@ -61,6 +62,16 @@ interface StaffData {
   };
 }
 
+interface LoadingStates {
+  employees: boolean;
+  branches: boolean;
+  formerEmployees: boolean;
+  birthdays: boolean;
+  attendance: boolean;
+  departments: boolean;
+  staffData: boolean;
+}
+
 const AdminDashboard: React.FC = () => {
   const [totalEmployees, setTotalEmployees] = useState<number>(0);
   const [totalBranches, setTotalBranches] = useState<number>(0);
@@ -76,6 +87,21 @@ const AdminDashboard: React.FC = () => {
   const [branches, setBranches] = useState<Branch[]>([]);
   const [departments, setDepartments] = useState<string[]>([]);
   const [staffData, setStaffData] = useState<StaffData>({});
+  const [loadingStates, setLoadingStates] = useState<LoadingStates>({
+    employees: true,
+    branches: true,
+    formerEmployees: true,
+    birthdays: true,
+    attendance: true,
+    departments: true,
+    staffData: true,
+  });
+
+  const updateLoadingState = (key: keyof LoadingStates, value: boolean) => {
+    setLoadingStates(prev => ({ ...prev, [key]: value }));
+  };
+
+  const isLoading = Object.values(loadingStates).some(state => state);
 
   const fetchTotalEmployees = async (): Promise<void> => {
     try {
@@ -110,6 +136,8 @@ const AdminDashboard: React.FC = () => {
       setRecentHires(recentHiresCount);
     } catch (error) {
       console.error("Error fetching total employees: ", error);
+    } finally {
+      updateLoadingState('employees', false);
     }
   };
 
@@ -119,6 +147,8 @@ const AdminDashboard: React.FC = () => {
       setTotalBranches(querySnapshot.size);
     } catch (error) {
       console.error("Error fetching total branches: ", error);
+    } finally {
+      updateLoadingState('branches', false);
     }
   };
 
@@ -128,6 +158,8 @@ const AdminDashboard: React.FC = () => {
       setFormerEmployees(querySnapshot.size);
     } catch (error) {
       console.error("Error fetching former employees: ", error);
+    } finally {
+      updateLoadingState('formerEmployees', false);
     }
   };
 
@@ -166,6 +198,8 @@ const AdminDashboard: React.FC = () => {
       setUpcomingBirthdays(birthdaysCount);
     } catch (error) {
       console.error("Error fetching upcoming birthdays: ", error);
+    } finally {
+      updateLoadingState('birthdays', false);
     }
   };
 
@@ -207,6 +241,8 @@ const AdminDashboard: React.FC = () => {
       setTotalEmployees(totalUsers);
     } catch (error) {
       console.error("Error fetching attendance summary: ", error);
+    } finally {
+      updateLoadingState('attendance', false);
     }
   };
 
@@ -217,6 +253,8 @@ const AdminDashboard: React.FC = () => {
       setBranches(branchesData);
     } catch (error) {
       console.error("Error fetching branches: ", error);
+    } finally {
+      updateLoadingState('branches', false);
     }
   };
 
@@ -227,6 +265,8 @@ const AdminDashboard: React.FC = () => {
       setDepartments(departmentsData);
     } catch (error) {
       console.error("Error fetching departments: ", error);
+    } finally {
+      updateLoadingState('departments', false);
     }
   };
 
@@ -267,6 +307,8 @@ const AdminDashboard: React.FC = () => {
       setStaffData(staffCounts);
     } catch (error) {
       console.error("Error fetching staff data: ", error);
+    } finally {
+      updateLoadingState('staffData', false);
     }
   };
 
@@ -358,21 +400,29 @@ const AdminDashboard: React.FC = () => {
         <AdminLayout>
           <div className="container h-full mx-auto p-4 dark:text-zinc-200">
             <ToastContainer />
-            <CardComponent cardData={cardData} />
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 border dark:border-zinc-800">
-                <h2 className="text-lg font-semibold mb-2">Attendance Summary</h2>
-                <Doughnut data={doughnutData} />
+            {isLoading ? (
+              <div className="flex items-center justify-center h-screen">
+                <Loading />
               </div>
-              <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 border dark:border-zinc-800">
-                {branches.map((branch) => (
-                  <div key={branch.id} className="border p-1 mb-4">
-                    <h3 className="text-md font-semibold mb-2">{branch.name} Staff Headcounts</h3>
-                    <Bar options={options} data={generateChartData(branch.name)} />
+            ) : (
+              <>
+                <CardComponent cardData={cardData} />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 border dark:border-zinc-800">
+                    <h2 className="text-lg font-semibold mb-2">Attendance Summary</h2>
+                    <Doughnut data={doughnutData} />
                   </div>
-                ))}
-              </div>
-            </div>
+                  <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 border dark:border-zinc-800">
+                    {branches.map((branch) => (
+                      <div key={branch.id} className="border p-1 mb-4">
+                        <h3 className="text-md font-semibold mb-2">{branch.name} Staff Headcounts</h3>
+                        <Bar options={options} data={generateChartData(branch.name)} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </AdminLayout>
       </SignedIn>
