@@ -21,7 +21,6 @@ import { auth, db } from "@/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import LeaveTaken from "./LeaveTaken";
 import Productivity from "./Productivity";
-import FinancialOverview from "./FinancialOverview";
 
 ChartJS.register(
   CategoryScale,
@@ -40,7 +39,7 @@ interface UserData {
   department?: string;
   profilePicUrl?: string;
   attendanceStatus?: string;
-  userIdRef?: string;
+  userIdRef: string;
   dailyRate?: number;
 }
 
@@ -73,19 +72,16 @@ export default function UserDashboard() {
 
   const QuickActionButton = ({
     icon: Icon,
-    label,
     onClick,
   }: {
     icon: React.ElementType;
-    label: string;
     onClick?: () => void;
   }) => (
     <button
-      className="flex items-center justify-center gap-2 bg-primary text-white py-2 px-4 hover:bg-neutral transition-colors text-sm"
+      className="flex items-center justify-center bg-primary text-white p-3 rounded-full hover:bg-neutral transition-colors"
       onClick={onClick}
     >
-      <Icon />
-      {label}
+      <Icon className="w-6 h-6" />
     </button>
   );
 
@@ -106,25 +102,22 @@ export default function UserDashboard() {
               /> */}
 
               {/* Quick Actions */}
-              <div className="bg-white rounded-lg shadow p-6 dark:bg-gray-800 ">
-                <h2 className="text-xl font-semibold mb-4 text-neutral dark:text-white">
+              <div className="bg-white rounded-lg shadow p-4 sm:p-6 dark:bg-gray-800">
+                <h2 className="text-lg sm:text-xl font-semibold mb-4 text-neutral dark:text-white">
                   Quick Actions
                 </h2>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-4 justify-center sm:justify-start">
+                  <Link href="/user/payslip">
+                    <QuickActionButton icon={FaMoneyCheckAlt} />
+                    <label htmlFor="Payslip">Payslip</label>
+                  </Link>
                   <Link href="/user/attendance">
-                    <QuickActionButton
-                      icon={FaClipboardList}
-                      label="View Attendance"
-                    />
+                    <QuickActionButton icon={FaClipboardList} />
+                    <label htmlFor="Leave">Leave</label>
                   </Link>
                   <Link href="/user/request">
-                    <QuickActionButton icon={FaUserAlt} label="Leave Request" />
-                  </Link>
-                  <Link href="/user/payslip">
-                    <QuickActionButton
-                      icon={FaMoneyCheckAlt}
-                      label="View Payslip"
-                    />
+                    <QuickActionButton icon={FaUserAlt} />
+                    <label htmlFor="Request">Request</label>
                   </Link>
                 </div>
               </div>
