@@ -130,10 +130,10 @@ const UserAccount = () => {
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-900 px-4 py-8">
                   <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    <UserInfo label="Department" value={userData?.department} icon={FaBuilding} />
                     <UserInfo label="Employee ID" value={userData?.employeeId} icon={FaIdCardClip} />
-                    <UserInfo label="Phone" value={userData?.phone} icon={FaIdBadge} />
                     <UserInfo label="Birthday" value={userData?.birthday ? format(userData?.birthday, 'MMM dd, yyyy') : ""} icon={FaIdBadge} />
+                    <UserInfo label="Phone" value={userData?.phone} icon={FaIdBadge} />
+                    <UserInfo label="Department" value={userData?.department} icon={FaBuilding} />
                     <UserInfo label="Gender" value={userData?.gender} icon={RiUserSmileFill} />
                     <UserInfo label="Nationality" value={userData?.nationality} icon={FaFlag} />
                     <UserInfo label="Status" value={userData?.status} icon={FaUserTag} />
