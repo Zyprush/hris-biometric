@@ -181,6 +181,8 @@ const Request = () => {
                   </React.Fragment>
                 ))}
               </div>
+              {/*
+              
               <Link
                 href={"/user/request/updated"}
                 className="indicator fixed bottom-14 right-4 flex items-center gap-2 mx-auto text-xs rounded-md p-2 font-bold border-2 mb-5 btn btn-primary"
@@ -193,6 +195,7 @@ const Request = () => {
                   Updated
                 </div>
               </Link>
+              */}
             </div>
 
             <button

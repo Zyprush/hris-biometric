@@ -324,14 +324,14 @@ const AdminDashboard: React.FC = () => {
   }, []);
 
   const doughnutData: ChartData<"doughnut"> = {
-    labels: ["Present", "Absent", "Leave", "Restday"],
+    labels: ["Present", "Absent", "Leave",],
     datasets: [
       {
         data: [
           attendanceSummary.present,
           attendanceSummary.absent,
           attendanceSummary.leave,
-          attendanceSummary.restday,
+          //attendanceSummary.restday,
         ],
         backgroundColor: ["#40ae75", "#E57373", "#238F99", "#104A55"],
         hoverBackgroundColor: ["#238F99", "#E57372", "#1A7680", "#135D66"],

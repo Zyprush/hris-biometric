@@ -102,6 +102,11 @@ const UserAccount = () => {
                 <div className="pt-16 pb-8 px-4 text-center">
                   <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">{userData?.name || "Admin User"}</h1>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">{userData?.position || "Administrator"}</p>
+                  <p className="text-md text-gray-600 dark:text-gray-400">
+                    <MdEmail className="inline mr-2" />
+                    {userData?.email || "Example@example.com"}
+                    {isEmailVerified && <RiVerifiedBadgeFill className="inline ml-2 text-green-500" />}
+                  </p>
                   {!isEmailVerified && (
                     <div className="mt-4">
                       <button
@@ -125,12 +130,10 @@ const UserAccount = () => {
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-900 px-4 py-8">
                   <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    <UserInfo label="Email" value={userData?.email} icon={MdEmail} />
                     <UserInfo label="Department" value={userData?.department} icon={FaBuilding} />
                     <UserInfo label="Employee ID" value={userData?.employeeId} icon={FaIdCardClip} />
                     <UserInfo label="Phone" value={userData?.phone} icon={FaIdBadge} />
-                    <UserInfo label="Birthday" value={userData?.birthday ? format(userData?.birthday, 'MMM dd, yyyy'):""} icon={FaIdBadge} />
-                    <UserInfo label="Verified" value={isEmailVerified ? "Yes" : "No"} icon={RiVerifiedBadgeFill} />
+                    <UserInfo label="Birthday" value={userData?.birthday ? format(userData?.birthday, 'MMM dd, yyyy') : ""} icon={FaIdBadge} />
                     <UserInfo label="Gender" value={userData?.gender} icon={RiUserSmileFill} />
                     <UserInfo label="Nationality" value={userData?.nationality} icon={FaFlag} />
                     <UserInfo label="Status" value={userData?.status} icon={FaUserTag} />
@@ -138,6 +141,7 @@ const UserAccount = () => {
                     <UserInfo label="PhilHealth" value={userData?.philHealthNumber} icon={FaUserTag} />
                     <UserInfo label="TIN" value={userData?.tinNumber} icon={FaUserTag} />
                     <UserInfo label="SSS" value={userData?.sss} icon={FaUserTag} />
+                    <UserInfo label="Start Date" value={userData?.startDate ? format(userData?.startDate, 'MMM dd, yyyy') : ""} icon={FaUserTag} />
                   </div>
                 </div>
               </div>
@@ -155,16 +159,16 @@ interface UserInfoProps {
 }
 const UserInfo = ({ label, value, icon: Icon }: UserInfoProps) => {
   return (
-    value ? 
-    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300 ease-in-out">
-      <div className="flex items-center">
-        <Icon className="text-2xl text-primary dark:text-white mr-3" />
-        <div className="truncate">
-          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{label}</p>
-          <p className="text-base font-semibold text-gray-800 dark:text-gray-200">{value}</p>
+    value ?
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300 ease-in-out">
+        <div className="flex items-center">
+          <Icon className="text-2xl text-primary dark:text-white mr-3" />
+          <div className="truncate">
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{label}</p>
+            <p className="text-base font-semibold text-gray-800 dark:text-gray-200">{value}</p>
+          </div>
         </div>
-      </div>
-    </div> : null
+      </div> : null
   );
 };
 export default UserAccount;

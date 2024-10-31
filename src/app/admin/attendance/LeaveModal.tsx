@@ -29,6 +29,13 @@ const LeaveModal = ({
   const { addHistory } = useHistoryStore();
   const { userData } = useUserStore();
 
+  const rejectionReasons = [
+    "Staff shortage",
+    "Peak Season",
+    "Overlap with other requests",
+    "Pending workload"
+  ];
+
   const handleSubmit = async () => {
     setLoading(true);
     try {
@@ -39,7 +46,7 @@ const LeaveModal = ({
       };
       if (respond === "rejected") {
         if (!reason) {
-          errorToast("Please provide a reason for rejecting");
+          errorToast("Please select a reason for rejecting");
         } else {
           updateData.status = "rejected";
           updateData.remarks = reason;
@@ -75,6 +82,7 @@ const LeaveModal = ({
       setLoading(false);
     }
   };
+
   return (
     <div className="fixed top-0 bottom-0 right-0 left-0 w-full h-full bg-zinc-800 bg-opacity-50 py-6 flex p-4 flex-col justify-center sm:py-12 gap-4 z-50">
       <ToastContainer />
@@ -137,13 +145,19 @@ const LeaveModal = ({
             </button>
           )}
         </span>
-        {respond == "rejected" && (
-          <textarea
-            rows={3}
-            placeholder="Why did you reject this leave request?"
-            className="border-2 p-2 rounded w-full text-xs dark:bg-zinc-100 border-zinc-400 mt-2 resize-none"
+        {respond === "rejected" && (
+          <select
+            value={reason}
             onChange={(e) => setReason(e.target.value)}
-          />
+            className="border-2 p-2 rounded w-full text-xs dark:bg-zinc-100 border-zinc-400 mt-2"
+          >
+            <option value="">Select a reason</option>
+            {rejectionReasons.map((reason) => (
+              <option key={reason} value={reason}>
+                {reason}
+              </option>
+            ))}
+          </select>
         )}
       </div>
       <button
@@ -161,6 +175,7 @@ interface UserInfoProps {
   value: string;
   icon: React.ComponentType<{ className?: string }>;
 }
+
 const Info = ({ label, value, icon: Icon }: UserInfoProps) => (
   <span className="text-gray-600 flex gap-1 items-center font-semibold">
     <Icon className="text-neutral" /> <p className="font-bold text-neutral">{label}:</p> {value}

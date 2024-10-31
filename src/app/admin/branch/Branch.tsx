@@ -27,6 +27,7 @@ interface Branch {
   totalEmployees: number;
   totalDepartments: number;
   imageUrl: string;
+  //added branch name use just to 
 }
 
 const BranchComponent = () => {
