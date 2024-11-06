@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { BsBarChartFill } from "react-icons/bs";
 import { MdTry, MdPayments } from "react-icons/md";
 import { RiFolderHistoryFill } from "react-icons/ri";
-import { FaUserAlt, FaBuilding, FaBell } from "react-icons/fa";
+import { FaUserAlt, FaBuilding, FaBell, FaInfoCircle } from "react-icons/fa";
 import Account from "./Account";
 import Loading from "../Loading";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -209,6 +209,13 @@ const AdminSideNavbar: React.FC<NavbarProps> = ({ children }) => {
             label="History"
             isMinimized={isMinimized}
             isActive={pathname === "/admin/history"}
+          />
+          <NavLink
+            href="/admin/about"
+            icon={FaInfoCircle}
+            label="About Us"
+            isMinimized={isMinimized}
+            isActive={pathname === "/admin/about"}
           />
           <button
             onClick={toggleNavbar}
