@@ -274,7 +274,21 @@ const Payroll: React.FC = () => {
         setEmployees(fetchedEmployees);
         setFilteredEmployees(fetchedEmployees);
       } else {
-        // Fetch historical data (remains the same)
+        // Fetch historical data
+        const payrollRef = doc(db, "payroll", month);
+        const payrollSnapshot = await getDoc(payrollRef);
+
+        if (payrollSnapshot.exists()) {
+          const historicalData = payrollSnapshot.data();
+          const historicalEmployees: Employee[] = Object.values(historicalData);
+
+          setEmployees(historicalEmployees);
+          setFilteredEmployees(historicalEmployees);
+        } else {
+          console.warn(`No payroll data found for ${month}`);
+          setEmployees([]);
+          setFilteredEmployees([]);
+        }
       }
     } catch (error) {
       console.error("Error fetching employees: ", error);
