@@ -247,11 +247,14 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
         <div className="w-full md:w-1/2">
           <label htmlFor="phone" className="text-sm text-gray-500 mb-1 block">Phone</label>
           <input
-            type="tel"
+            type="number"
             id="phone"
             onChange={(e) => setPhone(e.target.value)}
             value={phone}
             placeholder="Phone"
+            pattern="[0-9]{11}"
+            title="11 digit number only"
+            maxLength={11}
             required
             className="w-full p-2 border rounded dark:bg-zinc-200"
           />
@@ -291,6 +294,9 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             onChange={(e) => setEmergencyContactPhone(e.target.value)}
             value={emergencyContactPhone}
             placeholder="Contact Phone"
+            pattern="[0-9]{11}"
+            title="11 digit number only"
+            maxLength={11}
             required
             className="w-full p-2 border rounded dark:bg-zinc-200"
           />

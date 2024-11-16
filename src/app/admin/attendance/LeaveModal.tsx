@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoPersonCircle } from "react-icons/io5";
 import { BsCalendar2DayFill, BsFillSendFill } from "react-icons/bs";
 import { MdDiscount } from "react-icons/md";
@@ -9,31 +9,35 @@ import { GoIssueClosed } from "react-icons/go";
 import { RiCloseCircleLine } from "react-icons/ri";
 import { errorToast, successToast } from "@/components/toast";
 import { doc, updateDoc } from "firebase/firestore";
-import { db } from "@/firebase";
+import { auth, db } from "@/firebase";
 import { ToastContainer } from "react-toastify";
 import { useHistoryStore } from "@/state/history";
 import { useUserStore } from "@/state/user";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 interface LeaveModalProps {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   curRequest: any;
 }
 
-const LeaveModal = ({
-  setShowModal,
-  curRequest,
-}: LeaveModalProps) => {
+const LeaveModal = ({ setShowModal, curRequest }: LeaveModalProps) => {
   const [reason, setReason] = useState<string>("");
   const [respond, setRespond] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const { addHistory } = useHistoryStore();
-  const { userData } = useUserStore();
-
+  const { userData, fetchUserData } = useUserStore();
+  const { uid } = useAuthState(auth)[0] || { uid: "" };
+  useEffect(() => {
+    if (uid) {
+      fetchUserData(uid);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uid]);
   const rejectionReasons = [
     "Staff shortage",
     "Peak Season",
     "Overlap with other requests",
-    "Pending workload"
+    "Pending workload",
   ];
 
   const handleSubmit = async () => {
@@ -55,9 +59,9 @@ const LeaveModal = ({
           await addHistory({
             userId: curRequest.userId,
             adminId: userData?.id,
-            text: `${userData?.name} rejected ${curRequest.submittedBy} leave request`,
+            text: `${userData?.name} ejected ${curRequest.submittedBy} leave request`,
             time: currentDate,
-            type: "leave"
+            type: "leave",
           });
           successToast("Request Rejected!");
           setShowModal(false);
@@ -68,10 +72,10 @@ const LeaveModal = ({
         const currentDate = new Date().toISOString();
         await addHistory({
           userId: curRequest.userId,
-          adminId: userData?.id,
+          adminId: uid,
           text: `${userData?.name} approved ${curRequest.submittedBy} leave request`,
           time: currentDate,
-          type: "leave"
+          type: "leave",
         });
         successToast("Request Approved!");
         setShowModal(false);
@@ -178,7 +182,8 @@ interface UserInfoProps {
 
 const Info = ({ label, value, icon: Icon }: UserInfoProps) => (
   <span className="text-gray-600 flex gap-1 items-center font-semibold">
-    <Icon className="text-neutral" /> <p className="font-bold text-neutral">{label}:</p> {value}
+    <Icon className="text-neutral" />{" "}
+    <p className="font-bold text-neutral">{label}:</p> {value}
   </span>
 );
 

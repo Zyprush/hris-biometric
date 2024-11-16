@@ -25,9 +25,9 @@ export const useHistoryStore = create<HistoryStore>((set) => ({
 
   addHistory: async (data: object) => {
     set({ loadingHistory: true });
+    console.log("try adding history", data);
     try {
       const submittedDoc = await addDoc(collection(db, "history"), data);
-      console.log("Upload history successful");
       set((state) => ({
         history: state.history
           ? [...state.history, submittedDoc]

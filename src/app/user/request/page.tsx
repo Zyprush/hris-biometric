@@ -166,8 +166,7 @@ const Request = () => {
                                 {request.remarks && (
                                   <div className="text-xs text-zinc-500 leading-5 ml-1 mt-2 items-start flex flex-col">
                                     <span className="font-semibold text-zinc-700 flex items-center">
-                                      Rejected
-                                      <FaQuestion className="text-sm" />
+                                      Admin remarks:
                                     </span>
                                     {request.remarks}
                                   </div>

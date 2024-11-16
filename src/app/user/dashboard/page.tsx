@@ -115,12 +115,12 @@ export default function UserDashboard() {
                     <QuickActionButton icon={FaClipboardList} />
                     <label htmlFor="Leave">Leave</label>
                   </Link>
-                  {/*
-                  <Link href="/user/request">
+                  
+                  <Link href="/user/attendance">
                     <QuickActionButton icon={FaUserAlt} />
-                    <label htmlFor="Request">Request</label>
+                    <label htmlFor="Request">Attendance</label>
                   </Link>
-                  */}
+                 
                 </div>
               </div>
 
