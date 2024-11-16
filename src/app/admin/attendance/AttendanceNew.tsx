@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { AdminRouteGuard } from "@/components/AdminRouteGuard";
-import { differenceInMinutes, format, parseISO } from "date-fns";
+import { differenceInMinutes, eachDayOfInterval, format, parseISO } from "date-fns";
 import { collection, getDocs, query, where, DocumentData } from "firebase/firestore";
 import { ref, get, DataSnapshot } from "firebase/database";
 import { db, rtdb } from "@/firebase";
@@ -160,8 +160,64 @@ const Attendance: React.FC = () => {
     return { amIn, amOut, pmIn, pmOut };
   };
 
+  const fetchAttendanceForDate = async (date: string, users: Array<FirestoreUser & { rtdbUserId: string | null }>) => {
+    const dateRecords: AttendanceRecord[] = [];
+
+    for (const user of users) {
+      if (user.rtdbUserId) {
+        const attendanceSnapshot = await get(ref(rtdb, `attendance/${date}/id_${user.rtdbUserId}`));
+        const userAttendance = attendanceSnapshot.val() as Record<string, AttendanceEntry> | null;
+
+        if (userAttendance) {
+          const attendanceEntries = Object.values(userAttendance);
+          const checkIns = attendanceEntries.filter(entry => entry.type === "Check-in").map(entry => entry.time);
+          const checkOuts = attendanceEntries.filter(entry => entry.type === "Check-out").map(entry => entry.time);
+          const overtimeEntries = attendanceEntries.filter(entry => entry.type.startsWith("Overtime"));
+
+          const { amIn, amOut, pmIn, pmOut } = assignTimeEntries(checkIns, checkOuts);
+
+          const amMinutes = calculateTimeDifference(amIn, amOut);
+          const pmMinutes = calculateTimeDifference(pmIn, pmOut);
+          const totalMinutes = amMinutes + pmMinutes;
+          const totalHours = totalMinutes / 60;
+
+          const otHours = overtimeEntries.reduce((total, entry) => {
+            if (entry.type === "Overtime-in") {
+              const outEntry = overtimeEntries.find(e => e.type === "Overtime-out" && e.time > entry.time);
+              if (outEntry) {
+                const otMinutes = calculateTimeDifference(entry.time, outEntry.time);
+                return total + otMinutes / 60;
+              }
+            }
+            return total;
+          }, 0);
+
+          const underTime = Math.max(8 - totalHours, 0);
+
+          dateRecords.push({
+            date,
+            employeeId: user.employeeId,
+            employeeName: user.name,
+            department: user.department,
+            amIn: formatTo12Hour(amIn),
+            amOut: formatTo12Hour(amOut),
+            pmIn: formatTo12Hour(pmIn),
+            pmOut: formatTo12Hour(pmOut),
+            otHours: otHours.toFixed(2),
+            underTime: underTime.toFixed(2),
+            totalHours: totalHours.toFixed(2)
+          });
+        }
+      }
+    }
+
+    return dateRecords;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
+      if (!fromDate || !toDate) return;
+      
       setIsLoading(true);
       try {
         // Fetch departments
@@ -192,7 +248,7 @@ const Attendance: React.FC = () => {
             const rtdbUserData = userSnapshot.val() as RTDBUser;
             return {
               ...user,
-              rtdbUserId: rtdbUserData.userid // Use the 'userid' from RTDB
+              rtdbUserId: rtdbUserData.userid
             };
           } else {
             console.warn(`No matching RTDB user found for userIdRef: ${user.userIdRef}`);
@@ -203,62 +259,22 @@ const Attendance: React.FC = () => {
           }
         }));
 
-        // Fetch attendance data for each user
-        const attendanceRecords: AttendanceRecord[] = [];
+        // Get all dates in the range
+        const dateRange = eachDayOfInterval({
+          start: parseISO(fromDate),
+          end: parseISO(toDate)
+        });
 
-        for (const user of matchedUsers) {
-          if (user.rtdbUserId) {
-            const attendanceSnapshot = await get(ref(rtdb, `attendance/${fromDate}/id_${user.rtdbUserId}`));
-            const userAttendance = attendanceSnapshot.val() as Record<string, AttendanceEntry> | null;
+        // Fetch attendance for each date in parallel
+        const allAttendanceRecords = await Promise.all(
+          dateRange.map(date => 
+            fetchAttendanceForDate(format(date, 'yyyy-MM-dd'), matchedUsers)
+          )
+        );
 
-            if (userAttendance) {
-              const attendanceEntries = Object.values(userAttendance);
-              const checkIns = attendanceEntries.filter(entry => entry.type === "Check-in").map(entry => entry.time);
-              const checkOuts = attendanceEntries.filter(entry => entry.type === "Check-out").map(entry => entry.time);
-              const overtimeEntries = attendanceEntries.filter(entry => entry.type.startsWith("Overtime"));
+        // Flatten the array of arrays into a single array
+        setAttendanceData(allAttendanceRecords.flat());
 
-              const { amIn, amOut, pmIn, pmOut } = assignTimeEntries(checkIns, checkOuts);
-
-              // Calculate total hours
-              const amMinutes = calculateTimeDifference(amIn, amOut);
-              const pmMinutes = calculateTimeDifference(pmIn, pmOut);
-              const totalMinutes = amMinutes + pmMinutes;
-              const totalHours = totalMinutes / 60;
-
-              console.log(`Total hours: ${totalHours.toFixed(2)}`);
-
-              // Calculate OT hours
-              const otHours = overtimeEntries.reduce((total, entry) => {
-                if (entry.type === "Overtime-in") {
-                  const outEntry = overtimeEntries.find(e => e.type === "Overtime-out" && e.time > entry.time);
-                  if (outEntry) {
-                    const otMinutes = calculateTimeDifference(entry.time, outEntry.time);
-                    return total + otMinutes / 60;
-                  }
-                }
-                return total;
-              }, 0);
-
-              // Calculate undertime
-              const underTime = Math.max(8 - totalHours, 0);
-
-              attendanceRecords.push({
-                date: fromDate,
-                employeeId: user.employeeId,
-                employeeName: user.name,
-                department: user.department,
-                amIn: formatTo12Hour(amIn),
-                amOut: formatTo12Hour(amOut),
-                pmIn: formatTo12Hour(pmIn),
-                pmOut: formatTo12Hour(pmOut),
-                otHours: otHours.toFixed(2),
-                underTime: underTime.toFixed(2),
-                totalHours: totalHours.toFixed(2)
-              });
-            }
-          }
-        }
-        setAttendanceData(attendanceRecords);
       } catch (error) {
         console.error("Error fetching attendance data:", error);
         // Handle error (e.g., show error message to user)
@@ -267,10 +283,8 @@ const Attendance: React.FC = () => {
       }
     };
 
-    if (fromDate) {
-      fetchData();
-    }
-  }, [fromDate]);
+    fetchData();
+  }, [fromDate, toDate]);
 
   useEffect(() => {
     // Set initial date range to today
