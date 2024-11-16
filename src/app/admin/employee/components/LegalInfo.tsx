@@ -21,22 +21,30 @@ const LegalDocuments: React.FC<LegalDocumentsProps> = ({
     <div>
       <h2 className="text-xl font-bold mb-4">Legal Compliance and Documents</h2>
       <h2 className="text-sm font-thin mb-4">Put &quot;N/A&quot; if not applicable</h2>
-      <input
-        type="text"
-        onChange={(e) => setSss(e.target.value)}
-        value={sss}
-        placeholder="SSS"
-        required
-        className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
-      />
-      <input
-        type="text"
-        onChange={(e) => setPhilHealthNumber(e.target.value)}
-        value={philHealthNumber}
-        placeholder="Philhealth Number"
-        required
-        className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
-      />
+      <div className='w-full mb-4'>
+        <label htmlFor="sss" className='text-sm text-gray-500 mb-1'>Social Security System No.</label>
+        <input
+          type="text"
+          onChange={(e) => setSss(e.target.value)}
+          value={sss}
+          placeholder="SSS"
+          required
+          className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
+        />
+      </div>
+      <div className='w-full mb-4'>
+        <label htmlFor="philHealthNumber" className="text-sm text-gray-500 mb-1">Philhealth No.</label>
+        <input
+          type="text"
+          onChange={(e) => setPhilHealthNumber(e.target.value)}
+          value={philHealthNumber}
+          placeholder="Philhealth Number"
+          required
+          className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
+        />
+      </div>
+      <div className='w-full mb-4'>
+        <label htmlFor="pagIbigNumber" className="text-sm text-gray-500 mb-1">Pag-ibig No.</label>
       <input
         type="text"
         onChange={(e) => setPagIbigNumber(e.target.value)}
@@ -45,6 +53,9 @@ const LegalDocuments: React.FC<LegalDocumentsProps> = ({
         required
         className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
       />
+      </div>
+      <div className='w-full mb-4'>
+        <label htmlFor="tinNumber" className="text-sm text-gray-500 mb-1">Taxpayer Identification Number</label>
       <input
         type="text"
         onChange={(e) => setTinNumber(e.target.value)}
@@ -53,6 +64,7 @@ const LegalDocuments: React.FC<LegalDocumentsProps> = ({
         required
         className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
       />
+      </div>
       <div className="w-full mb-4">
         <label htmlFor="profilePic" className="text-sm text-gray-500 mb-1">Documents</label>
         <input
