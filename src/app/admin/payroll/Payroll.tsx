@@ -45,6 +45,8 @@ const Payroll: React.FC = () => {
       const currentDate = new Date();
       const currentMonth = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
 
+      //console.log("Current month:", currentMonth);
+
       if (!months.includes(currentMonth)) {
         months.unshift(currentMonth);
       }
@@ -263,16 +265,31 @@ const Payroll: React.FC = () => {
             })
         );
 
-        // Save current month's data
-        const payrollData = fetchedEmployees.reduce((acc, employee) => {
-          acc[employee.id] = employee;
-          return acc;
-        }, {} as Record<string, Employee>);
-
-        await setDoc(doc(db, "payroll", currentMonth), payrollData);
-
-        setEmployees(fetchedEmployees);
-        setFilteredEmployees(fetchedEmployees);
+        if (fetchedEmployees.length > 0) {
+          const payrollData = fetchedEmployees.reduce((acc, employee) => {
+            // Only add employees with valid IDs
+            if (employee.id) {
+              acc[employee.id] = employee;
+            }
+            return acc;
+          }, {} as Record<string, Employee>);
+  
+          // Only save if payrollData is not empty
+          if (Object.keys(payrollData).length > 0) {
+            await setDoc(doc(db, "payroll", currentMonth), payrollData);
+          } else {
+            console.warn("No valid employee data to save");
+            toast.warn("No valid employee data found");
+          }
+  
+          setEmployees(fetchedEmployees);
+          setFilteredEmployees(fetchedEmployees);
+        } else {
+          console.warn("No employees found");
+          toast.warn("No employees found");
+          setEmployees([]);
+          setFilteredEmployees([]);
+        }
       } else {
         // Fetch historical data
         const payrollRef = doc(db, "payroll", month);
