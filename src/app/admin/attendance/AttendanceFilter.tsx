@@ -23,6 +23,14 @@ const AttendanceFilters: React.FC<AttendanceFiltersProps> = ({
   onSearchChange,
   onDepartmentChange,
 }) => {
+  const handleToDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const toDateVal = e.target.value;
+    if (toDateVal < fromDate) {
+      onFromDateChange({ target: { value: toDateVal } } as React.ChangeEvent<HTMLInputElement>);
+    }
+    onToDateChange(e);
+  };
+
   return (
     <div className="mb-4 flex space-x-4">
       <div>
@@ -45,7 +53,7 @@ const AttendanceFilters: React.FC<AttendanceFiltersProps> = ({
           type="date"
           id="toDate"
           value={toDate}
-          onChange={onToDateChange}
+          onChange={handleToDateChange}
           className="border p-2 rounded"
         />
       </div>

@@ -42,21 +42,29 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({ data }) => {
           </tr>
         </thead>
         <tbody>
-          {data.map((record, index) => (
-            <tr key={index}>
-              <td className="px-2 py-1 border">{record.date}</td>
-              <td className="px-2 py-1 border">{record.employeeId}</td>
-              <td className="px-2 py-1 border">{record.employeeName}</td>
-              <td className="px-2 py-1 border">{record.department}</td>
-              <td className="px-2 py-1 border">{record.amIn}</td>
-              <td className="px-2 py-1 border">{record.amOut}</td>
-              <td className="px-2 py-1 border">{record.pmIn}</td>
-              <td className="px-2 py-1 border">{record.pmOut}</td>
-              <td className="px-2 py-1 border">{record.otHours}</td>
-              <td className="px-2 py-1 border">{record.underTime}</td>
-              <td className="px-2 py-1 border">{record.totalHours}</td>
+          {data.length > 0 ? (
+            data.map((record, index) => (
+              <tr key={index}>
+                <td className="px-2 py-1 border">{record.date}</td>
+                <td className="px-2 py-1 border">{record.employeeId}</td>
+                <td className="px-2 py-1 border">{record.employeeName}</td>
+                <td className="px-2 py-1 border">{record.department}</td>
+                <td className="px-2 py-1 border">{record.amIn}</td>
+                <td className="px-2 py-1 border">{record.amOut}</td>
+                <td className="px-2 py-1 border">{record.pmIn}</td>
+                <td className="px-2 py-1 border">{record.pmOut}</td>
+                <td className="px-2 py-1 border">{record.otHours}</td>
+                <td className="px-2 py-1 border">{record.underTime}</td>
+                <td className="px-2 py-1 border">{record.totalHours}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={10} className="px-2 py-1 border text-center">
+                No data available
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>

@@ -59,57 +59,121 @@ const AttendanceUser: React.FC<{ userId?: string }> = ({ userId }) => {
   };
 
   const calculateTimeDifference = (start: string, end: string): number => {
-    if (!start || !end) return 0;
     const startDate = parseISO(`2000-01-01T${start}`);
     const endDate = parseISO(`2000-01-01T${end}`);
     return differenceInMinutes(endDate, startDate);
   };
 
+  // Helper function to determine if a time is AM or PM
   const isAMTime = (time: string): boolean => {
     if (!time) return false;
     const [hours] = time.split(':');
     const hour = parseInt(hours, 10);
+    // Consider times between 5:00 and 12:59 as AM
     return hour >= 5 && hour < 13;
   };
 
+  // Helper function to determine if a time difference suggests missing middle entries
   const hasLargeTimeDifference = (checkIn: string, checkOut: string): boolean => {
     if (!checkIn || !checkOut) return false;
-    const diffInHours = calculateTimeDifference(checkIn, checkOut) / 60;
+    const startDate = parseISO(`2000-01-01T${checkIn}`);
+    const endDate = parseISO(`2000-01-01T${checkOut}`);
+    const diffInHours = differenceInMinutes(endDate, startDate) / 60;
+    // If difference is more than 5 hours, likely missing middle entries
     return diffInHours > 5;
   };
 
   const assignTimeEntries = (checkIns: string[], checkOuts: string[]): { amIn: string, amOut: string, pmIn: string, pmOut: string } => {
     let amIn = "", amOut = "", pmIn = "", pmOut = "";
+
+    // Sort times chronologically
     checkIns.sort();
     checkOuts.sort();
 
     if (checkIns.length === 2 && checkOuts.length === 2) {
-      if (isAMTime(checkIns[0])) {
-        amIn = checkIns[0];
-        amOut = checkOuts[0];
-        pmIn = checkIns[1];
-        pmOut = checkOuts[1];
+      // Full day scenario with 2 check-ins and 2 check-outs
+      const firstCheckIn = checkIns[0];
+      const secondCheckIn = checkIns[1];
+      const firstCheckOut = checkOuts[0];
+      const secondCheckOut = checkOuts[1];
+
+      if (isAMTime(firstCheckIn)) {
+        amIn = firstCheckIn;
+        amOut = firstCheckOut;
+        pmIn = secondCheckIn;
+        pmOut = secondCheckOut;
       } else {
-        pmIn = checkIns[0];
-        pmOut = checkOuts[0];
-        amIn = checkIns[1];
-        amOut = checkOuts[1];
+        pmIn = firstCheckIn;
+        pmOut = firstCheckOut;
+        amIn = secondCheckIn;
+        amOut = secondCheckOut;
       }
     } else if (checkIns.length === 1 && checkOuts.length === 1) {
-      if (isAMTime(checkIns[0])) {
-        if (hasLargeTimeDifference(checkIns[0], checkOuts[0])) {
-          amIn = checkIns[0];
-          pmOut = checkOuts[0];
+      const checkIn = checkIns[0];
+      const checkOut = checkOuts[0];
+
+      if (isAMTime(checkIn)) {
+        // Check if there's a large time gap suggesting missing middle entries
+        if (hasLargeTimeDifference(checkIn, checkOut)) {
+          // Case where employee checked in AM and checked out PM, missing middle entries
+          amIn = checkIn;
+          pmOut = checkOut;
         } else {
-          amIn = checkIns[0];
-          amOut = checkOuts[0];
+          // Normal half-day morning scenario
+          amIn = checkIn;
+          amOut = checkOut;
         }
       } else {
-        pmIn = checkIns[0];
-        pmOut = checkOuts[0];
+        // Afternoon half-day
+        pmIn = checkIn;
+        pmOut = checkOut;
+      }
+    } else if (checkIns.length === 2 && checkOuts.length === 1) {
+      // Special case: 2 check-ins but only 1 check-out
+      const firstCheckIn = checkIns[0];
+      const secondCheckIn = checkIns[1];
+      const checkOut = checkOuts[0];
+
+      if (isAMTime(firstCheckIn)) {
+        amIn = firstCheckIn;
+        if (isAMTime(secondCheckIn)) {
+          amOut = checkOut;
+        } else {
+          pmIn = secondCheckIn;
+          pmOut = checkOut;
+        }
+      } else {
+        pmIn = firstCheckIn;
+        if (isAMTime(secondCheckIn)) {
+          amIn = secondCheckIn;
+          amOut = checkOut;
+        } else {
+          pmOut = checkOut;
+        }
+      }
+    } else if (checkIns.length === 1 && checkOuts.length === 0) {
+      const checkIn = checkIns[0];
+      
+      if (isAMTime(checkIn)) {
+        // Morning check-in only
+        amIn = checkIn;
+      } else {
+        // Afternoon check-in only
+        pmIn = checkIn;
+      }
+    } else if (checkIns.length === 2 && checkOuts.length === 0) {
+      // Special case: 2 check-ins but no check-outs
+      const firstCheckIn = checkIns[0];
+      const secondCheckIn = checkIns[1];
+      if (isAMTime(firstCheckIn)) {
+        amIn = firstCheckIn;
+        pmIn = secondCheckIn;
+      } else {
+        pmIn = firstCheckIn;
+        amIn = secondCheckIn;
       }
     }
-
+    
     return { amIn, amOut, pmIn, pmOut };
   };
 

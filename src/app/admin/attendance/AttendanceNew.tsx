@@ -155,8 +155,29 @@ const Attendance: React.FC = () => {
           pmOut = checkOut;
         }
       }
+    } else if (checkIns.length === 1 && checkOuts.length === 0) {
+      const checkIn = checkIns[0];
+      
+      if (isAMTime(checkIn)) {
+        // Morning check-in only
+        amIn = checkIn;
+      } else {
+        // Afternoon check-in only
+        pmIn = checkIn;
+      }
+    } else if (checkIns.length === 2 && checkOuts.length === 0) {
+      // Special case: 2 check-ins but no check-outs
+      const firstCheckIn = checkIns[0];
+      const secondCheckIn = checkIns[1];
+      if (isAMTime(firstCheckIn)) {
+        amIn = firstCheckIn;
+        pmIn = secondCheckIn;
+      } else {
+        pmIn = firstCheckIn;
+        amIn = secondCheckIn;
+      }
     }
-
+    
     return { amIn, amOut, pmIn, pmOut };
   };
 
