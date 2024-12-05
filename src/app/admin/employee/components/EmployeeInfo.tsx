@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '@/firebase';
 import { collection, getDocs } from 'firebase/firestore';
+import { FaRandom } from 'react-icons/fa';
 
 interface EmploymentInfoProps {
   employeeId: string;
@@ -71,15 +72,24 @@ const EmploymentInfo: React.FC<EmploymentInfoProps> = ({
         </div>
         <div className="w-full md:w-1/2 px-2 mb-4">
           <label htmlFor="employeeId" className="text-sm text-gray-500 mb-1">Employee ID</label>
-          <input
-            type="text"
-            id="employeeId"
-            onChange={(e) => setEmployeeId(e.target.value)}
-            value={employeeId}
-            placeholder="Employee ID"
-            required
-            className="w-full p-2 border rounded dark:bg-zinc-200"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              id="employeeId"
+              onChange={(e) => setEmployeeId(e.target.value)}
+              value={employeeId}
+              placeholder="Employee ID"
+              required
+              className="w-full p-2 border rounded dark:bg-zinc-200"
+            />
+            <button
+              type="button"
+              onClick={() => setEmployeeId(`BEPER-${(Math.floor(Math.random() * 1000000))}`)}
+              className="absolute right-0 top-0 p-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-r focus:outline-none"
+            >
+              <FaRandom />
+            </button>
+          </div>
         </div>
         <div className="w-full md:w-1/2 px-2 mb-4">
           <label htmlFor="rate" className="text-sm text-gray-500 mb-1">Rate</label>

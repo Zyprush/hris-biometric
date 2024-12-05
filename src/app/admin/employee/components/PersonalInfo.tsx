@@ -244,12 +244,18 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
       )}
 
       <div className="flex flex-wrap md:flex-nowrap space-x-0 md:space-x-4 space-y-4 md:space-y-0 mb-4">
-        <div className="w-full md:w-1/2">
+        <div className="w-full md:w-1/2 relative">
           <label htmlFor="phone" className="text-sm text-gray-500 mb-1 block">Phone</label>
           <input
             type="number"
             id="phone"
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => {
+              const phoneValue = e.target.value;
+              const onlyNumbers = phoneValue.replace(/[^0-9]/g, '');
+              if (phoneValue.length <= 11) {
+                setPhone(onlyNumbers);
+              }
+            }}
             value={phone}
             placeholder="Phone"
             pattern="[0-9]{11}"
@@ -258,6 +264,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
             required
             className="w-full p-2 border rounded dark:bg-zinc-200"
           />
+          <span className="absolute top-0 right-0 text-sm" style={{color: phone.length < 11 ? 'red' : 'green'}}>{phone.length}/11</span>
         </div>
         <div className="w-full md:w-1/2">
           <label htmlFor="email" className="text-sm text-gray-500 mb-1 block">Email</label>
@@ -277,9 +284,9 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
         <div className="w-full md:w-1/3">
           <label htmlFor="emergencyContactName" className="text-sm text-gray-500 mb-1 block">Emergency Contact Name</label>
           <input
-            type="tel"
+            type="text"
             id="emergencyContactName"
-            onChange={(e) => setEmergencyContactName(e.target.value)}
+            onChange={(e) => setEmergencyContactName(e.target.value.replace(/[0-9]/g, ''))}
             value={emergencyContactName}
             placeholder="Contact Name"
             required
@@ -287,11 +294,17 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
           />
         </div>
         <div className="w-full md:w-1/3">
-          <label htmlFor="emergencyContactPhone" className="text-sm text-gray-500 mb-1 block">Contact Phone</label>
+          <label htmlFor="emergencyContactPhone" className="text-sm text-gray-500 mb-1 block">Contact Phone <span style={{color: emergencyContactPhone.length < 11 ? 'red' : 'green'}}>{emergencyContactPhone.length}/11</span></label>
           <input
             type="tel"
             id="emergencyContactPhone"
-            onChange={(e) => setEmergencyContactPhone(e.target.value)}
+            onChange={(e) => {
+              const phoneValue = e.target.value;
+              const onlyNumbers = phoneValue.replace(/[^0-9]/g, '');
+              if (phoneValue.length <= 11) {
+                setEmergencyContactPhone(onlyNumbers);
+              }
+            }}
             value={emergencyContactPhone}
             placeholder="Contact Phone"
             pattern="[0-9]{11}"
@@ -315,6 +328,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
         </div>
 
       </div>
+
     </div>
 
   );

@@ -20,12 +20,23 @@ const LegalDocuments: React.FC<LegalDocumentsProps> = ({
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">Legal Compliance and Documents</h2>
-      <h2 className="text-sm font-thin mb-4">Put &quot;N/A&quot; if not applicable</h2>
+      <h3 className="text-sm font-thin mb-4">Put &quot;N/A&quot; if not applicable</h3>
       <div className='w-full mb-4'>
-        <label htmlFor="sss" className='text-sm text-gray-500 mb-1'>Social Security System No.</label>
+        <label htmlFor="sss" className='text-sm text-gray-500 mb-1'>
+          Social Security System No.{' '}
+          <span className='text-xs'>
+            (0-9 only, max 10 digits, {sss.length}/10)
+          </span>
+        </label>
         <input
           type="text"
-          onChange={(e) => setSss(e.target.value)}
+          onChange={(e) => {
+            const sssValue = e.target.value;
+            const onlyNumbers = sssValue.replace(/[^0-9]/g, '');
+            if (sssValue.length <= 10) {
+              setSss(onlyNumbers);
+            }
+          }}
           value={sss}
           placeholder="SSS"
           required
@@ -33,10 +44,21 @@ const LegalDocuments: React.FC<LegalDocumentsProps> = ({
         />
       </div>
       <div className='w-full mb-4'>
-        <label htmlFor="philHealthNumber" className="text-sm text-gray-500 mb-1">Philhealth No.</label>
+        <label htmlFor="philHealthNumber" className="text-sm text-gray-500 mb-1">
+          Philhealth No.{' '}
+          <span className='text-xs'>
+            (0-9 only, max 12 digits, {philHealthNumber.length}/12)
+          </span>
+        </label>
         <input
           type="text"
-          onChange={(e) => setPhilHealthNumber(e.target.value)}
+          onChange={(e) => {
+            const philHealthNumberValue = e.target.value;
+            const onlyNumbers = philHealthNumberValue.replace(/[^0-9]/g, '');
+            if (philHealthNumberValue.length <= 12) {
+              setPhilHealthNumber(onlyNumbers);
+            }
+          }}
           value={philHealthNumber}
           placeholder="Philhealth Number"
           required
@@ -44,26 +66,48 @@ const LegalDocuments: React.FC<LegalDocumentsProps> = ({
         />
       </div>
       <div className='w-full mb-4'>
-        <label htmlFor="pagIbigNumber" className="text-sm text-gray-500 mb-1">Pag-ibig No.</label>
-      <input
-        type="text"
-        onChange={(e) => setPagIbigNumber(e.target.value)}
-        value={pagIbigNumber}
-        placeholder="Pag-ibig Number"
-        required
-        className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
-      />
+        <label htmlFor="pagIbigNumber" className="text-sm text-gray-500 mb-1">
+          Pag-ibig No.{' '}
+          <span className='text-xs'>
+            (0-9 only, max 12 digits, {pagIbigNumber.length}/12)
+          </span>
+        </label>
+        <input
+          type="text"
+          onChange={(e) => {
+            const pagIbigNumberValue = e.target.value;
+            const onlyNumbers = pagIbigNumberValue.replace(/[^0-9]/g, '');
+            if (pagIbigNumberValue.length <= 12) {
+              setPagIbigNumber(onlyNumbers);
+            }
+          }}
+          value={pagIbigNumber}
+          placeholder="Pag-ibig Number"
+          required
+          className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
+        />
       </div>
       <div className='w-full mb-4'>
-        <label htmlFor="tinNumber" className="text-sm text-gray-500 mb-1">Taxpayer Identification Number</label>
-      <input
-        type="text"
-        onChange={(e) => setTinNumber(e.target.value)}
-        value={tinNumber}
-        placeholder="TIN Number"
-        required
-        className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
-      />
+        <label htmlFor="tinNumber" className="text-sm text-gray-500 mb-1">
+          Taxpayer Identification Number{' '}
+          <span className='text-xs'>
+            (0-9 only, max 14 digits, {tinNumber.length}/14)
+          </span>
+        </label>
+        <input
+          type="text"
+          onChange={(e) => {
+            const tinNumberValue = e.target.value;
+            const onlyNumbers = tinNumberValue.replace(/[^0-9]/g, '');
+            if (tinNumberValue.length <= 14) {
+              setTinNumber(onlyNumbers);
+            }
+          }}
+          value={tinNumber}
+          placeholder="TIN Number"
+          required
+          className="w-full p-2 mb-2 border rounded dark:bg-zinc-200"
+        />
       </div>
       <div className="w-full mb-4">
         <label htmlFor="profilePic" className="text-sm text-gray-500 mb-1">Documents</label>
