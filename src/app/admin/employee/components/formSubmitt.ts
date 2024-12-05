@@ -3,7 +3,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, db, storage } from "@/firebase";
 import { FirebaseError } from "firebase/app";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 
 interface SubmitParams {
   auth: any;
@@ -99,6 +99,7 @@ export const handleSubmit = async ({
           profilePicUrl,
         });
         console.log("Document successfully written!");
+        await sendEmailVerification(newUser);
       } catch (firestoreError) {
         console.error("Error writing document: ", firestoreError);
         if (firestoreError instanceof FirebaseError) {
