@@ -12,6 +12,7 @@ const UserHistory = () => {
   const { userData } = useUserStore();
   useEffect(() => {
     if (userData) {
+      console.log('userData.id', userData.id)
       fetchHistoryByUser(userData.id);
     }
   }, [fetchHistoryByUser, userData]);
