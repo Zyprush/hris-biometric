@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { auth, db, rtdb } from "@/firebase";
 import { UserDatainterface } from "@/state/interface";
 import { useUserStore } from "@/state/user";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, getDocs, collection } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { get, ref } from "firebase/database";
 
@@ -32,6 +32,33 @@ const Payslip = () => {
   const { setUserData, setUser, userData } = useUserStore();
   const [rtdbUserId, setRtdbUserId] = useState<string>("");
   const [payrollData, setPayrollData] = useState<PayrollData | null>(null);
+  const [selectedMonth, setSelectedMonth] = useState<string>("");
+  const [availableMonths, setAvailableMonths] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchAvailableMonths = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "payroll"));
+        const months = querySnapshot.docs
+          .map(doc => doc.id)
+          .sort((a, b) => b.localeCompare(a));
+
+        const currentDate = new Date();
+        const currentMonth = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
+
+        if (!months.includes(currentMonth)) {
+          months.unshift(currentMonth);
+        }
+
+        setAvailableMonths(months);
+        setSelectedMonth(currentMonth);
+      } catch (error) {
+        console.error("Error fetching available months: ", error);
+      }
+    };
+
+    fetchAvailableMonths();
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -64,10 +91,8 @@ const Payslip = () => {
 
   useEffect(() => {
     const fetchPayrollData = async () => {
-      if (rtdbUserId) {
-        const currentDate = new Date();
-        const currentMonth = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
-        const payrollRef = doc(db, "payroll", currentMonth);
+      if (rtdbUserId && selectedMonth) {
+        const payrollRef = doc(db, "payroll", selectedMonth);
         const payrollSnap = await getDoc(payrollRef);
         
         if (payrollSnap.exists()) {
@@ -76,14 +101,16 @@ const Payslip = () => {
             setPayrollData(allPayrollData[rtdbUserId] as PayrollData);
           } else {
             console.warn(`No payroll data found for user with ID: ${rtdbUserId}`);
+            setPayrollData(null);
           }
         } else {
-          console.warn(`No payroll data found for the current month: ${currentMonth}`);
+          console.warn(`No payroll data found for the month: ${selectedMonth}`);
+          setPayrollData(null);
         }
       }
     };
     fetchPayrollData();
-  }, [rtdbUserId]);
+  }, [rtdbUserId, selectedMonth]);
 
   if (loading) return <div>Loading...</div>;
 
@@ -95,7 +122,20 @@ const Payslip = () => {
             className="w-full h-full flex flex-col justify-start items-center"
             ref={componentRef}
           >
-            <div className="p-4 mx-auto mt-10">
+            <div className="w-full max-w-3xl p-4 mx-auto mt-10">
+              <div className="mb-4">
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  className="select select-sm select-bordered rounded-sm w-full max-w-xs"
+                >
+                  {availableMonths.map((month) => (
+                    <option key={month} value={month}>
+                      {new Date(month).toLocaleString('default', { month: 'long', year: 'numeric' })}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="bg-white border border-gray-300 shadow-md">
                 <h1 className="text-xl font-bold p-2 bg-primary border-b border-gray-300 text-white">
                   PAYSLIP
