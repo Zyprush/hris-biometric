@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { collection, getDocs, doc, deleteDoc, updateDoc, getDoc, setDoc } from "firebase/firestore";
+import { collection, getDocs, doc, deleteDoc, updateDoc, getDoc, setDoc, Timestamp } from "firebase/firestore";
 import { db, storage } from "@/firebase";
 import Modal from "./components/employeeModal";
 import { AdminRouteGuard } from "@/components/AdminRouteGuard";
@@ -16,6 +16,8 @@ const FormerEmployee = () => {
   const [filteredEmployees, setFilteredEmployees] = useState<EmployeeDetails[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeDetails | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
   //page number
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 10;
@@ -59,10 +61,17 @@ const FormerEmployee = () => {
           role: data.role || '',
           documentUrls: data.documentUrls || [],
           remarks: data.remarks || 'no remarks',
+          deletedAt: data.deletedAt || '',
         } as EmployeeDetails;
       }).filter((employee) => employee.email !== ADMIN_EMAIL);
       setEmployees(fetchedEmployees);
-      setFilteredEmployees(fetchedEmployees);
+      setFilteredEmployees(
+        [...fetchedEmployees].sort((a, b) => {
+          if (!a.deletedAt) return 1;
+          if (!b.deletedAt) return -1;
+          return (b.deletedAt as Timestamp).toDate().getTime() - (a.deletedAt as Timestamp).toDate().getTime();
+        })
+      );
     } catch (error) {
       console.error("Error fetching employees: ", error);
       toast.error("Failed to fetch employees");
@@ -104,11 +113,29 @@ const handleRestore = async (employeeId: string) => {
 };
 
   const handleSearch = () => {
-    const filtered = employees.filter(
+    let filtered = employees.filter(
       (employee) =>
         employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         employee.employeeId.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // Apply date filtering if dates are selected
+    if (startDate || endDate) {
+      filtered = filtered.filter((employee) => {
+        if (!employee.deletedAt) return false;
+        
+        const deletedDate = employee.deletedAt.toDate();
+        const start = startDate ? new Date(startDate) : new Date(0);
+        const end = endDate ? new Date(endDate) : new Date(8640000000000000);
+        
+        // Set the time to midnight for consistent comparison
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+        
+        return deletedDate >= start && deletedDate <= end;
+      });
+    }
+
     setFilteredEmployees(filtered);
     setCurrentPage(1);
   };
@@ -213,6 +240,25 @@ const handleRestore = async (employeeId: string) => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="input input-sm input-bordered rounded-sm w-full sm:w-64"
             />
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => {
+                setStartDate(e.target.value);
+                if (!endDate) {
+                  setEndDate(e.target.value);
+                }
+              }}
+              className="input input-sm input-bordered rounded-sm w-full sm:w-auto"
+              placeholder="Start Date"
+            />
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="input input-sm input-bordered rounded-sm w-full sm:w-auto"
+              placeholder="End Date"
+            />
             <div className="flex w-full sm:flex-1 space-x-2">
               <button
                 onClick={handleSearch}
@@ -238,6 +284,7 @@ const handleRestore = async (employeeId: string) => {
                   <th className="px-6 py-3 text-left">Employee ID</th>
                   <th className="px-6 py-3 text-left">Name</th>
                   <th className="px-6 py-3 text-left">Remarks</th>
+                  <th className="px-6 py-3 text-left">Deleted At</th>
                   <th className="px-6 py-3 text-left">Actions</th>
                 </tr>
               </thead>
@@ -267,6 +314,9 @@ const handleRestore = async (employeeId: string) => {
                       </td>
                       <td className="px-4 py-2 text-xs text-left">
                         {employee?.remarks}
+                      </td>
+                      <td className="px-4 py-2 text-xs text-left">
+                        {employee?.deletedAt?.toDate().toLocaleString()}
                       </td>
                       <td className="px-4 py-2 text-xs text-left">
                         <button

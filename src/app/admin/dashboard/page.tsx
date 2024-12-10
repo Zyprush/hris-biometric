@@ -419,7 +419,7 @@ const AdminDashboard: React.FC = () => {
     };
   };
 
-  const [selectedBranch, setSelectedBranch] = useState(branches[0]?.name || '');
+  const [selectedBranch, setSelectedBranch] = useState(branches[0]?.name || 'Beper Shopping Center');
 
   return (
     <AdminRouteGuard>

@@ -13,6 +13,7 @@ import {
 } from "react-icons/fa";
 import Link from "next/link";
 import { MdEditDocument } from "react-icons/md";
+import { Timestamp } from "firebase/firestore";
 
 interface EmployeeDetails {
   id: string;
@@ -44,6 +45,7 @@ interface EmployeeDetails {
   documentUrls?: string[];
   profilePicUrl?: string;
   remarks?: string;
+  deletedAt?: Timestamp;
 }
 
 interface ModalProps {
