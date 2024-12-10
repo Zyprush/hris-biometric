@@ -103,6 +103,13 @@ const SignInPage = () => {
             and financial overviews. Additionally, the application integrates
             with Firebase for real-time data management and notifications,
             ensuring a seamless user experience.
+            <p className="">
+              Email: <a href="mailto:hrisbiometric@gmail.com" className="hover:underline">hrisbiometric@gmail.com</a>
+            </p>
+            <p className="">
+              Phone: <a href="tel:+63 938-587-1156" className="hover:underline">+63938-587-1156</a>
+            </p>
+
           </div>
           <div className="w-full max-w-md bg-gray-800 bg-opacity-40 backdrop-blur-sm rounded-lg shadow-md p-6 py-14 z-10 relative">
             <h1 className="text-2xl text-white font-bold mb-6">Sign in</h1>
