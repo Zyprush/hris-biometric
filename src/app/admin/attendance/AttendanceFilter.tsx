@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface AttendanceFiltersProps {
   fromDate: string;
@@ -23,11 +23,40 @@ const AttendanceFilters: React.FC<AttendanceFiltersProps> = ({
   onSearchChange,
   onDepartmentChange,
 }) => {
-  const handleToDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const toDateVal = e.target.value;
-    if (toDateVal < fromDate) {
-      onFromDateChange({ target: { value: toDateVal } } as React.ChangeEvent<HTMLInputElement>);
+  const [isToDateModifiedByUser, setIsToDateModifiedByUser] = useState(false);
+
+  const handleFromDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newFromDate = e.target.value;
+    
+    // If to date hasn't been manually modified, set it to the same as from date
+    if (!isToDateModifiedByUser) {
+      onToDateChange({ 
+        target: { value: newFromDate } 
+      } as React.ChangeEvent<HTMLInputElement>);
     }
+    
+    // Ensure from date is not after to date
+    if (newFromDate > toDate) {
+      onToDateChange({ 
+        target: { value: newFromDate } 
+      } as React.ChangeEvent<HTMLInputElement>);
+    }
+    
+    onFromDateChange(e);
+  };
+
+  const handleToDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Mark that the user has manually modified the to date
+    setIsToDateModifiedByUser(true);
+    
+    // Ensure to date is not before from date
+    const newToDate = e.target.value;
+    if (newToDate < fromDate) {
+      onFromDateChange({ 
+        target: { value: newToDate } 
+      } as React.ChangeEvent<HTMLInputElement>);
+    }
+    
     onToDateChange(e);
   };
 
@@ -41,7 +70,7 @@ const AttendanceFilters: React.FC<AttendanceFiltersProps> = ({
           type="date"
           id="fromDate"
           value={fromDate}
-          onChange={onFromDateChange}
+          onChange={handleFromDateChange}
           className="border p-2 rounded"
         />
       </div>
