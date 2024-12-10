@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { SignedIn } from "@/components/signed-in";
 import { Doughnut, Bar } from "react-chartjs-2";
@@ -14,7 +14,7 @@ import {
   BarElement,
   Title,
   ChartData,
-  ChartOptions
+  ChartOptions,
 } from "chart.js";
 import {
   FaUsers,
@@ -29,7 +29,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { db, rtdb } from "@/firebase";
 import CardComponent from "@/components/CardComponents";
 import { get, ref } from "firebase/database";
-import Loading from '@/components/Loading';
+import Loading from "@/components/Loading";
 
 ChartJS.register(
   ArcElement,
@@ -78,12 +78,14 @@ const AdminDashboard: React.FC = () => {
   const [formerEmployees, setFormerEmployees] = useState<number>(0);
   const [recentHires, setRecentHires] = useState<number>(0);
   const [upcomingBirthdays, setUpcomingBirthdays] = useState<number>(0);
-  const [attendanceSummary, setAttendanceSummary] = useState<AttendanceSummary>({
-    present: 0,
-    absent: 0,
-    leave: 0,
-    restday: 0,
-  });
+  const [attendanceSummary, setAttendanceSummary] = useState<AttendanceSummary>(
+    {
+      present: 0,
+      absent: 0,
+      leave: 0,
+      restday: 0,
+    }
+  );
   const [branches, setBranches] = useState<Branch[]>([]);
   const [departments, setDepartments] = useState<string[]>([]);
   const [staffData, setStaffData] = useState<StaffData>({});
@@ -98,10 +100,10 @@ const AdminDashboard: React.FC = () => {
   });
 
   const updateLoadingState = (key: keyof LoadingStates, value: boolean) => {
-    setLoadingStates(prev => ({ ...prev, [key]: value }));
+    setLoadingStates((prev) => ({ ...prev, [key]: value }));
   };
 
-  const isLoading = Object.values(loadingStates).some(state => state);
+  const isLoading = Object.values(loadingStates).some((state) => state);
 
   const fetchTotalEmployees = async (): Promise<void> => {
     try {
@@ -137,7 +139,7 @@ const AdminDashboard: React.FC = () => {
     } catch (error) {
       console.error("Error fetching total employees: ", error);
     } finally {
-      updateLoadingState('employees', false);
+      updateLoadingState("employees", false);
     }
   };
 
@@ -148,7 +150,7 @@ const AdminDashboard: React.FC = () => {
     } catch (error) {
       console.error("Error fetching total branches: ", error);
     } finally {
-      updateLoadingState('branches', false);
+      updateLoadingState("branches", false);
     }
   };
 
@@ -159,7 +161,7 @@ const AdminDashboard: React.FC = () => {
     } catch (error) {
       console.error("Error fetching former employees: ", error);
     } finally {
-      updateLoadingState('formerEmployees', false);
+      updateLoadingState("formerEmployees", false);
     }
   };
 
@@ -199,29 +201,36 @@ const AdminDashboard: React.FC = () => {
     } catch (error) {
       console.error("Error fetching upcoming birthdays: ", error);
     } finally {
-      updateLoadingState('birthdays', false);
+      updateLoadingState("birthdays", false);
     }
   };
 
   const fetchAttendanceSummary = async (): Promise<void> => {
     try {
-      const usersQuery = query(collection(db, "users"), where("role", "!=", "admin"));
+      const usersQuery = query(
+        collection(db, "users"),
+        where("role", "!=", "admin")
+      );
       const usersSnapshot = await getDocs(usersQuery);
       const totalUsers = usersSnapshot.size;
 
       let presentCount = 0;
-      const currentDate = new Date().toISOString().split('T')[0];
+      const currentDate = new Date().toISOString().split("T")[0];
 
       for (const userDoc of usersSnapshot.docs) {
         const userData = userDoc.data();
         const userIdRef = userData.userIdRef;
 
         if (userIdRef) {
-          const userIdSnapshot = await get(ref(rtdb, `users/${userIdRef}/userid`));
+          const userIdSnapshot = await get(
+            ref(rtdb, `users/${userIdRef}/userid`)
+          );
           const userId = userIdSnapshot.val();
 
           if (userId) {
-            const attendanceSnapshot = await get(ref(rtdb, `attendance/${currentDate}/id_${userId}`));
+            const attendanceSnapshot = await get(
+              ref(rtdb, `attendance/${currentDate}/id_${userId}`)
+            );
             if (attendanceSnapshot.exists()) {
               presentCount++;
             }
@@ -242,39 +251,47 @@ const AdminDashboard: React.FC = () => {
     } catch (error) {
       console.error("Error fetching attendance summary: ", error);
     } finally {
-      updateLoadingState('attendance', false);
+      updateLoadingState("attendance", false);
     }
   };
 
   const fetchBranches = async (): Promise<void> => {
     try {
       const branchesSnapshot = await getDocs(collection(db, "branches"));
-      const branchesData = branchesSnapshot.docs.map(doc => ({ id: doc.id, name: doc.data().name }));
+      const branchesData = branchesSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        name: doc.data().name,
+      }));
       setBranches(branchesData);
     } catch (error) {
       console.error("Error fetching branches: ", error);
     } finally {
-      updateLoadingState('branches', false);
+      updateLoadingState("branches", false);
     }
   };
 
   const fetchDepartments = async (): Promise<void> => {
     try {
       const departmentsSnapshot = await getDocs(collection(db, "departments"));
-      const departmentsData = departmentsSnapshot.docs.map(doc => doc.data().name);
+      const departmentsData = departmentsSnapshot.docs.map(
+        (doc) => doc.data().name
+      );
       setDepartments(departmentsData);
     } catch (error) {
       console.error("Error fetching departments: ", error);
     } finally {
-      updateLoadingState('departments', false);
+      updateLoadingState("departments", false);
     }
   };
 
   const fetchStaffData = async (): Promise<void> => {
     try {
-      const usersQuery = query(collection(db, "users"), where("role", "!=", "admin"));
+      const usersQuery = query(
+        collection(db, "users"),
+        where("role", "!=", "admin")
+      );
       const usersSnapshot = await getDocs(usersQuery);
-      const currentDate = new Date().toISOString().split('T')[0];
+      const currentDate = new Date().toISOString().split("T")[0];
 
       const staffCounts: StaffData = {};
 
@@ -292,11 +309,15 @@ const AdminDashboard: React.FC = () => {
         staffCounts[branch][department].total++;
 
         if (userIdRef) {
-          const userIdSnapshot = await get(ref(rtdb, `users/${userIdRef}/userid`));
+          const userIdSnapshot = await get(
+            ref(rtdb, `users/${userIdRef}/userid`)
+          );
           const userId = userIdSnapshot.val();
 
           if (userId) {
-            const attendanceSnapshot = await get(ref(rtdb, `attendance/${currentDate}/id_${userId}`));
+            const attendanceSnapshot = await get(
+              ref(rtdb, `attendance/${currentDate}/id_${userId}`)
+            );
             if (attendanceSnapshot.exists()) {
               staffCounts[branch][department].present++;
             }
@@ -308,7 +329,7 @@ const AdminDashboard: React.FC = () => {
     } catch (error) {
       console.error("Error fetching staff data: ", error);
     } finally {
-      updateLoadingState('staffData', false);
+      updateLoadingState("staffData", false);
     }
   };
 
@@ -324,7 +345,7 @@ const AdminDashboard: React.FC = () => {
   }, []);
 
   const doughnutData: ChartData<"doughnut"> = {
-    labels: ["Present", "Absent", "Leave",],
+    labels: ["Present", "Absent", "Leave"],
     datasets: [
       {
         data: [
@@ -344,14 +365,18 @@ const AdminDashboard: React.FC = () => {
     { title: "Total Branches", icon: FaBuilding, value: totalBranches },
     { title: "Recent Hires", icon: FaUserPlus, value: recentHires },
     { title: "Former Employees", icon: FaUserMinus, value: formerEmployees },
-    { title: "Upcoming Birthdays", icon: FaBirthdayCake, value: upcomingBirthdays },
+    {
+      title: "Upcoming Birthdays",
+      icon: FaBirthdayCake,
+      value: upcomingBirthdays,
+    },
   ];
 
   const options: ChartOptions<"bar"> = {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top' as const,
+        position: "top" as const,
       },
       title: {
         display: false,
@@ -364,7 +389,7 @@ const AdminDashboard: React.FC = () => {
     const stableData: number[] = [];
     const understaffData: number[] = [];
 
-    departments.forEach(dept => {
+    departments.forEach((dept) => {
       const deptData = branchData[dept] || { total: 0, present: 0 };
       const { total, present } = deptData;
 
@@ -381,18 +406,20 @@ const AdminDashboard: React.FC = () => {
       labels: departments,
       datasets: [
         {
-          label: 'Stable',
+          label: "Stable",
           data: stableData,
-          backgroundColor: '#135D66',
+          backgroundColor: "#135D66",
         },
         {
-          label: 'UnderStaff',
+          label: "UnderStaff",
           data: understaffData,
-          backgroundColor: '#E57373',
+          backgroundColor: "#E57373",
         },
       ],
     };
   };
+
+  const [selectedBranch, setSelectedBranch] = useState(branches[0]?.name || '');
 
   return (
     <AdminRouteGuard>
@@ -409,16 +436,35 @@ const AdminDashboard: React.FC = () => {
                 <CardComponent cardData={cardData} />
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 border dark:border-zinc-800">
-                    <h2 className="text-lg font-semibold mb-2">Attendance Summary</h2>
-                    <Doughnut data={doughnutData} />
+                    <h2 className="text-lg font-semibold mb-2">
+                      Attendance Summary
+                    </h2>
+                    <div className="h-96 flex items-center justify-center">
+                      <Doughnut data={doughnutData} />
+                    </div>
                   </div>
                   <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 border dark:border-zinc-800">
-                    {branches.map((branch) => (
-                      <div key={branch.id} className="border p-1 mb-4">
-                        <h3 className="text-md font-semibold mb-2">{branch.name} Staff Headcounts</h3>
-                        <Bar options={options} data={generateChartData(branch.name)} />
-                      </div>
-                    ))}
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-lg font-semibold">
+                        Staff Headcounts
+                      </h2>
+                      <select
+                        value={selectedBranch}
+                        onChange={(e) => setSelectedBranch(e.target.value)}
+                        className="form-select px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-zinc-600"
+                      >
+                        {branches.map((branch) => (
+                          <option key={branch.id} value={branch.name}>
+                            {branch.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <Bar
+                      options={options}
+                      data={generateChartData(selectedBranch)}
+                    />
                   </div>
                 </div>
               </>
