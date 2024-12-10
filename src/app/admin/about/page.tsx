@@ -45,6 +45,9 @@ const About = () => {
                 Our Web-Based Human Resource Management and Payroll System with Biometric Technology is built to simplify HR tasks and payroll processing for department and commercial stores. This system meets the need for easy and accurate employee management by offering a single platform that combines staff allocation, attendance monitoring, and payroll processing.
               </p>
             </div>
+            <div className="text-center space-y-4">
+              <a href="https://scribehow.com/shared/How_To_Manage_Employee_Accounts_In_Smart_HRIS__wtjcvxeyTi-dhshW7TpXAg" target="_blank" rel="noopener noreferrer" className="inline-block bg-primary text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition duration-300">User Guide</a>
+            </div>
 
             {/* Mission & Vision */}
             <div className="grid md:grid-cols-2 gap-8">
