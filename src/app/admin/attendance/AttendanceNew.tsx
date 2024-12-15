@@ -331,7 +331,8 @@ const Attendance: React.FC = () => {
     setSelectedDepartment(e.target.value);
   };
 
-  const filteredData = attendanceData.filter((record) => {
+  const filteredData = attendanceData
+  .filter((record) => {
     const isWithinDateRange =
       (!fromDate || record.date >= fromDate) && (!toDate || record.date <= toDate);
     const matchesSearchTerm =
@@ -340,7 +341,8 @@ const Attendance: React.FC = () => {
       selectedDepartment === "All" || record.department === selectedDepartment;
 
     return isWithinDateRange && matchesSearchTerm && matchesDepartment;
-  });
+  })
+  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
     <AdminRouteGuard>
