@@ -7,6 +7,10 @@ import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { useUserStore } from "@/state/user";
 import { useHistoryStore } from "@/state/history";
 
+interface LeaveType {
+  name: string;
+}
+
 const RequestForm = ({
   setShowRequestForm,
   requests,
@@ -19,14 +23,30 @@ const RequestForm = ({
   const [totalDays, setTotalDays] = useState<string>("");
   const [reason, setReason] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([]);
   const { userData, fetchUserData } = useUserStore();
   const { addHistory } = useHistoryStore();
 
   useEffect(() => {
     if (user) {
       fetchUserData(user.uid);
+      fetchLeaveTypes();
     }
   }, [user, fetchUserData]);
+
+  const fetchLeaveTypes = async () => {
+    try {
+      const leaveTypesRef = collection(db, "leave_types");
+      const querySnapshot = await getDocs(leaveTypesRef);
+      const types = querySnapshot.docs.map(doc => ({
+        name: doc.data().name
+      }));
+      setLeaveTypes(types);
+    } catch (error) {
+      console.error("Error fetching leave types:", error);
+      errorToast("Failed to load leave types");
+    }
+  };
 
   const createRequest = async (): Promise<void> => {
     setLoading(true);
@@ -132,11 +152,12 @@ const RequestForm = ({
                     onChange={(e) => setReason(e.target.value)}
                     className="w-full p-2 text-sm mb-2 border rounded bg-zinc-200"
                   >
-                    <option value="">Reason</option>
-                    <option value="Maternity Leave">Maternity Leave</option>
-                    <option value="Sick Leave">Sick Leave</option>
-                    <option value="Vacation Leave">Vacation Leave</option>
-                    <option value="Burial Leave">Burial Leave</option>
+                    <option value="">Type of Leave</option>
+                    {leaveTypes.map((type) => (
+                      <option key={type.name} value={type.name}>
+                        {type.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div className="relative">
