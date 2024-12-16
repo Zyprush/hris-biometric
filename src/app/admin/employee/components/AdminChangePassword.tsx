@@ -4,6 +4,7 @@ import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { errorToast, successToast } from "@/components/toast";
 import animationData from "../../../../../public/img/password-animation.json";
 import Lottie from "react-lottie";
+import { useHistoryStore } from "@/state/history";
 
 const AdminChangePassword = ({
   setChange,
@@ -13,6 +14,7 @@ const AdminChangePassword = ({
   email: string;
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
+  const { addHistory } = useHistoryStore();
 
   const handlePasswordReset = async () => {
     if (!email) {
@@ -35,6 +37,12 @@ const AdminChangePassword = ({
       //   time: currentDate,
       //   type: "admin"
       // });
+      addHistory({
+        adminId: "",
+        text: `Admin reset password for ${email}`,
+        time: new Date().toISOString(),
+        type: "admin",
+      });
       setChange(false);
     } catch (error: any) {
       console.log("Error:", error);
