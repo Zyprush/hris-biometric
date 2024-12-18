@@ -90,29 +90,26 @@ const Attendance: React.FC = () => {
   const assignTimeEntries = (checkIns: string[], checkOuts: string[]): { amIn: string, amOut: string, pmIn: string, pmOut: string } => {
     let amIn = "", amOut = "", pmIn = "", pmOut = "";
 
-    // Sort times chronologically
-    checkIns.sort();
-    checkOuts.sort();
+    // If more than 4 total entries, we'll reduce to most relevant entries
+  if (checkIns.length > 2 || checkOuts.length > 2) {
+    console.warn(`Unusual number of check-ins (${checkIns.length}) or check-outs (${checkOuts.length})`);
+    
+    // Sort all entries chronologically
+    const sortedCheckIns = [...checkIns].sort();
+    const sortedCheckOuts = [...checkOuts].sort();
 
-    if (checkIns.length === 2 && checkOuts.length === 2) {
-      // Full day scenario with 2 check-ins and 2 check-outs
-      const firstCheckIn = checkIns[0];
-      const secondCheckIn = checkIns[1];
-      const firstCheckOut = checkOuts[0];
-      const secondCheckOut = checkOuts[1];
+    // Take the earliest and latest entries for each period
+    const earlyAMCheckIns = sortedCheckIns.filter(time => isAMTime(time));
+    const lateAMCheckOuts = sortedCheckOuts.filter(time => isAMTime(time));
+    const earlyPMCheckIns = sortedCheckIns.filter(time => !isAMTime(time));
+    const latePMCheckOuts = sortedCheckOuts.filter(time => !isAMTime(time));
 
-      if (isAMTime(firstCheckIn)) {
-        amIn = firstCheckIn;
-        amOut = firstCheckOut;
-        pmIn = secondCheckIn;
-        pmOut = secondCheckOut;
-      } else {
-        pmIn = firstCheckIn;
-        pmOut = firstCheckOut;
-        amIn = secondCheckIn;
-        amOut = secondCheckOut;
-      }
-    } else if (checkIns.length === 1 && checkOuts.length === 1) {
+    // Select the most relevant entries
+    amIn = earlyAMCheckIns.length > 0 ? earlyAMCheckIns[0] : "";
+    amOut = lateAMCheckOuts.length > 0 ? lateAMCheckOuts[lateAMCheckOuts.length - 1] : "";
+    pmIn = earlyPMCheckIns.length > 0 ? earlyPMCheckIns[0] : "";
+    pmOut = latePMCheckOuts.length > 0 ? latePMCheckOuts[latePMCheckOuts.length - 1] : "";
+  } else  if (checkIns.length === 1 && checkOuts.length === 1) {
       const checkIn = checkIns[0];
       const checkOut = checkOuts[0];
 
