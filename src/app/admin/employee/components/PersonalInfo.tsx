@@ -52,6 +52,8 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
 }) => {
   const [users, setUsers] = useState<{ [key: string]: User }>({});
   const [usedUserIdRefs, setUsedUserIdRefs] = useState<string[]>([]);
+  // Explicitly excluded user references
+  const EXCLUDED_USER_REFS = ['2', '3', '4', '5', '58', '59', '61', '9'];
 
   useEffect(() => {
     const usersRef = ref(rtdb, 'users');
@@ -84,7 +86,10 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
     };
   }, []);
 
-  const availableUsers = Object.entries(users).filter(([key, _]) => !usedUserIdRefs.includes(key));
+  // Updated filtering to exclude specific user references
+  const availableUsers = Object.entries(users).filter(([key, _]) => 
+    !usedUserIdRefs.includes(key) && !EXCLUDED_USER_REFS.includes(key)
+  );
 
   useEffect(() => {
     if (isPermanentSameAsCurrent) {
